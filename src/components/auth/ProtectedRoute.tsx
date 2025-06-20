@@ -2,15 +2,17 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/config/constants';
+// Importa los estilos globales de componentes
+import '@/styles/components.css';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: 'usuario' | 'organizador' | 'admin';
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  requiredRole 
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  requiredRole
 }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
@@ -20,9 +22,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return (
       <div className="min-h-screen flex-center bg-gray-50">
         <div className="text-center">
-          <div className="spinner" style={{ 
-            width: '3rem', 
-            height: '3rem', 
+          <div className="spinner" style={{
+            width: '3rem',
+            height: '3rem',
             borderWidth: '3px',
             color: 'var(--stem-600)',
             margin: '0 auto var(--spacing-4)'
@@ -43,18 +45,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return (
       <div className="min-h-screen flex-center bg-gray-50">
         <div className="text-center">
-          <div 
-            className="card" 
-            style={{ 
+          <div
+            className="card"
+            style={{
               backgroundColor: '#fef2f2',
               border: '1px solid #fecaca',
               padding: 'var(--spacing-6)',
               maxWidth: '28rem'
             }}
           >
-            <h2 
-              className="text-xl font-semibold" 
-              style={{ 
+            <h2
+              className="text-xl font-semibold"
+              style={{
                 color: '#991b1b',
                 marginBottom: 'var(--spacing-2)'
               }}
