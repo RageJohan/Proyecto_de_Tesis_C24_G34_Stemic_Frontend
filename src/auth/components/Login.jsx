@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../../services/api';
 import { loadGoogleScript, renderGoogleButton } from '../../services/googleOAuth';
+import { useAuth } from '../../context/AuthContext';
 import "../styles/Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [correo, setcorreo] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null); // { type: 'error'|'success', text: string }
@@ -24,7 +26,7 @@ export default function Login() {
               });
               if (data?.data?.token) {
                 setMessage({ type: 'success', text: '¡Inicio de sesión con Google exitoso! Redirigiendo...' });
-                localStorage.setItem('token', data.data.token);
+                login(data.data.token);
                 setTimeout(() => navigate('/dashboard'), 2000);
               } else {
                 setMessage({ type: 'error', text: data.message || 'Error desconocido en login con Google.' });
@@ -37,6 +39,11 @@ export default function Login() {
         'google-signin-btn'
       );
     });
+    return () => {
+      // Limpia el contenedor al desmontar para evitar duplicados
+      const btn = document.getElementById('google-signin-btn');
+      if (btn) btn.innerHTML = '';
+    };
   }, []);
 
   const handleSubmit = async (e) => {
@@ -50,7 +57,7 @@ export default function Login() {
       });
       if (data?.data?.token) {
         setMessage({ type: 'success', text: '¡Inicio de sesión exitoso! Redirigiendo...' });
-        localStorage.setItem('token', data.data.token);
+        login(data.data.token);
         setTimeout(() => navigate('/dashboard'), 2000);
       } else if (data.errors) {
         // Mostrar errores de validación de forma amigable

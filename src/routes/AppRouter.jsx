@@ -1,20 +1,22 @@
 import React from "react";
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Login from '../auth/components/Login';
 import Register from '../auth/components/Register';
 import ForgotPassword from '../auth/components/ForgotPassword';
 import ResetPassword from '../auth/components/ResetPassword';
 import Dashboard from '../components/Dashboard';
+import AboutUs from '../components/AboutUs';
 
 export default function AppRouter() {
-  const isAuthenticated = localStorage.getItem('token');
+  const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />} />
+      <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <ForgotPassword />} />
+      <Route path="/reset-password" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <ResetPassword />} />
       <Route 
         path="/dashboard" 
         element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />} 
@@ -23,7 +25,8 @@ export default function AppRouter() {
         path="/" 
         element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
       />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+  <Route path="/about-us" element={<AboutUs />} />
+  <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

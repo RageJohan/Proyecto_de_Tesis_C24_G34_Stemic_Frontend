@@ -1,60 +1,61 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from './Header';
+import { apiFetch } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import '../styles/Header.css';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
+  const handleLogout = async () => {
+    try {
+      await apiFetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+      });
+    } catch (e) {
+      // No mostrar error técnico al usuario
+    }
+    logout();
     navigate('/login');
   };
 
+  const handleNavigate = (view) => {
+    if (view === 'home') navigate('/');
+    else navigate('/' + view);
+  };
+
   return (
-    <div style={{ 
-      padding: '2rem', 
-      maxWidth: '1200px', 
-      margin: '0 auto',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <header style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '2rem',
-        borderBottom: '1px solid #eee',
-        paddingBottom: '1rem'
+    <>
+      <Header onNavigate={handleNavigate} onLogout={handleLogout} />
+      <div style={{
+        flex: 1,
+        minHeight: 'calc(100vh - 80px)', // solo header
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '2rem',
+        fontFamily: 'Arial, sans-serif',
+        display: 'flex',
+        flexDirection: 'column',
       }}>
-        <h1 style={{ color: '#333', margin: 0 }}>STEMIC Dashboard</h1>
-        <button 
-          onClick={handleLogout}
-          style={{
-            background: '#dc3545',
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Cerrar sesión
-        </button>
-      </header>
-      
-      <main>
-        <div style={{
-          background: '#f8f9fa',
-          padding: '2rem',
-          borderRadius: '8px',
-          textAlign: 'center'
-        }}>
-          <h2 style={{ color: '#28a745', marginBottom: '1rem' }}>
-            ¡Bienvenido al Sistema STEMIC!
-          </h2>
-          <p style={{ color: '#666', fontSize: '1.1rem' }}>
-            Has iniciado sesión correctamente. El sistema está funcionando con React Router.
-          </p>
-        </div>
-      </main>
-    </div>
+        <main style={{ flex: 1 }}>
+          <div style={{
+            background: '#f8f9fa',
+            padding: '2rem',
+            borderRadius: '8px',
+            textAlign: 'center'
+          }}>
+            <h2 style={{ color: '#28a745', marginBottom: '1rem' }}>
+              ¡Bienvenido al Sistema STEMIC!
+            </h2>
+            <p style={{ color: '#666', fontSize: '1.1rem' }}>
+              Has iniciado sesión correctamente. El sistema está funcionando con React Router.
+            </p>
+          </div>
+        </main>
+      </div>
+    </>
   );
 }

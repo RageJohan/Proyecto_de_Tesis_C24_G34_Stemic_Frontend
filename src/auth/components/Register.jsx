@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../../services/api';
 import { loadGoogleScript, renderGoogleButton } from '../../services/googleOAuth';
+import { useAuth } from '../../context/AuthContext';
 import "../styles/Login.css";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
     name: "",
     correo: "",
@@ -29,7 +31,7 @@ export default function Register() {
               });
               if (data?.data?.token) {
                 setMessage({ type: 'success', text: '¡Registro con Google exitoso! Redirigiendo...' });
-                localStorage.setItem('token', data.data.token);
+                login(data.data.token);
                 setTimeout(() => navigate('/dashboard'), 2000);
               } else {
                 setMessage({ type: 'error', text: data.message || 'Error desconocido en registro con Google.' });
@@ -42,6 +44,11 @@ export default function Register() {
         'google-register-btn'
       );
     });
+    return () => {
+      // Limpia el contenedor al desmontar para evitar duplicados
+      const btn = document.getElementById('google-register-btn');
+      if (btn) btn.innerHTML = '';
+    };
   }, []);
 
   const handleChange = e => {
@@ -71,7 +78,7 @@ export default function Register() {
       });
       if (data?.data?.token) {
         setMessage({ type: 'success', text: '¡Registro exitoso! Redirigiendo...' });
-        localStorage.setItem('token', data.data.token);
+        login(data.data.token);
         setTimeout(() => navigate('/dashboard'), 2000);
       } else if (data.errors) {
         // Mostrar errores de validación de forma amigable
