@@ -1,0 +1,323 @@
+/* Acordeón horizontal misión/visión */
+.aboutus-horizontal-accordion {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+.aboutus-h-accordion-card {
+  flex: 1 1 320px;
+  min-width: 260px;
+  background: linear-gradient(120deg, rgba(121,87,242,0.08) 60%, var(--color-bg) 100%);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 16px rgba(30,30,60,0.10);
+  transition: box-shadow 0.3s, background 0.3s;
+  border: 1.5px solid #e3eafc;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  cursor: default;
+}
+.aboutus-h-accordion-card:hover {
+  box-shadow: 0 8px 32px rgba(121,87,242,0.13), 0 2px 8px rgba(191,42,82,0.10);
+  background: linear-gradient(120deg, rgba(166,36,157,0.10) 40%, var(--color-bg) 100%);
+}
+.aboutus-h-accordion-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-terciario);
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  letter-spacing: 0.5px;
+}
+.aboutus-h-accordion-content {
+  color: var(--color-texto-adicional);
+  font-size: 1.08rem;
+  line-height: 1.7;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+@media (max-width: 900px) {
+  .aboutus-horizontal-accordion {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .aboutus-h-accordion-card {
+    min-width: 0;
+  }
+}
+/* LEAD TECSUP Design System Variables */
+:root {
+  /* Colores principales */
+  --color-bg: #030C40;
+  --color-principal: #BF2A52;
+  --color-secundario: #D93240;
+  --color-terciario: #A6249D;
+  --color-acento: #7957F2;
+  --color-blanco: #FFFFFF;
+
+  /* Colores de texto */
+  --color-texto-principal: #FFFFFF;
+  --color-texto-secundario: #A6249D;
+  --color-texto-adicional: #888888;
+
+  /* Variables del sistema */
+  --font-sans: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  --radius: 0.75rem;
+}
+
+/* Estilos base */
+.aboutus-container {
+  background-color: var(--color-bg);
+  color: var(--color-texto-principal);
+  font-family: var(--font-sans);
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.aboutus-title {
+  color: var(--color-principal);
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.aboutus-subtitle {
+  color: var(--color-terciario);
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 3rem 0 2rem;
+}
+
+/* Acordeón */
+.accordion {
+  border: 2px solid var(--color-principal);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--color-terciario);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-header {
+  background-color: var(--color-principal);
+  color: var(--color-texto-principal);
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-header:hover {
+  background-color: var(--color-secundario);
+/* LEAD TECSUP Design System Variables */
+:root {
+  --color-bg: #030C40;
+  --color-principal: #BF2A52;
+  --color-secundario: #D93240;
+  --color-terciario: #A6249D;
+  --color-acento: #7957F2;
+  --color-blanco: #FFFFFF;
+  --color-texto-principal: #FFFFFF;
+  --color-texto-secundario: #A6249D;
+  --color-texto-adicional: #888888;
+  --font-sans: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  --radius: 0.75rem;
+  --shadow-card: 0 4px 24px rgba(121,87,242,0.10);
+  --shadow-hover: 0 8px 32px rgba(191,42,82,0.13);
+}
+
+.aboutus-container {
+  background: var(--color-bg);
+  color: var(--color-texto-principal);
+  font-family: var(--font-sans);
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.aboutus-title {
+  color: var(--color-principal);
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+}
+
+.aboutus-subtitle {
+  color: var(--color-terciario);
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 3rem 0 2rem;
+  letter-spacing: 0.5px;
+}
+
+/* Acordeón */
+.accordion {
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card);
+  background: transparent;
+}
+.accordion-header {
+  background: linear-gradient(90deg, var(--color-principal) 70%, var(--color-acento) 100%);
+  color: var(--color-blanco);
+  padding: 1.2rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: var(--radius);
+  transition: background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(191,42,82,0.08);
+}
+.accordion-header:hover {
+  background: linear-gradient(90deg, var(--color-secundario) 70%, var(--color-acento) 100%);
+  box-shadow: var(--shadow-hover);
+}
+.accordion-content {
+  background: var(--color-bg);
+  color: var(--color-texto-principal);
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-size: 1.08rem;
+  line-height: 1.7;
+  box-shadow: 0 2px 8px rgba(121,87,242,0.08);
+  transition: max-height 0.5s cubic-bezier(.4,0,.2,1), opacity 0.4s, padding 0.4s;
+}
+
+/* Carrusel */
+.carousel {
+  position: relative;
+  overflow: visible;
+  margin: 2rem 0;
+  min-height: 220px;
+}
+.carousel-item {
+  background: var(--color-bg);
+  border: 2px solid var(--color-acento);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  min-height: 180px;
+  transition: box-shadow 0.3s, border 0.3s;
+  animation: fadeInUp 0.7s;
+}
+.carousel-item h3 {
+  color: var(--color-acento);
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+.carousel-item p {
+  color: var(--color-texto-principal);
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  background: var(--color-principal);
+  color: var(--color-blanco);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(191,42,82,0.10);
+  transition: background 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-button:hover {
+  background: var(--color-secundario);
+  box-shadow: var(--shadow-hover);
+}
+.carousel-button[aria-label*="Valor"] {
+  background: var(--color-terciario);
+}
+.carousel-button[aria-label*="Valor"]:hover {
+  background: var(--color-acento);
+}
+.carousel-button:first-of-type { left: 0; }
+.carousel-button:last-of-type { right: 0; }
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.carousel-indicators span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #444;
+  display: inline-block;
+  transition: background 0.3s;
+}
+.carousel-indicators .active {
+  background: var(--color-acento);
+}
+.carousel-indicators.valor .active {
+  background: var(--color-terciario);
+}
+
+@media (max-width: 700px) {
+  .aboutus-container {
+    padding: 0.5rem;
+    margin: 18px auto;
+  }
+  .aboutus-title {
+    font-size: 1.5rem;
+  }
+  .aboutus-subtitle {
+    font-size: 1.1rem;
+  }
+  .carousel-item {
+    padding: 1.2rem 0.5rem;
+    font-size: 1rem;
+    min-height: 120px;
+  }
+  .carousel {
+    min-height: 140px;
+  }
+  .carousel-button {
+    width: 36px;
+    height: 36px;
+    font-size: 1.3rem;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+}
