@@ -20,7 +20,7 @@ body.joinus-bg-body {
 }
 
 .joinus-container {
-  width: 100vw;
+  width: 100%;
   max-width: 100vw;
   min-height: 100vh;
   margin: 0;
@@ -34,7 +34,7 @@ body.joinus-bg-body {
 }
 
 .joinus-hero-img {
-  width: 100vw;
+  width: 100%;
   height: 340px;
   min-height: 180px;
   object-fit: cover;

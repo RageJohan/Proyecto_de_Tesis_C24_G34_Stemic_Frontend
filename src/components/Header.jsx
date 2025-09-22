@@ -8,10 +8,10 @@ export default function Header({ onLogout, onProfileUpdate }) {
 
   const handleNav = (view) => {
     if (view === 'home') navigate("/");
-    if (view === 'eventos') navigate("/eventos");
-    if (view === 'organizaciones') navigate("/organizaciones");
-    if (view === 'unete') navigate("/unete");
-    if (view === 'sobre') navigate("/about-us");
+    else if (view === 'eventos') navigate("/eventos");
+    else if (view === 'organizaciones') navigate("/organizaciones");
+    else if (view === 'join-us') navigate("/join-us");
+    else if (view === 'sobre') navigate("/about-us");
   };
 
   return (
@@ -22,7 +22,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
           <button className="header-link" onClick={() => handleNav('home')}>Inicio</button>
           <button className="header-link" onClick={() => handleNav('eventos')}>Eventos</button>
           <button className="header-link" onClick={() => handleNav('organizaciones')}>Organizaciones</button>
-          <button className="header-link" onClick={() => handleNav('unete')}>Únete</button>
+          <button className="header-link" onClick={() => handleNav('join-us')}>Únete</button>
           <button className="header-link" onClick={() => handleNav('sobre')}>Sobre Nosotros</button>
         </nav>
       </div>

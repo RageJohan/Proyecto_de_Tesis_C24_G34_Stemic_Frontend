@@ -27,7 +27,7 @@ export default function AppRouter() {
         element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
       />
       <Route path="/about-us" element={<AboutUs />} />
-      <Route path="/unete" element={<JoinUs />} />
+      <Route path="/join-us" element={<JoinUs />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

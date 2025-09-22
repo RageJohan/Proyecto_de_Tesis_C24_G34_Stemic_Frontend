@@ -65,9 +65,10 @@ html {
 
 body {
   margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
   width: 100%;
+  min-width: 0;
+  height: 100%;
   background: var(--color-bg);
   font-family: var(--font-family);
   color: var(--color-texto-principal);
@@ -78,9 +79,9 @@ body {
   text-size-adjust: 100%;
 }
 
-/* Contenedor principal */
 #root {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -238,4 +239,9 @@ input:focus {
   body {
     background: var(--color-bg);
   }
+}
+
+body.joinus-bg-body {
+  background: #030c40 !important;
+  overflow-x: hidden !important;
 }
