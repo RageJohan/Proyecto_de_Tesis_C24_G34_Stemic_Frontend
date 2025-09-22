@@ -1,0 +1,121 @@
+:root {
+  --color-bg: #121212;
+  --color-acento: #BB86FC;
+  --color-blanco: #FFFFFF;
+  --color-texto-adicional: #B0B0B0;
+  --color-principal: #6200EE;
+  --color-footer-bg: #181C2F;
+  --color-footer-grad: #23274A;
+}
+
+.footer {
+  width: 100vw;
+  min-width: 100vw;
+  background: linear-gradient(90deg, var(--color-footer-bg) 70%, var(--color-footer-grad) 130%);
+  color: var(--color-blanco);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2.5rem 4vw 1.5rem 4vw;
+  gap: 2rem;
+  position: static;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -4px 24px 0 rgba(121,87,242,0.13), 0 -1.5px 8px 0 var(--color-acento);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.footer-section {
+  flex: 1 1 0;
+  min-width: 180px;
+  margin-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.footer-section:last-child {
+  margin-right: 0;
+}
+
+.footer-brand h2 {
+  color: var(--color-blanco);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+.footer-brand p {
+  color: var(--color-texto-adicional);
+  font-size: 0.98rem;
+  margin-top: 0.5rem;
+}
+
+.footer-section h3 {
+  color: var(--color-principal);
+  font-size: 1.1rem;
+  margin-bottom: 0.7rem;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer-section li {
+  margin-bottom: 0.5rem;
+}
+.footer-section a {
+  color: var(--color-blanco);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-section a:hover {
+  color: var(--color-acento);
+  text-decoration: underline;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  flex: 1 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-main {
+  flex: 1 0 auto;
+}
+
+@media (max-width: 900px) {
+  .footer {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 2rem 2vw 1rem 2vw;
+  }
+  .footer-section {
+    min-width: 120px;
+    margin-right: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 1.5rem 1vw 0.7rem 1vw;
+    font-size: 0.98rem;
+  }
+  .footer-section {
+    margin-right: 0;
+    margin-bottom: 1.2rem;
+  }
+}
