@@ -10,6 +10,7 @@ import Dashboard from '../components/Dashboard';
 import AboutUs from '../components/AboutUs';
 import JoinUs from '../components/JoinUs';
 import Events from '../components/Events';
+import Participations from '../components/Participations';
 
 export default function AppRouter() {
   const { isAuthenticated } = useAuth();
@@ -30,7 +31,8 @@ export default function AppRouter() {
       />
   <Route path="/about-us" element={<AboutUs />} />
   <Route path="/join-us" element={<JoinUs />} />
-  <Route path="/eventos" element={<Events />} />
+  <Route path="/events" element={<Events />} />
+  <Route path="/participations" element={<Participations />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
