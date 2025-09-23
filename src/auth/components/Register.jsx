@@ -197,7 +197,12 @@ export default function Register() {
             required
             disabled={loading}
           />
-          Acepto los términos y condiciones
+          <span>
+            Acepto los
+            <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="login-link" style={{ margin: '0 4px' }}>Términos y Condiciones</a>
+            y el
+            <a href="/aviso-privacidad.md" target="_blank" rel="noopener noreferrer" className="login-link" style={{ margin: '0 4px' }}>Aviso de Privacidad</a>
+          </span>
         </label>
         <button type="submit" className="login-btn" disabled={loading}>
           {loading ? 'Cargando...' : 'Registrarse'}
