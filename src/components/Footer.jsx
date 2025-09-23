@@ -6,23 +6,41 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-section footer-brand">
         <h2>STEMIC</h2>
-        <p>Plataforma de medición de impacto STEM.<br />© {new Date().getFullYear()} STEMIC. Todos los derechos reservados.</p>
+        <p>
+          Plataforma de medición de impacto STEM.
+          <br />© {new Date().getFullYear()} STEMIC. Todos los derechos
+          reservados.
+        </p>
       </div>
       <div className="footer-section">
         <h3>Enlaces Rápidos</h3>
         <ul>
-          <li><a href="/">Inicio</a></li>
-          <li><a href="/eventos">Eventos</a></li>
-          <li><a href="/organizaciones">Organizaciones</a></li>
-          <li><a href="/unete">Únete</a></li>
+          <li>
+            <a href="/">Inicio</a>
+          </li>
+          <li>
+            <a href="/eventos">Eventos</a>
+          </li>
+          <li>
+            <a href="/organizaciones">Organizaciones</a>
+          </li>
+          <li>
+            <a href="/unete">Únete</a>
+          </li>
         </ul>
       </div>
       <div className="footer-section">
         <h3>Recursos</h3>
         <ul>
-          <li><a href="/sobre">Sobre Nosotros</a></li>
-          <li><a href="/faq">Preguntas Frecuentes</a></li>
-          <li><a href="/blog">Blog</a></li>
+          <li>
+            <a href="/sobre">Sobre Nosotros</a>
+          </li>
+          <li>
+            <a href="/faq">Preguntas Frecuentes</a>
+          </li>
+          <li>
+            <a href="/blog">Blog</a>
+          </li>
         </ul>
       </div>
       <div className="footer-section">
@@ -30,7 +48,9 @@ export default function Footer() {
         <ul>
           <li>Email: contacto@stemic.com</li>
           <li>Tel: +51 999 999 999</li>
-          <li><a href="/contacto">Formulario de contacto</a></li>
+          <li>
+            <a href="/contacto">Formulario de contacto</a>
+          </li>
         </ul>
       </div>
     </footer>
