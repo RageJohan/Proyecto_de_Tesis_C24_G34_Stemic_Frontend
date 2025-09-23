@@ -1,53 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Events.css";
-import joinUsImg from "../assets/JoinUs1.JPG";
-import reactLogo from "../assets/react.svg";
-import Header from "./Header";
 
-const events = [
-  {
-    date: "20/06/2025",
-    image: joinUsImg,
-    title: "LEAD IBM EXPLORE DAY",
-    description: "Un evento dinámico y colaborativo en el que estudiantes con interés en tecnología y liderazgo participan en charlas, workshops y networking con expertos de la industria. ¡Prepárate a crecer y conectar!",
-    tags: ["Tech", "Líder", "Networking"],
-    modalidad: "Presencial",
-  },
-  {
-    date: "22/07/2025",
-    image: reactLogo,
-    title: "HACKATHON STEMIC",
-    description: "Competencia de innovación y tecnología para estudiantes apasionados por resolver retos reales en equipo.",
-    tags: ["Hackathon", "Innovación", "STEM"],
-    modalidad: "Virtual",
-  },
-  {
-    date: "05/08/2025",
-    image: joinUsImg,
-    title: "BOOTCAMP DE LIDERAZGO",
-    description: "Taller intensivo para desarrollar habilidades de liderazgo, comunicación y trabajo en equipo.",
-    tags: ["Liderazgo", "Bootcamp", "Soft Skills"],
-    modalidad: "Híbrido",
-  },
-  {
-    date: "15/09/2025",
-    image: reactLogo,
-    title: "MEETUP DE TECNOLOGÍA",
-    description: "Encuentro mensual para compartir experiencias, aprender de expertos y hacer networking en tecnología.",
-    tags: ["Meetup", "Tech", "Networking"],
-    modalidad: "Virtual",
-  },
-  {
-    date: "30/09/2025",
-    image: joinUsImg,
-    title: "JORNADA DE INNOVACIÓN",
-    description: "Jornada de talleres y charlas sobre innovación, creatividad y emprendimiento en STEM.",
-    tags: ["Innovación", "Emprendimiento", "STEM"],
-    modalidad: "Híbrido",
-  },
-];
+import Header from "./Header";
+import { apiFetch } from "../services/api";
+
 
 const PAGE_SIZE = 6;
+
+
 
 function Pagination({ page, total, onPageChange }) {
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -67,79 +27,99 @@ function Pagination({ page, total, onPageChange }) {
   );
 }
 
-const allTags = Array.from(new Set(events.flatMap(e => e.tags)));
-const allModalidades = Array.from(new Set(events.map(e => e.modalidad)));
+
+
 
 export default function Events() {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [modalidad, setModalidad] = useState("");
-  const [orden, setOrden] = useState("proximo");
+  const [events, setEvents] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [modalidades, setModalidades] = useState([]);
+  const [modalityFilter, setModalityFilter] = useState("");
 
-  // Filtros simulados
-  let filtered = events.filter(e =>
-    (!search || e.title.toLowerCase().includes(search.toLowerCase()) || e.description.toLowerCase().includes(search.toLowerCase())) &&
-    (!categoria || e.tags.includes(categoria)) &&
-    (!modalidad || e.modalidad === modalidad)
-  );
-  filtered = filtered.sort((a, b) => {
-    const da = a.date.split("/").reverse().join("-");
-    const db = b.date.split("/").reverse().join("-");
-    if (orden === "proximo") return da.localeCompare(db);
-    else return db.localeCompare(da);
-  });
-  const pagedEvents = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    apiFetch(`/api/events/public`)
+      .then(data => {
+        let eventos = Array.isArray(data) ? data : (data.data || data.events || []);
+        setEvents(eventos);
+        setTotal(eventos.length);
+        // Extraer modalidades únicas del backend
+        const mods = Array.from(new Set(eventos.map(ev => ev.modalidad).filter(Boolean)));
+        setModalidades(mods);
+      })
+      .catch(err => setError("Error al cargar eventos"))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <>
       <Header />
       <div className="events-view">
         <h2 className="events-title">
-          Próximos Eventos <span className="events-sub">| Enterate de los próximos eventos y regístrate</span>
+          Próximos Eventos <span className="events-sub">| Entérate de los próximos eventos y regístrate</span>
         </h2>
+        {/* Filtros UI, pero no funcionales aún */}
         <div className="events-filters">
-          <input
-            className="events-filter-input"
-            type="text"
-            placeholder="Buscar evento..."
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-          />
-          <select className="events-filter-select" value={categoria} onChange={e => { setCategoria(e.target.value); setPage(1); }}>
-            <option value="">Todas las categorías</option>
-            {allTags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
-          </select>
-          <select className="events-filter-select" value={modalidad} onChange={e => { setModalidad(e.target.value); setPage(1); }}>
+          <input className="events-filter-input" type="text" placeholder="Buscar evento..." disabled />
+          <select className="events-filter-select" disabled><option>Todas las categorías</option></select>
+          <select
+            className="events-filter-select"
+            value={modalityFilter}
+            onChange={e => setModalityFilter(e.target.value)}
+          >
             <option value="">Todas las modalidades</option>
-            {allModalidades.map(m => <option key={m} value={m}>{m}</option>)}
+            {modalidades.map((mod, i) => (
+              <option value={mod} key={i}>{mod}</option>
+            ))}
           </select>
-          <select className="events-filter-select" value={orden} onChange={e => { setOrden(e.target.value); setPage(1); }}>
-            <option value="proximo">Más próximo</option>
-            <option value="lejano">Más lejano</option>
-          </select>
+          <select className="events-filter-select" disabled><option>Más próximo</option></select>
         </div>
-        <div className="events-cards">
-          {pagedEvents.map((event, idx) => (
-            <div className="event-card" key={idx}>
-              <div className="event-card-img-box">
-                <img src={event.image} alt={event.title} className="event-card-img" />
-                <div className="event-card-date">{event.date}</div>
-              </div>
-              <div className="event-card-content">
-                <h3 className="event-card-title">{event.title}</h3>
-                <p className="event-card-desc">{event.description}</p>
-                <div className="event-card-tags">
-                  {event.tags.map((tag, i) => (
-                    <span className={`event-card-tag tag-${i}`} key={i}>{tag}</span>
-                  ))}
-                </div>
-                <div className="event-card-modality">{event.modalidad}</div>
-              </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', margin: '2rem' }}>Cargando eventos...</div>
+        ) : error ? (
+          <div style={{ color: 'red', textAlign: 'center', margin: '2rem' }}>{error}</div>
+        ) : (
+          <>
+            <div className="events-cards">
+              {Array.isArray(events) && events.length === 0 ? (
+                <div style={{ textAlign: 'center', width: '100%' }}>No hay eventos disponibles.</div>
+              ) : (
+                (Array.isArray(events) ? events : [])
+                  .filter(ev => !modalityFilter || ev.modalidad === modalityFilter)
+                  .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+                  .map((event, idx) => {
+                    const image = event.imagen_url || event.image || "https://via.placeholder.com/300x180?text=Evento";
+                    const title = event.titulo || event.title || "Sin título";
+                    const desc = event.descripcion || event.description || "";
+                    const date = event.fecha_hora || event.date || event.fecha || "";
+                    const tags = event.tags || event.etiquetas || [];
+                    return (
+                      <div className="event-card" key={event.id || event._id || idx}>
+                        <div className="event-card-img-box">
+                          <img src={image} alt={title} className="event-card-img" />
+                          <div className="event-card-date">{date ? new Date(date).toLocaleDateString() : ""}</div>
+                        </div>
+                        <div className="event-card-content">
+                          <h3 className="event-card-title">{title}</h3>
+                          <p className="event-card-desc">{desc}</p>
+                          <div className="event-card-tags">
+                            {Array.isArray(tags) && tags.length > 0 ? tags.map((tag, i) => (
+                              <span className={`event-card-tag tag-${i}`} key={i}>{tag}</span>
+                            )) : null}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+              )}
             </div>
-          ))}
-        </div>
-        <Pagination page={page} total={filtered.length} onPageChange={setPage} />
+            <Pagination page={page} total={events.length} onPageChange={setPage} />
+          </>
+        )}
       </div>
     </>
   );

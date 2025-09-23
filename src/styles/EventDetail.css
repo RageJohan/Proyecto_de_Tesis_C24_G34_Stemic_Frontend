@@ -1,0 +1,115 @@
+.event-detail-view {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 16px 32px 16px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+}
+
+.event-detail-main-box {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.event-detail-img-box {
+  flex: 1 1 320px;
+  max-width: 420px;
+}
+.event-detail-img {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 12px 0 rgba(30,30,80,0.10);
+}
+
+.event-detail-info-box {
+  flex: 2 1 400px;
+  background: #f8f9fd;
+  border-radius: 12px;
+  padding: 24px 28px;
+  min-width: 320px;
+}
+.event-detail-title {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #232e60;
+}
+.event-detail-desc {
+  color: #444;
+  margin-bottom: 18px;
+}
+.event-detail-table > div {
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+.event-detail-table b {
+  color: #232e60;
+}
+.event-detail-tags {
+  margin-top: 16px;
+}
+.event-detail-tag {
+  display: inline-block;
+  background: #e3e7fa;
+  color: #232e60;
+  border-radius: 8px;
+  padding: 4px 14px;
+  margin-right: 8px;
+  font-size: 0.98rem;
+  margin-bottom: 6px;
+}
+.event-detail-section {
+  background: #f8f9fd;
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 18px;
+}
+.event-detail-section h3 {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 1.2rem;
+  color: #232e60;
+  margin-bottom: 8px;
+}
+.event-detail-skills {
+  margin-top: 8px;
+}
+.event-detail-skill {
+  display: inline-block;
+  background: #d0f5e8;
+  color: #1a7f5a;
+  border-radius: 8px;
+  padding: 4px 14px;
+  margin-right: 8px;
+  font-size: 0.98rem;
+  margin-bottom: 6px;
+}
+.event-detail-back {
+  margin-top: 18px;
+  background: #232e60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.event-detail-back:hover {
+  background: #3a4691;
+}
+@media (max-width: 900px) {
+  .event-detail-main-box {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .event-detail-info-box {
+    padding: 16px 10px;
+    min-width: unset;
+  }
+}

@@ -83,7 +83,6 @@
 .events-view {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(120deg, #030c40 60%, #7957F2 100%);
   background-size: 200% 200%;
   animation: eventsBgMove 12s ease-in-out infinite alternate;
   position: relative;
