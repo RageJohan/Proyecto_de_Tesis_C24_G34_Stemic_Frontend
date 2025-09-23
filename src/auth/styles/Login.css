@@ -1,3 +1,16 @@
+/* Botón para ir a la página principal desde login */
+.login-btn-home {
+  margin-top: 12px;
+  background: #fff;
+  color: var(--color-principal);
+  border: 1px solid var(--color-principal);
+  transition: background 0.2s, color 0.2s;
+}
+.login-btn-home:hover,
+.login-btn-home:focus {
+  background: var(--color-principal);
+  color: #fff;
+}
 /* Variables globales de color */
 :root {
   --color-bg: #030C40;
