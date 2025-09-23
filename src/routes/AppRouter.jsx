@@ -5,9 +5,11 @@ import Login from '../auth/components/Login';
 import Register from '../auth/components/Register';
 import ForgotPassword from '../auth/components/ForgotPassword';
 import ResetPassword from '../auth/components/ResetPassword';
+
 import Dashboard from '../components/Dashboard';
 import AboutUs from '../components/AboutUs';
 import JoinUs from '../components/JoinUs';
+import Events from '../components/Events';
 
 export default function AppRouter() {
   const { isAuthenticated } = useAuth();
@@ -26,8 +28,9 @@ export default function AppRouter() {
         path="/" 
         element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
       />
-      <Route path="/about-us" element={<AboutUs />} />
-      <Route path="/join-us" element={<JoinUs />} />
+  <Route path="/about-us" element={<AboutUs />} />
+  <Route path="/join-us" element={<JoinUs />} />
+  <Route path="/eventos" element={<Events />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
