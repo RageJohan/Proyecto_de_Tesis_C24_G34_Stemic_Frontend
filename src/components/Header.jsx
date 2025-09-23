@@ -22,50 +22,115 @@ export default function Header({ onLogout, onProfileUpdate }) {
 
   const handleNav = (view) => {
     setNavOpen(false);
-    if (view === 'home') navigate("/");
-    else if (view === 'eventos') navigate("/events");
-    else if (view === 'organizaciones') navigate("/organizaciones");
-    else if (view === 'join-us') navigate("/join-us");
-    else if (view === 'sobre') navigate("/about-us");
+    if (view === "home") navigate("/");
+    else if (view === "eventos") navigate("/events");
+    else if (view === "organizaciones") navigate("/organizaciones");
+    else if (view === "join-us") navigate("/join-us");
+    else if (view === "sobre") navigate("/about-us");
   };
 
   return (
     <header className="header">
       <div className="header-left">
-        <span className="header-logo" onClick={() => handleNav('home')}>STEMIC</span>
+        <span className="header-logo" onClick={() => handleNav("home")}>
+          STEMIC
+        </span>
         {isMobile ? (
           <>
-            <button className="header-hamburger" aria-label="Abrir menú" onClick={() => setNavOpen(v => !v)}>
-              <span role="img" aria-label="menu">☰</span>
+            <button
+              className="header-hamburger"
+              aria-label="Abrir menú"
+              onClick={() => setNavOpen((v) => !v)}
+            >
+              <span role="img" aria-label="menu">
+                ☰
+              </span>
             </button>
-            <nav className={`header-nav${navOpen ? ' open' : ''}`} style={{ display: navOpen ? 'flex' : 'none' }}>
-              <button className="header-link" onClick={() => handleNav('home')}>Inicio</button>
-              <button className="header-link" onClick={() => handleNav('eventos')}>Eventos</button>
-              <button className="header-link" onClick={() => handleNav('organizaciones')}>Organizaciones</button>
-              <button className="header-link" onClick={() => handleNav('join-us')}>Únete</button>
-              <button className="header-link" onClick={() => handleNav('sobre')}>Sobre Nosotros</button>
+            <nav
+              className={`header-nav${navOpen ? " open" : ""}`}
+              style={{ display: navOpen ? "flex" : "none" }}
+            >
+              <button className="header-link" onClick={() => handleNav("home")}>
+                Inicio
+              </button>
+              <button
+                className="header-link"
+                onClick={() => handleNav("eventos")}
+              >
+                Eventos
+              </button>
+              <button
+                className="header-link"
+                onClick={() => handleNav("organizaciones")}
+              >
+                Organizaciones
+              </button>
+              <button
+                className="header-link"
+                onClick={() => handleNav("join-us")}
+              >
+                Únete
+              </button>
+              <button
+                className="header-link"
+                onClick={() => handleNav("sobre")}
+              >
+                Sobre Nosotros
+              </button>
             </nav>
           </>
         ) : (
-          <nav className="header-nav" style={{ display: 'flex' }}>
-            <button className="header-link" onClick={() => handleNav('home')}>Inicio</button>
-            <button className="header-link" onClick={() => handleNav('eventos')}>Eventos</button>
-            <button className="header-link" onClick={() => handleNav('organizaciones')}>Organizaciones</button>
-            <button className="header-link" onClick={() => handleNav('join-us')}>Únete</button>
-            <button className="header-link" onClick={() => handleNav('sobre')}>Sobre Nosotros</button>
+          <nav className="header-nav" style={{ display: "flex" }}>
+            <button className="header-link" onClick={() => handleNav("home")}>
+              Inicio
+            </button>
+            <button
+              className="header-link"
+              onClick={() => handleNav("eventos")}
+            >
+              Eventos
+            </button>
+            <button
+              className="header-link"
+              onClick={() => handleNav("organizaciones")}
+            >
+              Organizaciones
+            </button>
+            <button
+              className="header-link"
+              onClick={() => handleNav("join-us")}
+            >
+              Únete
+            </button>
+            <button className="header-link" onClick={() => handleNav("sobre")}>
+              Sobre Nosotros
+            </button>
           </nav>
         )}
       </div>
       <div className="header-profile">
         {isAuthenticated ? (
           <>
-            <button className="header-profile-btn" onClick={() => setProfileOpen(v => !v)}>
+            <button
+              className="header-profile-btn"
+              onClick={() => setProfileOpen((v) => !v)}
+            >
               Mi perfil <span className="header-profile-caret">▼</span>
             </button>
             {profileOpen && (
               <div className="header-profile-dropdown">
-                <button className="header-profile-item" onClick={() => navigate('/participations')}>Participaciones</button>
-                <button className="header-profile-item" onClick={onProfileUpdate}>Actualizar mi perfil</button>
+                <button
+                  className="header-profile-item"
+                  onClick={() => navigate("/participations")}
+                >
+                  Participaciones
+                </button>
+                <button
+                  className="header-profile-item"
+                  onClick={onProfileUpdate}
+                >
+                  Actualizar mi perfil
+                </button>
                 <button
                   className="header-profile-item"
                   onClick={async () => {
@@ -84,12 +149,18 @@ export default function Header({ onLogout, onProfileUpdate }) {
           </>
         ) : (
           <>
-            <button className="header-link" onClick={() => navigate('/login')}>Iniciar sesión</button>
-            <button className="header-link" onClick={() => navigate('/register')}>Registrarse</button>
+            <button className="header-link" onClick={() => navigate("/login")}>
+              Iniciar sesión
+            </button>
+            <button
+              className="header-link"
+              onClick={() => navigate("/register")}
+            >
+              Registrarse
+            </button>
           </>
         )}
       </div>
     </header>
   );
 }
-
