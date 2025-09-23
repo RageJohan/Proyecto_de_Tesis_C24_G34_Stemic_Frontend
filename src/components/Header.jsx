@@ -21,7 +21,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
   const handleNav = (view) => {
     setNavOpen(false);
     if (view === 'home') navigate("/");
-    else if (view === 'eventos') navigate("/eventos");
+    else if (view === 'eventos') navigate("/events");
     else if (view === 'organizaciones') navigate("/organizaciones");
     else if (view === 'join-us') navigate("/join-us");
     else if (view === 'sobre') navigate("/about-us");
@@ -60,6 +60,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
         </button>
         {profileOpen && (
           <div className="header-profile-dropdown">
+            <button className="header-profile-item" onClick={() => navigate('/participations')}>Participaciones</button>
             <button className="header-profile-item" onClick={onProfileUpdate}>Actualizar mi perfil</button>
             <button className="header-profile-item" onClick={onLogout}>Cerrar sesión</button>
           </div>
