@@ -1,3 +1,47 @@
+/* Menú hamburguesa */
+.header-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-blanco);
+  font-size: 2rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  z-index: 120;
+}
+
+@media (max-width: 900px) {
+  .header-nav {
+    display: none;
+    flex-direction: column;
+    background: linear-gradient(90deg, var(--color-bg) 80%, var(--color-acento) 120%);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100vw;
+    box-shadow: 0 4px 24px 0 rgba(121,87,242,0.13);
+    padding: 1.2rem 0 1.2rem 2rem;
+    gap: 1.2rem;
+    z-index: 110;
+    border-bottom-left-radius: 1.2rem;
+    border-bottom-right-radius: 1.2rem;
+  }
+  .header-nav.open {
+    display: flex;
+  }
+  .header-hamburger {
+    display: block;
+  }
+  .header {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    gap: 0.7rem;
+  }
+  .header-left {
+    gap: 1rem;
+  }
+}
 .header {
   width: 100vw;
   min-width: 100vw;

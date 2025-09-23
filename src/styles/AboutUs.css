@@ -1,0 +1,122 @@
+/* AboutUs.css - Animaciones y layout dinámico para AboutUs
+
+.aboutus-bg {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aboutus-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: linear-gradient(120deg, rgba(121,87,242,0.7) 0%, rgba(166,36,157,0.5) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.aboutus-container {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  width: 100vw;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 5rem;
+  padding-bottom: 3rem;
+  overflow-x: hidden;
+}
+
+.aboutus-title {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 4px 24px rgba(121,87,242,0.25);
+  animation: fadeInDown 1s;
+}
+
+.aboutus-horizontal-accordion {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  width: 90vw;
+  max-width: 900px;
+  animation: slideInLeft 1.2s;
+}
+
+.aboutus-h-accordion-card {
+  flex: 1;
+  background: rgba(255,255,255,0.10);
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 16px rgba(121,87,242,0.10);
+  padding: 2rem 1.5rem;
+  min-width: 0;
+  transition: box-shadow 0.3s, background 0.3s;
+  border: 2px solid rgba(255,255,255,0.18);
+}
+
+.aboutus-h-accordion-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(121,87,242,0.18);
+}
+
+.aboutus-h-accordion-content {
+  font-size: 1.1rem;
+  color: #f3eaff;
+}
+
+.aboutus-subtitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 2.5rem 0 1.5rem 0;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(166,36,157,0.18);
+  animation: fadeInDown 1.2s;
+}
+
+.carousel {
+  animation: fadeInUp 1.2s;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Partículas animadas */
+.aboutus-particles {
+  position: absolute;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .aboutus-horizontal-accordion {
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 98vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .aboutus-title { font-size: 2.1rem; }
+  .aboutus-subtitle { font-size: 1.2rem; }
+  .aboutus-container { padding-top: 3.5rem; }
+}

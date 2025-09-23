@@ -1,3 +1,9 @@
+body.aboutus-bg-body {
+  background: linear-gradient(120deg, #7957F2 0%, #A6249D 100%) fixed !important;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
 :root {
   /* Colores principales */
   --color-bg: #030C40;
