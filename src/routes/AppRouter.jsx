@@ -25,15 +25,15 @@ export default function AppRouter() {
         path="/dashboard" 
         element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />} 
       />
+      <Route path="/about-us" element={<AboutUs />} />
+      <Route path="/join-us" element={<JoinUs />} />
+      <Route path="/events" element={<Events />} />
+      <Route path="/participations" element={<Participations />} />
       <Route 
         path="/" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+        element={<Navigate to={isAuthenticated ? "/dashboard" : "/about-us"} replace />} 
       />
-  <Route path="/about-us" element={<AboutUs />} />
-  <Route path="/join-us" element={<JoinUs />} />
-  <Route path="/events" element={<Events />} />
-  <Route path="/participations" element={<Participations />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/about-us" replace />} />
     </Routes>
   );
 }

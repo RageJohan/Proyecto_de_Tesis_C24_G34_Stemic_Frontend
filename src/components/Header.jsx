@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
 function useIsMobile(breakpoint = 900) {
@@ -17,6 +18,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
   const [navOpen, setNavOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { logout, isAuthenticated } = useAuth();
 
   const handleNav = (view) => {
     setNavOpen(false);
@@ -55,15 +57,36 @@ export default function Header({ onLogout, onProfileUpdate }) {
         )}
       </div>
       <div className="header-profile">
-        <button className="header-profile-btn" onClick={() => setProfileOpen(v => !v)}>
-          Mi perfil <span className="header-profile-caret">▼</span>
-        </button>
-        {profileOpen && (
-          <div className="header-profile-dropdown">
-            <button className="header-profile-item" onClick={() => navigate('/participations')}>Participaciones</button>
-            <button className="header-profile-item" onClick={onProfileUpdate}>Actualizar mi perfil</button>
-            <button className="header-profile-item" onClick={onLogout}>Cerrar sesión</button>
-          </div>
+        {isAuthenticated ? (
+          <>
+            <button className="header-profile-btn" onClick={() => setProfileOpen(v => !v)}>
+              Mi perfil <span className="header-profile-caret">▼</span>
+            </button>
+            {profileOpen && (
+              <div className="header-profile-dropdown">
+                <button className="header-profile-item" onClick={() => navigate('/participations')}>Participaciones</button>
+                <button className="header-profile-item" onClick={onProfileUpdate}>Actualizar mi perfil</button>
+                <button
+                  className="header-profile-item"
+                  onClick={async () => {
+                    if (onLogout) {
+                      await onLogout();
+                    } else {
+                      logout();
+                      navigate("/login");
+                    }
+                  }}
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <button className="header-link" onClick={() => navigate('/login')}>Iniciar sesión</button>
+            <button className="header-link" onClick={() => navigate('/register')}>Registrarse</button>
+          </>
         )}
       </div>
     </header>
