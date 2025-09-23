@@ -2,6 +2,7 @@
 
 Frontend de la aplicación STEMIC construido con React, Vite y React Router.
 
+
 ## Características
 
 - ✅ **Enrutamiento con React Router**: Navegación completa por URLs
@@ -9,15 +10,22 @@ Frontend de la aplicación STEMIC construido con React, Vite y React Router.
 - 🌐 **Integración con Google OAuth**: Autenticación con Google
 - 📱 **Responsive**: Diseño adaptativo
 - ⚡ **Vite**: Desarrollo rápido con Hot Module Replacement
+- 🛡️ **Consentimiento y privacidad**: El registro requiere la aceptación de los Términos y Condiciones y el Aviso de Privacidad, con enlaces visibles a ambos documentos.
+
 
 ## Rutas Disponibles
 
-- `/` - Redirección automática (login o dashboard)
+- `/` - Vista principal pública
 - `/login` - Página de inicio de sesión
-- `/register` - Página de registro
+- `/register` - Página de registro (con consentimiento obligatorio)
 - `/forgot-password` - Recuperación de contraseña
 - `/reset-password` - Restablecimiento de contraseña
 - `/dashboard` - Panel principal (requiere autenticación)
+## Privacidad y consentimiento
+
+Durante el registro, el usuario debe aceptar explícitamente los [Términos y Condiciones](/terminos.pdf) y el [Aviso de Privacidad](/aviso-privacidad.md). Ambos documentos están disponibles desde el formulario de registro y deben ser leídos y aceptados para crear una cuenta.
+
+El aviso de privacidad cumple con la Ley N° 29733 (Ley de Protección de Datos Personales).
 
 ## Scripts disponibles
 
