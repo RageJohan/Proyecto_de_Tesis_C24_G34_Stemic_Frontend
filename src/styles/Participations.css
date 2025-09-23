@@ -1,0 +1,66 @@
+.participations-view {
+  min-height: 100vh;
+  padding: 40px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.participations-title {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+  text-align: left;
+  width: 90%;
+  max-width: 1100px;
+}
+
+.participations-table-box {
+  background: rgba(255,255,255,0.10);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+  padding: 32px 24px;
+  width: 90%;
+  max-width: 1100px;
+  overflow-x: auto;
+}
+
+.participations-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.participations-table th, .participations-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #3949ab;
+  text-align: left;
+}
+
+.participations-table th {
+  background: #2d3870;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.participations-table tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 700px) {
+  .participations-title, .participations-table-box {
+    width: 98%;
+    padding: 16px 4px;
+  }
+  .participations-title {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+  .participations-table th, .participations-table td {
+    padding: 8px 6px;
+    font-size: 0.95rem;
+  }
+}
