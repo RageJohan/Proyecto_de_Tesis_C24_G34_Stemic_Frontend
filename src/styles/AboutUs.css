@@ -9,7 +9,6 @@
 .aboutus-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: linear-gradient(120deg, rgba(121,87,242,0.7) 0%, rgba(166,36,157,0.5) 100%);
   z-index: 1;
   pointer-events: none;
 }
