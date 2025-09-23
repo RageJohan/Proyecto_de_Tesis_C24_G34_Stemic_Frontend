@@ -12,7 +12,9 @@ export default function EventCard({ event }) {
         <p className="event-card-desc">{event.description}</p>
         <div className="event-card-tags">
           {event.tags.map((tag, i) => (
-            <span className={`event-card-tag tag-${i}`} key={i}>{tag}</span>
+            <span className={`event-card-tag tag-${i}`} key={i}>
+              {tag}
+            </span>
           ))}
         </div>
       </div>
