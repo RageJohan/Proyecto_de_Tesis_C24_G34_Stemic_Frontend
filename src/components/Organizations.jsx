@@ -43,11 +43,14 @@ export default function Organizations() {
   return (
     <>
       <Header />
-      <div className="orgs-container">
+      <div className="orgs-container fade-in-uniform">
         <h1 className="orgs-title">Nuestras Alianzas</h1>
         <div className="orgs-featured">
           {featuredAlliances.map((ally, idx) => (
-            <div className="orgs-featured-card" key={idx}>
+            <div
+              className="orgs-featured-card"
+              key={idx}
+            >
               <img src={ally.logo} alt={ally.name} className="orgs-featured-logo" />
               <div className="orgs-featured-info">
                 <h2 className="orgs-featured-name">{ally.name}</h2>
@@ -60,7 +63,10 @@ export default function Organizations() {
         <h3 className="orgs-subtitle">Otras alianzas</h3>
         <div className="orgs-grid">
           {otherAlliances.map((ally, idx) => (
-            <div className="orgs-card" key={idx}>
+            <div
+              className="orgs-card"
+              key={idx}
+            >
               <img src={ally.logo} alt={ally.name} className="orgs-card-logo" />
               <div className="orgs-card-info">
                 <h4 className="orgs-card-name">{ally.name}</h4>
