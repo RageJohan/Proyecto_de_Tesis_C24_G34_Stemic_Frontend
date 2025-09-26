@@ -1,6 +1,9 @@
 .loader-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(20, 20, 40, 0.45);
   z-index: 9999;
   display: flex;
@@ -11,11 +14,15 @@
   width: 56px;
   height: 56px;
   border: 6px solid #fff;
-  border-top: 6px solid #BF2A52;
+  border-top: 6px solid #bf2a52;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

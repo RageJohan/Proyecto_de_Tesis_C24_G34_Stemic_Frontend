@@ -36,7 +36,7 @@
   box-shadow: 0 2px 12px 0 rgba(49, 32, 120, 0.08);
 }
 .home-btn-primary {
-  background: #BF2A52;
+  background: #bf2a52;
   color: #fff;
 }
 .home-btn-primary:hover {
@@ -44,8 +44,8 @@
 }
 .home-btn-secondary {
   background: #fff;
-  color: #7957F2;
-  border: 2px solid #7957F2;
+  color: #7957f2;
+  border: 2px solid #7957f2;
 }
 .home-btn-secondary:hover {
   background: #e6e9fa;
@@ -54,7 +54,7 @@
   width: 260px;
   max-width: 38vw;
   border-radius: 1.2rem;
-  box-shadow: 0 0 32px 0 #7957F2, 0 2px 16px 0 rgba(0,0,0,0.10);
+  box-shadow: 0 0 32px 0 #7957f2, 0 2px 16px 0 rgba(0, 0, 0, 0.1);
 }
 
 .home-benefits {
@@ -74,9 +74,9 @@
   gap: 2.2rem;
 }
 .home-benefit-card {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 1.1rem;
-  box-shadow: 0 0 24px 0 #7957F2, 0 2px 12px 0 rgba(0,0,0,0.08);
+  box-shadow: 0 0 24px 0 #7957f2, 0 2px 12px 0 rgba(0, 0, 0, 0.08);
   padding: 2.1rem 1.5rem 1.7rem 1.5rem;
   max-width: 260px;
   min-width: 200px;
@@ -89,7 +89,7 @@
 }
 .home-benefit-card:hover {
   transform: translateY(-6px) scale(1.04);
-  box-shadow: 0 8px 32px 0 #BF2A52;
+  box-shadow: 0 8px 32px 0 #bf2a52;
 }
 .home-benefit-icon {
   font-size: 2.3rem;
