@@ -1,0 +1,148 @@
+/* Estilos para la vista de alianzas de organizaciones */
+.orgs-container {
+  width: 100vw;
+  min-height: 100vh;
+  background: var(--color-bg, #030C40);
+  padding: 2.5rem 0 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.orgs-title {
+  color: #fff;
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin-bottom: 2.2rem;
+  letter-spacing: 1px;
+}
+.orgs-featured {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+.orgs-featured-card {
+  background: linear-gradient(135deg, #f6f2fa 60%, #e6e9fa 100%);
+  border-radius: 1.2rem;
+  box-shadow:
+    0 0 40px 0 #BF2A52,
+    0 0 32px 0 #7957F2,
+    0 2px 16px 0 rgba(0,0,0,0.10);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2.2rem;
+  min-width: 320px;
+  max-width: 420px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.orgs-featured-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 24px 0 rgba(191,42,82,0.13);
+}
+.orgs-featured-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: #f5f5f5;
+  border: 2px solid var(--color-principal, #BF2A52);
+}
+.orgs-featured-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.orgs-featured-name {
+  color: var(--color-principal, #BF2A52);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+.orgs-featured-desc {
+  color: #333;
+  font-size: 1rem;
+  margin: 0 0 0.3rem 0;
+}
+.orgs-featured-link {
+  color: var(--color-secundario, #D93240);
+  font-weight: 500;
+  text-decoration: underline;
+  font-size: 1rem;
+}
+.orgs-subtitle {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  margin-top: 0.5rem;
+  letter-spacing: 0.5px;
+}
+.orgs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  width: 90vw;
+  max-width: 1100px;
+}
+.orgs-card {
+  background: linear-gradient(135deg, #f6f2fa 60%, #e6e9fa 100%);
+  border-radius: 1.1rem;
+  box-shadow:
+    0 0 40px 0 #7957F2,
+    0 0 12px 0 #BF2A52,
+    0 2px 12px 0 rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 1rem 1.2rem 1rem;
+  gap: 0.7rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.orgs-card:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 6px 18px 0 rgba(191,42,82,0.10);
+}
+.orgs-card-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 0.7rem;
+  background: #f5f5f5;
+  border: 1.5px solid var(--color-principal, #BF2A52);
+}
+.orgs-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.orgs-card-name {
+  color: var(--color-principal, #BF2A52);
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin: 0;
+}
+.orgs-card-desc {
+  color: #333;
+  font-size: 0.98rem;
+  margin: 0 0 0.2rem 0;
+  text-align: center;
+}
+.orgs-card-link {
+  color: var(--color-secundario, #D93240);
+  font-weight: 500;
+  text-decoration: underline;
+  font-size: 0.98rem;
+}
+@media (max-width: 700px) {
+  .orgs-featured {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .orgs-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
