@@ -15,19 +15,20 @@ import Events from '../components/Events';
 import Participations from '../components/Participations';
 import ProfileEdit from '../components/ProfileEdit';
 import Organizations from '../components/Organizations';
+import Home from '../components/Home';
 
 export default function AppRouter() {
   const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} />
-      <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />} />
-      <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <ForgotPassword />} />
-      <Route path="/reset-password" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <ResetPassword />} />
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <Register />} />
+      <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/" replace /> : <ForgotPassword />} />
+      <Route path="/reset-password" element={isAuthenticated ? <Navigate to="/" replace /> : <ResetPassword />} />
       <Route 
         path="/dashboard" 
-        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />} 
+        element={isAuthenticated ? <Navigate to="/" replace /> : <Navigate to="/login" replace />} 
       />
       <Route 
         path="/profile" 
@@ -40,9 +41,9 @@ export default function AppRouter() {
   <Route path="/participations" element={<Participations />} />
       <Route 
         path="/" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/about-us"} replace />} 
+        element={<Home />} 
       />
-      <Route path="*" element={<Navigate to="/about-us" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
