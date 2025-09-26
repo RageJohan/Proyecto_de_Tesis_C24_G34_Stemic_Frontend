@@ -19,11 +19,20 @@ export default function Home() {
       <Header />
       <section className="home-hero">
         <div className="home-hero-content">
-          <h1 className="home-hero-title">Impulsando el futuro STEM en jóvenes</h1>
-          <p className="home-hero-subtitle">Conecta, aprende y crece con la comunidad STEM más activa de la región.</p>
+          <h1 className="home-hero-title">
+            Impulsando el futuro STEM en jóvenes
+          </h1>
+          <p className="home-hero-subtitle">
+            Conecta, aprende y crece con la comunidad STEM más activa de la
+            región.
+          </p>
           <div className="home-hero-actions">
-            <a href="/join-us" className="home-btn home-btn-primary">Únete</a>
-            <a href="/events" className="home-btn home-btn-secondary">Explora eventos</a>
+            <a href="/join-us" className="home-btn home-btn-primary">
+              Únete
+            </a>
+            <a href="/events" className="home-btn home-btn-secondary">
+              Explora eventos
+            </a>
           </div>
         </div>
         <div className="home-hero-illustration">
@@ -38,7 +47,10 @@ export default function Home() {
           <div className="home-benefit-card">
             <span className="home-benefit-icon">🎓</span>
             <h3>Eventos y talleres</h3>
-            <p>Participa en actividades exclusivas para potenciar tus habilidades STEM.</p>
+            <p>
+              Participa en actividades exclusivas para potenciar tus habilidades
+              STEM.
+            </p>
           </div>
           <div className="home-benefit-card">
             <span className="home-benefit-icon">🤝</span>
@@ -53,7 +65,10 @@ export default function Home() {
           <div className="home-benefit-card">
             <span className="home-benefit-icon">🌟</span>
             <h3>Comunidad activa</h3>
-            <p>Forma parte de una red de jóvenes apasionados por la ciencia y tecnología.</p>
+            <p>
+              Forma parte de una red de jóvenes apasionados por la ciencia y
+              tecnología.
+            </p>
           </div>
         </div>
       </section>

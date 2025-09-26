@@ -1,8 +1,6 @@
-
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Profile.css";
-
 
 export default function ProfileEdit() {
   const [form, setForm] = useState({
@@ -12,22 +10,22 @@ export default function ProfileEdit() {
     birthdate: "",
     email: "",
     description: "",
-    interests: ""
+    interests: "",
   });
   const [avatar, setAvatar] = useState("/src/assets/JoinUs1.JPG");
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleAvatarChange = e => {
+  const handleAvatarChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
-      reader.onload = ev => setAvatar(ev.target.result);
+      reader.onload = (ev) => setAvatar(ev.target.result);
       reader.readAsDataURL(file);
     }
   };
@@ -36,16 +34,15 @@ export default function ProfileEdit() {
     <div className="profile-container no-bg">
       <div className="profile-header-row">
         <h1 className="profile-title">
-          <span className="profile-title-green">MI</span> <span className="profile-title-blue">PERFIL</span>
+          <span className="profile-title-green">MI</span>{" "}
+          <span className="profile-title-blue">PERFIL</span>
         </h1>
-        <button className="profile-back-btn" onClick={() => navigate("/")}>Volver al inicio</button>
+        <button className="profile-back-btn" onClick={() => navigate("/")}>
+          Volver al inicio
+        </button>
       </div>
       <div className="profile-avatar-wrapper">
-        <img
-          src={avatar}
-          alt="Avatar"
-          className="profile-avatar"
-        />
+        <img src={avatar} alt="Avatar" className="profile-avatar" />
         <button
           type="button"
           className="profile-avatar-upload-btn"
@@ -62,7 +59,8 @@ export default function ProfileEdit() {
         />
       </div>
       <form className="profile-form wide">
-        <label className="profile-label">Nombres
+        <label className="profile-label">
+          Nombres
           <input
             type="text"
             name="name"
@@ -99,7 +97,8 @@ export default function ProfileEdit() {
             />
           </label>
         </div>
-        <label className="profile-label">Fecha Nacimiento
+        <label className="profile-label">
+          Fecha Nacimiento
           <input
             type="date"
             name="birthdate"
@@ -108,7 +107,8 @@ export default function ProfileEdit() {
             onChange={handleChange}
           />
         </label>
-        <label className="profile-label">Correo electrónico
+        <label className="profile-label">
+          Correo electrónico
           <input
             type="email"
             name="email"
@@ -118,7 +118,8 @@ export default function ProfileEdit() {
             onChange={handleChange}
           />
         </label>
-        <label className="profile-label">Descripción
+        <label className="profile-label">
+          Descripción
           <textarea
             name="description"
             className="profile-input"
@@ -128,7 +129,8 @@ export default function ProfileEdit() {
             rows={2}
           />
         </label>
-        <label className="profile-label">Intereses
+        <label className="profile-label">
+          Intereses
           <input
             type="text"
             name="interests"
@@ -138,7 +140,9 @@ export default function ProfileEdit() {
             onChange={handleChange}
           />
         </label>
-        <button type="button" className="profile-btn">GUARDAR</button>
+        <button type="button" className="profile-btn">
+          GUARDAR
+        </button>
       </form>
     </div>
   );
