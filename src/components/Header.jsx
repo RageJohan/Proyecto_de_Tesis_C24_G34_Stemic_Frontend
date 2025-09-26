@@ -127,7 +127,10 @@ export default function Header({ onLogout, onProfileUpdate }) {
                 </button>
                 <button
                   className="header-profile-item"
-                  onClick={onProfileUpdate}
+                  onClick={() => {
+                    setProfileOpen(false);
+                    navigate("/profile");
+                  }}
                 >
                   Actualizar mi perfil
                 </button>
