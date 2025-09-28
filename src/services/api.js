@@ -2,12 +2,10 @@
 
 // Obtener opciones de perfil (géneros, intereses, etc)
 export async function getProfileOptions() {
-  const token = localStorage.getItem('token');
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile/options`, {
+  const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/auth/profile/options`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
     },
   });
   if (!res.ok) throw new Error('Error al obtener opciones de perfil');
@@ -19,20 +17,19 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch(endpoint, options = {}) {
   const url = `${API_URL}${endpoint}`;
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    throw new Error(`Error: ${response.status}`);
+  const res = await fetchWithAuth(url, options);
+  if (!res.ok) {
+    throw new Error(`Error: ${res.status}`);
   }
-  return response.json();
+  return res.json();
 }
 
 // Obtener perfil de usuario
 export async function getProfile(token) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
+  const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
     },
   });
   if (!res.ok) throw new Error('Error al obtener el perfil');
@@ -41,14 +38,69 @@ export async function getProfile(token) {
 
 // Actualizar perfil de usuario
 export async function updateProfile(data, token) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
+  let body;
+  let headers = {};
+  if (data.avatar && data.avatar instanceof File) {
+    // Si hay imagen, usar FormData
+    body = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'avatar' && value instanceof File) {
+        body.append('avatar', value);
+      } else if (Array.isArray(value)) {
+        value.forEach(v => body.append(key, v));
+      } else {
+        body.append(key, value);
+      }
+    });
+    // No poner Content-Type, fetch lo gestiona
+  } else {
+    body = JSON.stringify(data);
+    headers['Content-Type'] = 'application/json';
+  }
+  const res = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
+    headers,
+    body,
   });
   if (!res.ok) throw new Error('Error al actualizar el perfil');
   return await res.json();
+}
+
+// Refrescar el token de acceso usando el refresh token
+export async function refreshAccessToken() {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) throw new Error('No hay refresh token');
+  const res = await fetch(`${API_URL}/api/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  });
+  if (!res.ok) throw new Error('No se pudo refrescar el token');
+  const json = await res.json();
+  if (json.token) {
+    localStorage.setItem('token', json.token);
+    return json.token;
+  }
+  throw new Error('No se recibió nuevo token');
+}
+
+// Wrapper para peticiones protegidas con manejo de refresh
+export async function fetchWithAuth(url, options = {}) {
+  let token = localStorage.getItem('token');
+  if (!options.headers) options.headers = {};
+  options.headers['Authorization'] = `Bearer ${token}`;
+  let res = await fetch(url, options);
+  if (res.status === 401) {
+    // Intentar refrescar el token
+    try {
+      token = await refreshAccessToken();
+      options.headers['Authorization'] = `Bearer ${token}`;
+      res = await fetch(url, options);
+    } catch {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      throw new Error('Sesión expirada. Por favor inicia sesión.');
+    }
+  }
+  return res;
 }

@@ -48,6 +48,11 @@ export default function ProfileEdit() {
           description: data.description || "",
           interests: data.interests || [],
         });
+        if (data.avatar_url) {
+          setAvatar(data.avatar_url);
+        } else {
+          setAvatar("/src/assets/JoinUs1.JPG");
+        }
         setLoading(false);
       })
       .catch(() => {
@@ -65,6 +70,7 @@ export default function ProfileEdit() {
   const handleAvatarChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file && file.type.startsWith("image/")) {
+      setForm(f => ({ ...f, avatar: file }));
       const reader = new FileReader();
       reader.onload = (ev) => setAvatar(ev.target.result);
       reader.readAsDataURL(file);
@@ -88,13 +94,18 @@ export default function ProfileEdit() {
       setLoading(false);
       return;
     }
+    // Si hay avatar, enviar como archivo
     const payload = {
       ...form,
       interests: selectedInterests,
     };
     try {
-      await updateProfile(payload, token);
+      const res = await updateProfile(payload, token);
       setSuccess("Perfil actualizado correctamente");
+      // Si el backend retorna la nueva url, actualiza el avatar
+      if (res.data && res.data.avatar_url) {
+        setAvatar(res.data.avatar_url);
+      }
     } catch (err) {
       setError("No se pudo actualizar el perfil");
     }
