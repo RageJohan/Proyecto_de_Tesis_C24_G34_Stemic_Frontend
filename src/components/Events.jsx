@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Events.css";
-
+import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import { apiFetch } from "../services/api";
 
@@ -41,6 +41,7 @@ export default function Events() {
   const [error, setError] = useState(null);
   const [modalidades, setModalidades] = useState([]);
   const [modalityFilter, setModalityFilter] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -134,6 +135,8 @@ export default function Events() {
                       <div
                         className="event-card"
                         key={event.id || event._id || idx}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate(`/evento/${event.id || event._id}`)}
                       >
                         <div className="event-card-img-box">
                           <img
