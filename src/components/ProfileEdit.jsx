@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
+import Select from 'react-select';
 import { getProfile, updateProfile } from "../services/api";
+import { getProfileOptions } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "../styles/Profile.css";
 
 export default function ProfileEdit() {
+  const [options, setOptions] = useState({ genders: [], interests: [] });
   const [form, setForm] = useState({
     nombre: "",
     gender: "",
@@ -21,8 +24,17 @@ export default function ProfileEdit() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Obtener opciones de perfil
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setError("No autorizado. Por favor inicia sesión.");
+      navigate("/login");
+      return;
+    }
+    getProfileOptions(token)
+      .then((opts) => setOptions(opts))
+      .catch(() => setOptions({ genders: [], interests: [] }));
+
     setLoading(true);
     getProfile(token)
       .then((res) => {
@@ -31,17 +43,17 @@ export default function ProfileEdit() {
           nombre: data.nombre || "",
           gender: data.gender || "",
           phone_number: data.phone_number || "",
-          birth_date: data.birth_date || "",
+          birth_date: data.birth_date ? data.birth_date.slice(0, 10) : "",
           correo: data.correo || "",
           description: data.description || "",
-          interests: Array.isArray(data.interests) ? data.interests.join(", ") : "",
+          interests: data.interests || [],
         });
-        if (data.avatar_url) setAvatar(data.avatar_url);
         setLoading(false);
       })
-      .catch((err) => {
-        setError("No se pudo cargar el perfil");
+      .catch(() => {
+        setError("No autorizado. Por favor inicia sesión.");
         setLoading(false);
+        navigate("/login");
       });
   }, []);
 
@@ -65,8 +77,23 @@ export default function ProfileEdit() {
     setError("");
     setSuccess("");
     const token = localStorage.getItem("token");
+    // Validar intereses
+    const validInterests = options.interests.map(opt => opt.value);
+    const selectedInterests = Array.isArray(form.interests)
+      ? form.interests.map(i => typeof i === 'object' ? i.value : i)
+      : [];
+    const invalid = selectedInterests.filter(i => !validInterests.includes(i));
+    if (invalid.length > 0) {
+      setError(`Intereses inválidos: ${invalid.join(", ")}`);
+      setLoading(false);
+      return;
+    }
+    const payload = {
+      ...form,
+      interests: selectedInterests,
+    };
     try {
-      await updateProfile(form, token);
+      await updateProfile(payload, token);
       setSuccess("Perfil actualizado correctamente");
     } catch (err) {
       setError("No se pudo actualizar el perfil");
@@ -124,9 +151,9 @@ export default function ProfileEdit() {
               onChange={handleChange}
             >
               <option value="">Seleccione su género</option>
-              <option value="masculino">Masculino</option>
-              <option value="femenino">Femenino</option>
-              <option value="otro">Otro</option>
+              {options.genders.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
             </select>
           </label>
           <label className="profile-label" style={{ flex: 1 }}>
@@ -175,14 +202,71 @@ export default function ProfileEdit() {
         </label>
         <label className="profile-label">
           Intereses
-          <input
-            type="text"
-            name="interests"
-            className="profile-input"
-            placeholder="Ingresa tus intereses"
-            value={form.interests}
-            onChange={handleChange}
-          />
+          <div style={{ marginBottom: 8 }}>
+            <Select
+              isMulti
+              name="interests"
+              options={options.interests}
+              value={options.interests.filter(opt => form.interests.includes(opt.value))}
+              onChange={selected => {
+                // Siempre guardar solo los values del enum
+                setForm({ ...form, interests: Array.isArray(selected) ? selected.map(opt => opt.value) : [] });
+              }}
+              getOptionValue={opt => opt.value}
+              getOptionLabel={opt => opt.label}
+              classNamePrefix="react-select"
+              placeholder="Selecciona tus intereses..."
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  minHeight: 40,
+                  fontSize: '1em',
+                  background: '#f9f9f9',
+                  border: state.isFocused ? '2px solid var(--color-principal, #bf2a52)' : '1.5px solid #e0e0e0',
+                  boxShadow: state.isFocused ? '0 0 0 2px var(--color-principal, #bf2a52)' : 'none',
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isSelected
+                    ? 'var(--color-principal, #bf2a52)'
+                    : state.isFocused
+                    ? 'var(--color-secundario, #d93240)'
+                    : '#fff',
+                  color: state.isSelected || state.isFocused ? '#fff' : '#222',
+                  fontWeight: state.isSelected ? 600 : 400,
+                }),
+                multiValue: (base) => ({
+                  ...base,
+                  background: 'var(--color-principal, #bf2a52)',
+                  color: '#fff',
+                  borderRadius: '16px',
+                }),
+                multiValueLabel: (base) => ({
+                  ...base,
+                  color: '#fff',
+                  fontWeight: 500,
+                }),
+                multiValueRemove: (base) => ({
+                  ...base,
+                  color: '#fff',
+                  background: 'transparent',
+                  ':hover': {
+                    background: 'var(--color-secundario, #d93240)',
+                    color: '#fff',
+                  },
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: 'var(--color-principal, #bf2a52)',
+                  fontWeight: 500,
+                }),
+                menu: (base) => ({
+                  ...base,
+                  zIndex: 20,
+                }),
+              }}
+            />
+          </div>
         </label>
         <button type="submit" className="profile-btn" disabled={loading}>
           {loading ? "Guardando..." : "GUARDAR"}
