@@ -1,3 +1,42 @@
+// Obtener mi postulación
+export async function getMyPostulation() {
+  const res = await fetchWithAuth(`${API_URL}/api/postulations/my-postulation`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudo obtener tu postulación');
+  const json = await res.json();
+  return json.data || null;
+}
+
+// Crear postulación
+export async function createPostulation(data) {
+  const res = await fetchWithAuth(`${API_URL}/api/postulations`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('No se pudo crear la postulación');
+  const json = await res.json();
+  return json.data || null;
+}
+
+// Eliminar mi postulación
+export async function deleteMyPostulation(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/postulations/my-postulation/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudo eliminar la postulación');
+  const json = await res.json();
+  return json.data || null;
+}
 // Obtener inscripciones del usuario
 export async function getMyInscriptions() {
   const res = await fetchWithAuth(`${API_URL}/api/my-inscriptions`, {
