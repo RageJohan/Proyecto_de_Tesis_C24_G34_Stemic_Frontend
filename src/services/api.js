@@ -1,3 +1,15 @@
+// Obtener todas las alianzas
+export async function getAlliances() {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener las alianzas');
+  const json = await res.json();
+  return json.data || [];
+}
 // Obtener mi postulación
 export async function getMyPostulation() {
   const res = await fetchWithAuth(`${API_URL}/api/postulations/my-postulation`, {
