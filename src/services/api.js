@@ -1,5 +1,20 @@
 // src/services/api.js
 
+// Obtener opciones de perfil (géneros, intereses, etc)
+export async function getProfileOptions() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile/options`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Error al obtener opciones de perfil');
+  const json = await res.json();
+  return json.data;
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch(endpoint, options = {}) {
