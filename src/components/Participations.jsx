@@ -1,49 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import "../styles/Participations.css";
-
-// Simulación de participaciones
-const participations = [
-  {
-    event: "LEAD IBM EXPLORE DAY",
-    date: "20/06/2025",
-    modality: "Presencial",
-  },
-  {
-    event: "HACKATHON STEMIC",
-    date: "22/07/2025",
-    modality: "Virtual",
-  },
-  {
-    event: "BOOTCAMP DE LIDERAZGO",
-    date: "05/08/2025",
-    modality: "Híbrido",
-  },
-];
+import { getMyInscriptions } from "../services/api";
 
 export default function Participations() {
+  const [participations, setParticipations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    getMyInscriptions()
+      .then((data) => {
+        setParticipations(data);
+      })
+      .catch(() => setError("No se pudieron cargar tus participaciones"))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <>
       <Header />
       <div className="participations-view">
         <h2 className="participations-title">Mis Participaciones</h2>
+        {loading && <div>Cargando...</div>}
+        {error && <div style={{ color: "red" }}>{error}</div>}
         <div className="participations-table-box">
           <table className="participations-table">
             <thead>
               <tr>
                 <th>Evento</th>
-                <th>Fecha</th>
+                <th>Fecha, Hora</th>
                 <th>Modalidad</th>
               </tr>
             </thead>
             <tbody>
-              {participations.map((p, idx) => (
-                <tr key={idx}>
-                  <td>{p.event}</td>
-                  <td>{p.date}</td>
-                  <td>{p.modality}</td>
-                </tr>
-              ))}
+              {participations.length === 0 && !loading ? (
+                <tr><td colSpan={3}>No tienes participaciones registradas.</td></tr>
+              ) : (
+                participations.map((p, idx) => {
+                  const evento = p.evento || p.event || {};
+                  return (
+                    <tr key={idx}>
+                      <td>{evento.titulo || evento.title || "Sin título"}</td>
+                      <td>{evento.fecha_hora ? new Date(evento.fecha_hora).toLocaleString() : ""}</td>
+                      <td>{evento.modalidad || ""}</td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
