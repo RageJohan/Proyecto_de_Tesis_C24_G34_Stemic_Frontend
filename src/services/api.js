@@ -1,3 +1,49 @@
+// Obtener inscripciones del usuario
+export async function getMyInscriptions() {
+  const res = await fetchWithAuth(`${API_URL}/api/my-inscriptions`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudieron cargar tus inscripciones');
+  const json = await res.json();
+  return json.data || [];
+}
+// Cancelar inscripción a un evento
+export async function cancelarInscripcionEvento(eventId) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/inscription`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudo cancelar la inscripción');
+  return await res.json();
+}
+// Verificar estado de inscripción
+export async function estadoInscripcionEvento(eventId) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/inscription/status`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudo verificar el estado de inscripción');
+  const json = await res.json();
+  return json.data?.is_inscribed || false;
+}
+// Inscribirse a un evento (sin postulación)
+export async function inscribirseEvento(eventId) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/inscription`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error('No se pudo inscribir al evento');
+  return await res.json();
+}
 // src/services/api.js
 
 // Obtener opciones de perfil (géneros, intereses, etc)
