@@ -7,6 +7,7 @@ import ForgotPassword from "../auth/components/ForgotPassword";
 import ResetPassword from "../auth/components/ResetPassword";
 
 import Dashboard from "../components/Dashboard";
+import EventDetail from "../components/EventDetail";
 import AboutUs from "../components/AboutUs";
 import JoinUs from "../components/JoinUs";
 import Events from "../components/Events";
@@ -58,7 +59,8 @@ export default function AppRouter() {
       />
       <Route path="/about-us" element={<AboutUs />} />
       <Route path="/join-us" element={<JoinUs />} />
-      <Route path="/events" element={<Events />} />
+  <Route path="/events" element={<Events />} />
+  <Route path="/evento/:id" element={<EventDetail />} />
       <Route path="/organizaciones" element={<Organizations />} />
       <Route path="/participations" element={<Participations />} />
       <Route path="/" element={<Home />} />
