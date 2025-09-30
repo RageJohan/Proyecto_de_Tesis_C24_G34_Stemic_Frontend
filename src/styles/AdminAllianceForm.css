@@ -1,0 +1,75 @@
+.admin-alliance-form-modal {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-alliance-form {
+  background: #23264a;
+  color: #fff;
+  padding: 2.2rem 2rem 1.5rem 2rem;
+  border-radius: 1.2rem;
+  min-width: 340px;
+  max-width: 95vw;
+  box-shadow: 0 4px 32px rgba(121,87,242,0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.admin-alliance-form h3 {
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+.admin-alliance-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  gap: 0.3rem;
+}
+.admin-alliance-form input,
+.admin-alliance-form textarea {
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid #7957F2;
+  font-size: 1rem;
+  background: #181c2f;
+  color: #fff;
+  margin-top: 0.2rem;
+}
+.admin-alliance-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+.btn-cancelar {
+  background: #F44336;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-crear {
+  background: #7957F2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.form-error {
+  color: #F44336;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
