@@ -78,10 +78,8 @@ input, textarea, select {
 /* Estilos base */
 html {
   font-size: var(--font-size-base);
-  -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-size-adjust: 100%;
 }
 
 body {
@@ -96,8 +94,6 @@ body {
   line-height: var(--line-height-base);
   overflow-x: hidden;
   position: relative;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 #root {
