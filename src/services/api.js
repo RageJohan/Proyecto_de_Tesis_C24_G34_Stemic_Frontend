@@ -1,3 +1,86 @@
+// Obtener todas las alianzas (admin)
+export async function getAdminAlliances({ activo = '', nombre = '', descripcion = '', page = 1, limit = 10 }) {
+  const params = [];
+  if (activo) params.push(`activo=${encodeURIComponent(activo)}`);
+  if (nombre) params.push(`nombre=${encodeURIComponent(nombre)}`);
+  if (descripcion) params.push(`descripcion=${encodeURIComponent(descripcion)}`);
+  if (page) params.push(`page=${page}`);
+  if (limit) params.push(`limit=${limit}`);
+  const query = params.length ? `?${params.join('&')}` : '';
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas/admin${query}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener las alianzas');
+  const json = await res.json();
+  return json;
+}
+
+// Activar alianza
+export async function activateAlliance(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas/${id}/activar`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo activar la alianza');
+  return await res.json();
+}
+
+// Desactivar alianza
+export async function deactivateAlliance(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas/${id}/desactivar`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo desactivar la alianza');
+  return await res.json();
+}
+
+// Eliminar alianza permanentemente
+export async function deleteAlliance(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo eliminar la alianza');
+  return await res.json();
+}
+// Obtener todas las postulaciones (admin)
+export async function getAdminPostulations({ estado = '', carrera = '', page = 1, limit = 10 }) {
+  const params = [];
+  if (estado) params.push(`estado=${encodeURIComponent(estado)}`);
+  if (carrera) params.push(`carrera_especialidad=${encodeURIComponent(carrera)}`);
+  if (page) params.push(`page=${page}`);
+  if (limit) params.push(`limit=${limit}`);
+  const query = params.length ? `?${params.join('&')}` : '';
+  const res = await fetchWithAuth(`${API_URL}/api/postulations${query}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener las postulaciones');
+  const json = await res.json();
+  return json;
+}
+
+// Aprobar postulación
+export async function approvePostulation(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/postulations/${id}/approve`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo aprobar la postulación');
+  return await res.json();
+}
+
+// Rechazar postulación
+export async function rejectPostulation(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/postulations/${id}/reject`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo rechazar la postulación');
+  return await res.json();
+}
 // Obtener todos los eventos
 export async function getEvents() {
   const res = await fetchWithAuth(`${API_URL}/api/events`, {
