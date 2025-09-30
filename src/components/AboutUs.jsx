@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import "../styles/AboutUs.css";
 
@@ -64,38 +64,12 @@ function AnimatedTitle({ text }) {
   );
 }
 
-function ParticlesBG() {
-  const ref = useRef();
-  useEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-    const colors = ["var(--color-acento)", "#fff", "#7957F2", "#A6249D"];
-    for (let i = 0; i < 18; i++) {
-      const p = document.createElement("div");
-      p.className = "aboutus-particle";
-      p.style.width = `${16 + Math.random() * 32}px`;
-      p.style.height = p.style.width;
-      p.style.left = `${Math.random() * 100}vw`;
-      p.style.bottom = `-${Math.random() * 20}vh`;
-      p.style.background = colors[Math.floor(Math.random() * colors.length)];
-      p.style.animationDuration = `${10 + Math.random() * 8}s`;
-      p.style.animationDelay = `${Math.random() * 8}s`;
-      container.appendChild(p);
-    }
-    return () => {
-      container.innerHTML = "";
-    };
-  }, []);
-  return <div className="aboutus-particles" ref={ref} />;
-}
+
 
 export default function AboutUs() {
   const [pillarIndex, setPillarIndex] = useState(0);
   const [valueIndex, setValueIndex] = useState(0);
-  useEffect(() => {
-    document.body.classList.add("aboutus-bg-body");
-    return () => document.body.classList.remove("aboutus-bg-body");
-  }, []);
+  // El fondo se maneja solo por CSS, no modificar el body
 
   // Carrusel pilares
   const nextPillar = () =>
@@ -113,7 +87,7 @@ export default function AboutUs() {
       <Header />
       <div className="aboutus-bg" />
       <div className="aboutus-overlay" />
-      <ParticlesBG />
+
       <div className="aboutus-container">
         <h1 className="aboutus-title">
           <AnimatedTitle text="Sobre Nosotros" />
