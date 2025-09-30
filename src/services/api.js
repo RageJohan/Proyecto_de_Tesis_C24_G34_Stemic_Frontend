@@ -1,3 +1,14 @@
+// Crear alianza (admin)
+export async function createAlliance(data) {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('No se pudo crear la alianza');
+  const json = await res.json();
+  return json.data || null;
+}
 // Obtener todas las alianzas (admin)
 export async function getAdminAlliances({ activo = '', nombre = '', descripcion = '', page = 1, limit = 10 }) {
   const params = [];
