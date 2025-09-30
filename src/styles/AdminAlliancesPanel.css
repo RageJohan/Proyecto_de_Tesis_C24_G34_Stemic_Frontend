@@ -1,0 +1,111 @@
+.admin-alliances-panel {
+  background: #181c2f;
+  color: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 1.2rem;
+  max-width: 1200px;
+  margin: 3rem auto;
+  box-shadow: 0 4px 32px rgba(121,87,242,0.10);
+}
+.admin-alliances-panel h2 {
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+}
+.admin-alliances-filtros {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+.admin-alliances-filtros select,
+.admin-alliances-filtros input {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #7957F2;
+  font-size: 1rem;
+  background: #23264a;
+  color: #fff;
+}
+.admin-alliances-table-wrap {
+  overflow-x: auto;
+}
+.admin-alliances-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #23264a;
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+.admin-alliances-table th, .admin-alliances-table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+}
+.admin-alliances-table th {
+  background: #7957F2;
+  color: #fff;
+  font-weight: 700;
+}
+.admin-alliances-table tr:nth-child(even) {
+  background: #20234a;
+}
+.btn-activar {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-desactivar {
+  background: #F44336;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-eliminar {
+  background: #A6249D;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-crear {
+  background: #7957F2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.admin-alliances-paginacion {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.admin-alliances-paginacion button {
+  background: #7957F2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-alliances-paginacion button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
