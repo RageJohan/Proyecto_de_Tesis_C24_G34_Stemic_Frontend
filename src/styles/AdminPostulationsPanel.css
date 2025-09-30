@@ -1,0 +1,91 @@
+.admin-post-panel {
+  background: #181c2f;
+  color: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 1.2rem;
+  max-width: 1200px;
+  margin: 3rem auto;
+  box-shadow: 0 4px 32px rgba(121,87,242,0.10);
+}
+.admin-post-panel h2 {
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+}
+.admin-post-filtros {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+.admin-post-filtros select,
+.admin-post-filtros input {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #7957F2;
+  font-size: 1rem;
+  background: #23264a;
+  color: #fff;
+}
+.admin-post-table-wrap {
+  overflow-x: auto;
+}
+.admin-post-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #23264a;
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+.admin-post-table th, .admin-post-table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+}
+.admin-post-table th {
+  background: #7957F2;
+  color: #fff;
+  font-weight: 700;
+}
+.admin-post-table tr:nth-child(even) {
+  background: #20234a;
+}
+.btn-aprobar {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-rechazar {
+  background: #F44336;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-post-paginacion {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.admin-post-paginacion button {
+  background: #7957F2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-post-paginacion button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
