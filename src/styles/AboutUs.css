@@ -1,9 +1,14 @@
+
 .aboutus-bg {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  background: #030c40;
 }
 
 .aboutus-overlay {
@@ -22,10 +27,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   padding-top: 5rem;
   padding-bottom: 3rem;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .aboutus-title {
@@ -41,8 +47,9 @@
   display: flex;
   gap: 2rem;
   margin-bottom: 3rem;
-  width: 90vw;
+  width: 100%;
   max-width: 900px;
+  justify-content: center;
   animation: slideInLeft 1.2s;
 }
 
@@ -96,19 +103,18 @@
   to { opacity: 1; transform: translateX(0); }
 }
 
-/* Partículas animadas */
-.aboutus-particles {
-  position: absolute;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  z-index: 0;
-  pointer-events: none;
-}
+
 
 @media (max-width: 900px) {
   .aboutus-horizontal-accordion {
     flex-direction: column;
     gap: 1.2rem;
-    width: 98vw;
+    width: 100vw;
+    align-items: center;
+  }
+  .aboutus-container {
+    padding-top: 3.5rem;
+    justify-content: flex-start;
   }
 }
 
