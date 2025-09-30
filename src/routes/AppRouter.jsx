@@ -16,6 +16,8 @@ import ProfileEdit from "../components/ProfileEdit";
 import Organizations from "../components/Organizations";
 import Home from "../components/Home";
 import AdminEventsPanel from "../components/AdminEventsPanel";
+import AdminPostulationsPanel from "../components/AdminPostulationsPanel";
+import AdminAlliancesPanel from "../components/AdminAlliancesPanel";
 
 export default function AppRouter() {
   const { isAuthenticated } = useAuth();
@@ -64,6 +66,8 @@ export default function AppRouter() {
   <Route path="/evento/:id" element={<EventDetail />} />
   <Route path="/organizaciones" element={<Organizations />} />
   <Route path="/admin-eventos" element={<AdminEventsPanel />} />
+  <Route path="/admin-postulations" element={<AdminPostulationsPanel />} />
+  <Route path="/admin-alianzas" element={<AdminAlliancesPanel />} />
       <Route path="/participations" element={<Participations />} />
       <Route path="/" element={<Home />} />
       <Route path="*" element={<Navigate to="/" replace />} />
