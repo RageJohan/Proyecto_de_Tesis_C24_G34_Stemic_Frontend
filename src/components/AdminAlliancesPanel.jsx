@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   getAdminAlliances,
@@ -5,6 +6,7 @@ import {
   deactivateAlliance,
   deleteAlliance
 } from "../services/api";
+import AdminAllianceForm from "./AdminAllianceForm";
 import "../styles/AdminAlliancesPanel.css";
 
 function EstadoBadge({ activo }) {
@@ -21,11 +23,15 @@ function EstadoBadge({ activo }) {
   );
 }
 
+
 export default function AdminAlliancesPanel() {
   const [alianzas, setAlianzas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({ activo: "", nombre: "", descripcion: "", page: 1, limit: 10 });
   const [total, setTotal] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+
+  const refresh = () => setFiltros(f => ({ ...f }));
 
   useEffect(() => {
     setLoading(true);
@@ -39,16 +45,16 @@ export default function AdminAlliancesPanel() {
 
   const handleActivar = async (id) => {
     await activateAlliance(id);
-    setFiltros({ ...filtros });
+    refresh();
   };
   const handleDesactivar = async (id) => {
     await deactivateAlliance(id);
-    setFiltros({ ...filtros });
+    refresh();
   };
   const handleEliminar = async (id) => {
     if (window.confirm("¿Eliminar esta alianza permanentemente?")) {
       await deleteAlliance(id);
-      setFiltros({ ...filtros });
+      refresh();
     }
   };
 
@@ -120,8 +126,17 @@ export default function AdminAlliancesPanel() {
         <span>Total: {total}</span>
       </div>
       <div style={{textAlign: "right", marginTop: 16}}>
-        <button className="btn-crear">Crear nueva alianza</button>
+        <button className="btn-crear" onClick={() => setShowForm(true)}>Crear nueva alianza</button>
       </div>
+      {showForm && (
+        <AdminAllianceForm
+          onSuccess={() => {
+            setShowForm(false);
+            refresh();
+          }}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
     </div>
   );
 }
