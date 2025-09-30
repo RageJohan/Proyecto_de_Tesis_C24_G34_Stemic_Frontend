@@ -1,0 +1,51 @@
+.admin-events-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #232347;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  padding: 32px;
+}
+.admin-events-title {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #fff;
+  text-align: center;
+}
+.admin-events-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.admin-events-table th, .admin-events-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #444;
+  text-align: left;
+  color: #fff;
+}
+.admin-events-table th {
+  background: #2d2d5a;
+  color: #ffd700;
+}
+.admin-events-btn {
+  margin-right: 8px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.admin-events-btn.edit {
+  background: #7957F2;
+  color: #fff;
+}
+.admin-events-btn.delete {
+  background: #d93240;
+  color: #fff;
+}
+
+.admin-events-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
