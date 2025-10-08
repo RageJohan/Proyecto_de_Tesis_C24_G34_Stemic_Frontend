@@ -1,3 +1,48 @@
+// Obtener evento por ID
+export async function getEventById(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${id}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('Could not fetch event');
+  const json = await res.json();
+  return json.data || json;
+}
+
+// Actualizar evento
+export async function updateEvent(id, formData) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${id}`, {
+    method: 'PUT',
+    body: formData,
+    // No poner Content-Type, fetch lo gestiona con FormData
+  });
+  if (!res.ok) {
+    let msg = 'Could not update event';
+    try {
+      const err = await res.json();
+      if (err && err.message) msg = err.message;
+    } catch {}
+    throw new Error(msg);
+  }
+  return await res.json();
+}
+// Crear evento (admin)
+export async function createEvent(formData) {
+  const res = await fetchWithAuth(`${API_URL}/api/events`, {
+    method: 'POST',
+    body: formData,
+    // No poner Content-Type, fetch lo gestiona con FormData
+  });
+  if (!res.ok) {
+    let msg = 'No se pudo crear el evento';
+    try {
+      const err = await res.json();
+      if (err && err.message) msg = err.message;
+    } catch {}
+    throw new Error(msg);
+  }
+  return await res.json();
+}
 // Crear alianza (admin)
 export async function createAlliance(data) {
   const res = await fetchWithAuth(`${API_URL}/api/alianzas`, {
