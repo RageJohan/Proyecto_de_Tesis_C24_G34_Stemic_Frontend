@@ -24,7 +24,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
     setNavOpen(false);
     if (view === "home") navigate("/");
     else if (view === "eventos") navigate("/events");
-    else if (view === "organizaciones") navigate("/organizaciones");
+  else if (view === "organizaciones") navigate("/organizations");
     else if (view === "join-us") navigate("/join-us");
     else if (view === "sobre") navigate("/about-us");
   };

@@ -22,7 +22,7 @@ export default function Footer() {
             <a href="/eventos">Eventos</a>
           </li>
           <li>
-            <a href="/organizaciones">Organizaciones</a>
+            <a href="/organizations">Organizations</a>
           </li>
           <li>
             <a href="/unete">Únete</a>
