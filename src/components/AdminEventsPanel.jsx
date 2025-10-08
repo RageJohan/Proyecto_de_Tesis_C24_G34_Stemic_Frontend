@@ -1,12 +1,15 @@
+
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import "../styles/AdminEventsPanel.css";
 import { getEvents } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminEventsPanel() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     getEvents()
@@ -19,22 +22,23 @@ export default function AdminEventsPanel() {
     <>
       <Header />
       <div className="admin-events-container fade-in-uniform">
-        <h1 className="admin-events-title">Panel de administración de eventos</h1>
+        <h1 className="admin-events-title">Event Administration Panel</h1>
+        <button className="admin-events-btn create" onClick={() => navigate("/admin-events/create") } style={{marginBottom:16}}>+ Create event</button>
         {loading ? (
-          <div className="orgs-loading">Cargando eventos...</div>
+          <div className="orgs-loading">Loading events...</div>
         ) : error ? (
           <div className="orgs-error">{error}</div>
         ) : events.length === 0 ? (
-          <div className="orgs-empty">No hay eventos registrados.</div>
+          <div className="orgs-empty">No events registered.</div>
         ) : (
           <table className="admin-events-table">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Mode</th>
+                <th>Description</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -46,8 +50,8 @@ export default function AdminEventsPanel() {
                   <td>{ev.descripcion}</td>
                   <td>
                     <div className="admin-events-actions">
-                      <button className="admin-events-btn edit">Editar</button>
-                      <button className="admin-events-btn delete">Eliminar</button>
+                      <button className="admin-events-btn edit" onClick={() => navigate(`/admin-events/edit/${ev.id}`)}>Edit</button>
+                      <button className="admin-events-btn delete">Delete</button>
                     </div>
                   </td>
                 </tr>
