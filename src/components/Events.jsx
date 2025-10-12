@@ -136,7 +136,7 @@ export default function Events() {
                         className="event-card"
                         key={event.id || event._id || idx}
                         style={{ cursor: "pointer" }}
-                        onClick={() => navigate(`/evento/${event.id || event._id}`)}
+                        onClick={() => navigate(`/event/${event.id || event._id}`)}
                       >
                         <div className="event-card-img-box">
                           <img

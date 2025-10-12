@@ -45,14 +45,10 @@ export default function EventDetail() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
     setLoading(true);
     Promise.all([
       apiFetch(`/api/events/public/${id}`),
-      estadoInscripcionEvento(id)
+      isAuthenticated ? estadoInscripcionEvento(id) : Promise.resolve(false)
     ])
       .then(([eventData, isInscribed]) => {
         setEvent(eventData.data || eventData.event || eventData);
@@ -128,23 +124,33 @@ export default function EventDetail() {
           </div>
         </div>
         {!requierePostulacion && (
-          inscrito ? (
-            <button
-              className="event-detail-back"
-              style={{ marginTop: 32, background: '#d93240', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 2rem', fontSize: '1.1em', fontWeight: 600, cursor: 'pointer' }}
-              onClick={handleCancelarInscripcion}
-              disabled={inscribiendo}
-            >
-              {inscribiendo ? "Cancelando..." : "Cancelar Inscripción"}
-            </button>
+          isAuthenticated ? (
+            inscrito ? (
+              <button
+                className="event-detail-back"
+                style={{ marginTop: 32, background: '#d93240', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 2rem', fontSize: '1.1em', fontWeight: 600, cursor: 'pointer' }}
+                onClick={handleCancelarInscripcion}
+                disabled={inscribiendo}
+              >
+                {inscribiendo ? "Cancelando..." : "Cancelar Inscripción"}
+              </button>
+            ) : (
+              <button
+                className="event-detail-back"
+                style={{ marginTop: 32, background: '#00796b', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 2rem', fontSize: '1.1em', fontWeight: 600, cursor: 'pointer' }}
+                onClick={handleInscribirse}
+                disabled={inscribiendo}
+              >
+                {inscribiendo ? "Inscribiendo..." : "Inscribirse"}
+              </button>
+            )
           ) : (
             <button
               className="event-detail-back"
-              style={{ marginTop: 32, background: '#00796b', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 2rem', fontSize: '1.1em', fontWeight: 600, cursor: 'pointer' }}
-              onClick={handleInscribirse}
-              disabled={inscribiendo}
+              style={{ marginTop: 32, background: '#7957F2', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 2rem', fontSize: '1.1em', fontWeight: 600, cursor: 'pointer' }}
+              onClick={() => navigate('/login')}
             >
-              {inscribiendo ? "Inscribiendo..." : "Inscribirse"}
+              Inicia sesión para inscribirte
             </button>
           )
         )}
