@@ -15,6 +15,7 @@ import Participations from "../components/Participations";
 import ProfileEdit from "../components/ProfileEdit";
 import Organizations from "../components/Organizations";
 import Home from "../components/Home";
+import SurveyView from "../components/SurveyView";
 
 import AdminEventsPanel from "../components/AdminEventsPanel";
 import AdminPostulationsPanel from "../components/AdminPostulationsPanel";
@@ -74,6 +75,10 @@ export default function AppRouter() {
   <Route path="/admin-applications" element={<AdminPostulationsPanel />} />
   <Route path="/admin-alliances" element={<AdminAlliancesPanel />} />
       <Route path="/participations" element={<Participations />} />
+      <Route 
+        path="/survey" 
+        element={isAuthenticated ? <SurveyView /> : <Navigate to="/login" replace />} 
+      />
       <Route path="/" element={<Home />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
