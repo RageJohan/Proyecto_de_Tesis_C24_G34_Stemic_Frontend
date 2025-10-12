@@ -73,3 +73,39 @@
   margin-bottom: 0.5rem;
   text-align: center;
 }
+
+.logo-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.logo-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.logo-preview img {
+  border-radius: 0.5rem;
+  border: 2px solid #7957F2;
+  background: #181c2f;
+  padding: 0.5rem;
+}
+
+.logo-upload-btn {
+  background: #7957F2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: flex-start;
+}
+
+.logo-upload-btn:hover {
+  background: #6a4ae8;
+}

@@ -44,11 +44,10 @@ export async function createEvent(formData) {
   return await res.json();
 }
 // Crear alianza (admin)
-export async function createAlliance(data) {
+export async function createAlliance(formData) {
   const res = await fetchWithAuth(`${API_URL}/api/alianzas`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: formData,
   });
   if (!res.ok) throw new Error('No se pudo crear la alianza');
   const json = await res.json();
