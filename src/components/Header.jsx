@@ -13,12 +13,13 @@ function useIsMobile(breakpoint = 900) {
   return isMobile;
 }
 
+
 export default function Header({ onLogout, onProfileUpdate }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated, user } = useAuth();
 
   const handleNav = (view) => {
     setNavOpen(false);
@@ -119,6 +120,17 @@ export default function Header({ onLogout, onProfileUpdate }) {
             </button>
             {profileOpen && (
               <div className="header-profile-dropdown">
+                {user?.rol === "admin" && (
+                  <button
+                    className="header-profile-item"
+                    onClick={() => {
+                      setProfileOpen(false);
+                      navigate("/admin-events");
+                    }}
+                  >
+                    Admin Panel
+                  </button>
+                )}
                 <button
                   className="header-profile-item"
                   onClick={() => navigate("/participations")}
