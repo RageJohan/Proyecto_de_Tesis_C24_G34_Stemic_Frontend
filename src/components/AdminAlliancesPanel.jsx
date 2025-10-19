@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AdminSidebar from "./AdminSidebar";
 import {
   getAdminAlliances,
   activateAlliance,
@@ -58,84 +59,89 @@ export default function AdminAlliancesPanel() {
   };
 
   return (
-    <div className="admin-alliances-panel">
-      <h2>Alianzas - Admin</h2>
-      <div className="admin-alliances-filtros">
-        <select value={filtros.activo} onChange={e => setFiltros(f => ({ ...f, activo: e.target.value, page: 1 }))}>
-          <option value="">Todas</option>
-          <option value="true">Activas</option>
-          <option value="false">Inactivas</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={filtros.nombre}
-          onChange={e => setFiltros(f => ({ ...f, nombre: e.target.value, page: 1 }))}
-        />
-        <input
-          type="text"
-          placeholder="Descripción"
-          value={filtros.descripcion}
-          onChange={e => setFiltros(f => ({ ...f, descripcion: e.target.value, page: 1 }))}
-        />
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <div style={{ minWidth: 220 }}>
+        <AdminSidebar />
       </div>
-      <div className="admin-alliances-table-wrap">
-        <table className="admin-alliances-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={4}>Cargando...</td></tr>
-            ) : alianzas.length === 0 ? (
-              <tr><td colSpan={4}>No hay alianzas</td></tr>
-            ) : (
-              alianzas.map((a) => (
-                <tr key={a.id}>
-                  <td>{a.nombre}</td>
-                  <td>{a.descripcion}</td>
-                  <td><EstadoBadge activo={a.activo} /></td>
-                  <td>
-                    {a.activo ? (
-                      <button onClick={() => handleDesactivar(a.id)} className="btn-desactivar">Desactivar</button>
-                    ) : (
-                      <button onClick={() => handleActivar(a.id)} className="btn-activar">Activar</button>
-                    )}
-                    <button onClick={() => handleEliminar(a.id)} className="btn-eliminar">Eliminar</button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      <div className="admin-alliances-panel" style={{ marginLeft: 220, flex: 1 }}>
+        <h2>Alianzas - Admin</h2>
+        <div className="admin-alliances-filtros">
+          <select value={filtros.activo} onChange={e => setFiltros(f => ({ ...f, activo: e.target.value, page: 1 }))}>
+            <option value="">Todas</option>
+            <option value="true">Activas</option>
+            <option value="false">Inactivas</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={filtros.nombre}
+            onChange={e => setFiltros(f => ({ ...f, nombre: e.target.value, page: 1 }))}
+          />
+          <input
+            type="text"
+            placeholder="Descripción"
+            value={filtros.descripcion}
+            onChange={e => setFiltros(f => ({ ...f, descripcion: e.target.value, page: 1 }))}
+          />
+        </div>
+        <div className="admin-alliances-table-wrap">
+          <table className="admin-alliances-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={4}>Cargando...</td></tr>
+              ) : alianzas.length === 0 ? (
+                <tr><td colSpan={4}>No hay alianzas</td></tr>
+              ) : (
+                alianzas.map((a) => (
+                  <tr key={a.id}>
+                    <td>{a.nombre}</td>
+                    <td>{a.descripcion}</td>
+                    <td><EstadoBadge activo={a.activo} /></td>
+                    <td>
+                      {a.activo ? (
+                        <button onClick={() => handleDesactivar(a.id)} className="btn-desactivar">Desactivar</button>
+                      ) : (
+                        <button onClick={() => handleActivar(a.id)} className="btn-activar">Activar</button>
+                      )}
+                      <button onClick={() => handleEliminar(a.id)} className="btn-eliminar">Eliminar</button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="admin-alliances-paginacion">
+          <button disabled={filtros.page === 1} onClick={() => setFiltros(f => ({ ...f, page: f.page - 1 }))}>
+            Anterior
+          </button>
+          <span>Página {filtros.page}</span>
+          <button disabled={alianzas.length < filtros.limit} onClick={() => setFiltros(f => ({ ...f, page: f.page + 1 }))}>
+            Siguiente
+          </button>
+          <span>Total: {total}</span>
+        </div>
+        <div style={{textAlign: "right", marginTop: 16}}>
+          <button className="btn-crear" onClick={() => setShowForm(true)}>Crear nueva alianza</button>
+        </div>
+        {showForm && (
+          <AdminAllianceForm
+            onSuccess={() => {
+              setShowForm(false);
+              refresh();
+            }}
+            onCancel={() => setShowForm(false)}
+          />
+        )}
       </div>
-      <div className="admin-alliances-paginacion">
-        <button disabled={filtros.page === 1} onClick={() => setFiltros(f => ({ ...f, page: f.page - 1 }))}>
-          Anterior
-        </button>
-        <span>Página {filtros.page}</span>
-        <button disabled={alianzas.length < filtros.limit} onClick={() => setFiltros(f => ({ ...f, page: f.page + 1 }))}>
-          Siguiente
-        </button>
-        <span>Total: {total}</span>
-      </div>
-      <div style={{textAlign: "right", marginTop: 16}}>
-        <button className="btn-crear" onClick={() => setShowForm(true)}>Crear nueva alianza</button>
-      </div>
-      {showForm && (
-        <AdminAllianceForm
-          onSuccess={() => {
-            setShowForm(false);
-            refresh();
-          }}
-          onCancel={() => setShowForm(false)}
-        />
-      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import AdminSidebar from "./AdminSidebar";
 import Header from "./Header";
 import "../styles/AdminEventsPanel.css";
 import { getEvents } from "../services/api";
@@ -19,9 +20,11 @@ export default function AdminEventsPanel() {
   }, []);
 
   return (
-    <>
-      <Header />
-      <div className="admin-events-container fade-in-uniform">
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <div style={{ minWidth: 220 }}>
+        <AdminSidebar />
+      </div>
+      <div className="admin-events-container fade-in-uniform" style={{ marginLeft: 220, flex: 1 }}>
         <h1 className="admin-events-title">Event Administration Panel</h1>
         <button className="admin-events-btn create" onClick={() => navigate("/admin-events/create") } style={{marginBottom:16}}>+ Create event</button>
         {loading ? (
@@ -60,6 +63,6 @@ export default function AdminEventsPanel() {
           </table>
         )}
       </div>
-    </>
+    </div>
   );
 }

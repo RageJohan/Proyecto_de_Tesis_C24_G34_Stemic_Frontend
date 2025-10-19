@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AdminSidebar from "./AdminSidebar";
 import { getAdminPostulations, approvePostulation, rejectPostulation } from "../services/api";
 import "../styles/AdminPostulationsPanel.css";
 
@@ -47,76 +48,81 @@ export default function AdminPostulationsPanel() {
   };
 
   return (
-    <div className="admin-post-panel">
-      <h2>Postulaciones</h2>
-      <div className="admin-post-filtros">
-        <select value={filtros.estado} onChange={e => setFiltros(f => ({ ...f, estado: e.target.value, page: 1 }))}>
-          <option value="">Todos los estados</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="aprobada">Aprobada</option>
-          <option value="rechazada">Rechazada</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Carrera/especialidad"
-          value={filtros.carrera}
-          onChange={e => setFiltros(f => ({ ...f, carrera: e.target.value, page: 1 }))}
-        />
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <div style={{ minWidth: 220 }}>
+        <AdminSidebar />
       </div>
-      <div className="admin-post-table-wrap">
-        <table className="admin-post-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Carrera</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={6}>Cargando...</td></tr>
-            ) : postulaciones.length === 0 ? (
-              <tr><td colSpan={6}>No hay postulaciones</td></tr>
-            ) : (
-              postulaciones.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.usuario?.nombre || ''}</td>
-                  <td>{p.usuario?.correo || ''}</td>
-                  <td>{p.carrera_especialidad}</td>
-                  <td><EstadoBadge estado={p.estado} /></td>
-                  <td>{
-                    p.fecha_postulacion
-                      ? new Date(p.fecha_postulacion).toLocaleDateString()
-                      : p.created_at
-                        ? new Date(p.created_at).toLocaleDateString()
-                        : ''
-                  }</td>
-                  <td>
-                    {p.estado === "pendiente" && (
-                      <>
-                        <button onClick={() => handleAprobar(p.id)} className="btn-aprobar">Aprobar</button>
-                        <button onClick={() => handleRechazar(p.id)} className="btn-rechazar">Rechazar</button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div className="admin-post-paginacion">
-        <button disabled={filtros.page === 1} onClick={() => setFiltros(f => ({ ...f, page: f.page - 1 }))}>
-          Anterior
-        </button>
-        <span>Página {filtros.page}</span>
-        <button disabled={postulaciones.length < filtros.limit} onClick={() => setFiltros(f => ({ ...f, page: f.page + 1 }))}>
-          Siguiente
-        </button>
-        <span>Total: {total}</span>
+      <div className="admin-post-panel" style={{ marginLeft: 220, flex: 1 }}>
+        <h2>Postulaciones</h2>
+        <div className="admin-post-filtros">
+          <select value={filtros.estado} onChange={e => setFiltros(f => ({ ...f, estado: e.target.value, page: 1 }))}>
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aprobada">Aprobada</option>
+            <option value="rechazada">Rechazada</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Carrera/especialidad"
+            value={filtros.carrera}
+            onChange={e => setFiltros(f => ({ ...f, carrera: e.target.value, page: 1 }))}
+          />
+        </div>
+        <div className="admin-post-table-wrap">
+          <table className="admin-post-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Carrera</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6}>Cargando...</td></tr>
+              ) : postulaciones.length === 0 ? (
+                <tr><td colSpan={6}>No hay postulaciones</td></tr>
+              ) : (
+                postulaciones.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.usuario?.nombre || ''}</td>
+                    <td>{p.usuario?.correo || ''}</td>
+                    <td>{p.carrera_especialidad}</td>
+                    <td><EstadoBadge estado={p.estado} /></td>
+                    <td>{
+                      p.fecha_postulacion
+                        ? new Date(p.fecha_postulacion).toLocaleDateString()
+                        : p.created_at
+                          ? new Date(p.created_at).toLocaleDateString()
+                          : ''
+                    }</td>
+                    <td>
+                      {p.estado === "pendiente" && (
+                        <>
+                          <button onClick={() => handleAprobar(p.id)} className="btn-aprobar">Aprobar</button>
+                          <button onClick={() => handleRechazar(p.id)} className="btn-rechazar">Rechazar</button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="admin-post-paginacion">
+          <button disabled={filtros.page === 1} onClick={() => setFiltros(f => ({ ...f, page: f.page - 1 }))}>
+            Anterior
+          </button>
+          <span>Página {filtros.page}</span>
+          <button disabled={postulaciones.length < filtros.limit} onClick={() => setFiltros(f => ({ ...f, page: f.page + 1 }))}>
+            Siguiente
+          </button>
+          <span>Total: {total}</span>
+        </div>
       </div>
     </div>
   );
