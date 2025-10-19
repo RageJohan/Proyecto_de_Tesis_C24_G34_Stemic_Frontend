@@ -1,7 +1,7 @@
 .admin-sidebar {
   width: 220px;
   height: 100vh;
-  background: linear-gradient(135deg, #2e3a59 60%, #4f6d7a 100%);
+  background: linear-gradient(135deg, #030c40 30%, #D93240 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -38,8 +38,8 @@
 
 .sidebar-nav a.active,
 .sidebar-nav a:hover {
-  background: #f7c873;
-  color: #2e3a59;
+  background: #7957f28c;
+  color: #fff;
 }
 
 .sidebar-back-btn {
@@ -57,6 +57,6 @@
   transition: background 0.2s, color 0.2s;
 }
 .sidebar-back-btn:hover {
-  background: #f7c873;
-  color: #2e3a59;
+  background: #ffffff66;
+  color: #fff;
 }
