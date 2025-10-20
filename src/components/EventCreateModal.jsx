@@ -1,6 +1,6 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/EventCreateModal.css";
+import { getEventOptions } from "../services/api";
 
 export default function EventCreateModal({ open, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -21,6 +21,19 @@ export default function EventCreateModal({ open, onClose, onSave }) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    getEventOptions()
+      .then((data) => {
+        setForm((f) => ({
+          ...f,
+          skills: data.skills || [],
+          tags: data.tags || [],
+          modalidad: data.modalities?.[0] || "virtual",
+        }));
+      })
+      .catch((err) => setError(err.message || "Error al cargar opciones"));
+  }, []);
 
   if (!open) return null;
 

@@ -353,3 +353,14 @@ export async function fetchWithAuth(url, options = {}) {
   }
   return res;
 }
+
+// Obtener opciones para eventos
+export async function getEventOptions() {
+  const res = await fetchWithAuth(`${API_URL}/api/events/options`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener las opciones para eventos');
+  const json = await res.json();
+  return json;
+}
