@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getEventById, updateEvent, getEventOptions } from "../services/api";
+import { getEventById, updateEvent } from "../services/api";
 import "../styles/EventCreateModal.css";
 
 export default function EventEditView() {
@@ -12,16 +12,16 @@ export default function EventEditView() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([getEventById(id), getEventOptions()])
-      .then(([eventData, options]) => {
+    getEventById(id)
+      .then((eventData) => {
         setForm({
           ...eventData,
-          skills: eventData.skills || options.skills || [],
-          tags: eventData.tags || options.tags || [],
-          modalidad: eventData.modalidad || options.modalities?.[0] || "virtual",
+          skills: Array.isArray(eventData.skills) ? eventData.skills : [],
+          tags: Array.isArray(eventData.tags) ? eventData.tags : [],
+          modalidad: eventData.modalidad || "virtual",
         });
       })
-      .catch(() => setError("Error al cargar datos del evento u opciones"))
+      .catch(() => setError("Error al cargar datos del evento"))
       .finally(() => setLoading(false));
   }, [id]);
 
