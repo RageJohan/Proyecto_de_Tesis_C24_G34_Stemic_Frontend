@@ -15,6 +15,13 @@ function useIsMobile(breakpoint = 900) {
 
 
 export default function Header({ onLogout, onProfileUpdate }) {
+  // Añadir clase al body cuando el Header se monta
+  useEffect(() => {
+    document.body.classList.add('with-header');
+    return () => {
+      document.body.classList.remove('with-header');
+    };
+  }, []);
   const [profileOpen, setProfileOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const navigate = useNavigate();
