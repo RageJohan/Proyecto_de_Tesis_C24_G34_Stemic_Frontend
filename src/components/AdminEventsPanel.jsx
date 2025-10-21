@@ -20,13 +20,16 @@ export default function AdminEventsPanel() {
   }, []);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <div style={{ minWidth: 220 }}>
-        <AdminSidebar />
-      </div>
-      <div className="admin-events-container fade-in-uniform" style={{ marginLeft: 220, flex: 1 }}>
-        <h1 className="admin-events-title">Event Administration Panel</h1>
-        <button className="admin-events-btn create" onClick={() => navigate("/admin-events/create") } style={{marginBottom:16}}>+ Create event</button>
+    <AdminSidebar>
+      <div className="admin-events-container">
+        <div className="admin-events-header">
+          <h1>Panel de Eventos</h1>
+        </div>
+        <div className="admin-events-panel">
+          <button className="admin-events-btn create" onClick={() => navigate("/admin-events/create")}>
+            <i className="fas fa-plus"></i>
+            Crear evento
+          </button>
         {loading ? (
           <div className="orgs-loading">Loading events...</div>
         ) : error ? (
@@ -63,6 +66,7 @@ export default function AdminEventsPanel() {
           </table>
         )}
       </div>
-    </div>
+      </div>
+    </AdminSidebar>
   );
 }
