@@ -286,6 +286,7 @@
   }
 }
 
-body {
+/* Solo aplicar el padding cuando el header está presente */
+.with-header {
   padding-top: 70px;
 }
