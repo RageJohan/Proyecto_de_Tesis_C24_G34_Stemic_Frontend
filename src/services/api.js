@@ -337,21 +337,62 @@ export async function refreshAccessToken() {
 export async function fetchWithAuth(url, options = {}) {
   let token = localStorage.getItem('token');
   if (!options.headers) options.headers = {};
-  options.headers['Authorization'] = `Bearer ${token}`;
-  let res = await fetch(url, options);
-  if (res.status === 401) {
-    // Intentar refrescar el token
-    try {
-      token = await refreshAccessToken();
-      options.headers['Authorization'] = `Bearer ${token}`;
-      res = await fetch(url, options);
-    } catch {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      throw new Error('Sesión expirada. Por favor inicia sesión.');
-    }
+  
+  // Si no hay token, rechazar inmediatamente
+  if (!token) {
+    throw new Error('No hay token de acceso');
   }
-  return res;
+
+  options.headers['Authorization'] = `Bearer ${token}`;
+  
+  try {
+    let res = await fetch(url, options);
+    
+    // Si la respuesta es 401 o 403, intentar refresh
+    if (res.status === 401 || res.status === 403) {
+      try {
+        token = await refreshAccessToken();
+        if (!token) {
+          throw new Error('No se pudo obtener un nuevo token');
+        }
+        
+        options.headers['Authorization'] = `Bearer ${token}`;
+        res = await fetch(url, options);
+        
+        // Si aún después del refresh sigue dando error de autenticación
+        if (res.status === 401 || res.status === 403) {
+          throw new Error('Sesión expirada');
+        }
+      } catch (error) {
+        // Limpiar tokens y notificar error de sesión
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        
+        // Propagar el error con información adicional
+        throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.');
+      }
+    }
+    
+    // Si la respuesta no es ok después de todos los intentos
+    if (!res.ok) {
+      let errorMessage = 'Error en la petición';
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // Si no se puede parsear el error, usar mensaje genérico
+      }
+      throw new Error(errorMessage);
+    }
+    
+    return res;
+  } catch (error) {
+    // Si es un error de red o CORS
+    if (error.name === 'TypeError') {
+      throw new Error('Error de conexión. Por favor verifica tu conexión a internet.');
+    }
+    throw error;
+  }
 }
 
 // Obtener opciones para eventos
