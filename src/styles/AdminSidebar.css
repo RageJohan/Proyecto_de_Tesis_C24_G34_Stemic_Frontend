@@ -26,8 +26,8 @@ body {
   top: 0;
   z-index: 100;
   border-right: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .admin-content {
@@ -100,8 +100,8 @@ body {
   text-decoration: none;
   border: 1px solid rgba(255,255,255,0.2);
   transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .sidebar-back-btn:hover {
@@ -144,8 +144,6 @@ body {
     overflow-x: auto;
     padding: 1rem;
     gap: 1rem;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     -ms-overflow-style: none;
   }
 
