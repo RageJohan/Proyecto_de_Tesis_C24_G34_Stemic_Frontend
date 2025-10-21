@@ -8,7 +8,15 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background: #030c40;
+  background: linear-gradient(-45deg, #030c40, #030c40, #081050, #030c40);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
 }
 
 .aboutus-overlay {
@@ -16,6 +24,7 @@
   top: 0; left: 0; width: 100vw; height: 100vh;
   z-index: 1;
   pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(121,87,242,0.05) 0%, rgba(3,12,64,0.3) 100%);
 }
 
 .aboutus-container {
@@ -35,91 +44,257 @@
 }
 
 .aboutus-title {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  margin-bottom: 2.5rem;
-  text-shadow: 0 4px 24px rgba(121,87,242,0.25);
+  letter-spacing: 3px;
+  margin-bottom: 3rem;
+  text-shadow: 0 4px 24px rgba(121,87,242,0.35);
   animation: fadeInDown 1s;
+  background: linear-gradient(120deg, #fff, #f3eaff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.aboutus-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-acento), var(--color-terciario));
+  border-radius: 4px;
 }
 
 .aboutus-horizontal-accordion {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 2.5rem;
+  margin-bottom: 4rem;
   width: 100%;
-  max-width: 900px;
+  max-width: 1000px;
   justify-content: center;
   animation: slideInLeft 1.2s;
+  padding: 0 2rem;
 }
 
 .aboutus-h-accordion-card {
   flex: 1;
-  background: rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
   border-radius: 1.2rem;
-  box-shadow: 0 2px 16px rgba(121,87,242,0.10);
-  padding: 2rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(121,87,242,0.15);
+  padding: 2.5rem 2rem;
   min-width: 0;
-  transition: box-shadow 0.3s, background 0.3s;
-  border: 2px solid rgba(255,255,255,0.18);
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transform: translateY(0);
+  cursor: pointer;
+  max-width: 400px;
+}
+
+.aboutus-h-accordion-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 12px 40px rgba(121,87,242,0.25);
 }
 
 .aboutus-h-accordion-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
   color: #fff;
-  text-shadow: 0 2px 8px rgba(121,87,242,0.18);
+  text-shadow: 0 2px 8px rgba(121,87,242,0.3);
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.aboutus-h-accordion-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-acento), transparent);
+  border-radius: 3px;
 }
 
 .aboutus-h-accordion-content {
   font-size: 1.1rem;
-  color: #f3eaff;
+  line-height: 1.8;
+  color: rgba(243,234,255,0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .aboutus-subtitle {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  margin: 2.5rem 0 1.5rem 0;
+  margin: 3.5rem 0 2rem 0;
   color: #fff;
-  text-shadow: 0 2px 8px rgba(166,36,157,0.18);
+  text-shadow: 0 2px 12px rgba(166,36,157,0.25);
   animation: fadeInDown 1.2s;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+}
+
+.aboutus-subtitle::before,
+.aboutus-subtitle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-terciario), transparent);
+}
+
+.aboutus-subtitle::before {
+  right: calc(100% + 20px);
+}
+
+.aboutus-subtitle::after {
+  left: calc(100% + 20px);
+  transform: rotate(180deg);
 }
 
 .carousel {
   animation: fadeInUp 1.2s;
+  position: relative;
+  padding: 1rem;
+}
+
+.carousel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  padding: 2px;
+  background: linear-gradient(45deg, var(--color-acento), var(--color-terciario));
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-60px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(-40px); 
+    filter: blur(10px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+    filter: blur(0);
+  }
 }
 
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px);
+    filter: blur(10px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-60px);
+    filter: blur(10px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+
+.carousel-button {
+  transition: all 0.3s ease !important;
+  opacity: 0.8 !important;
+}
+
+.carousel-button:hover {
+  transform: translateY(-50%) scale(1.1) !important;
+  opacity: 1 !important;
+  box-shadow: 0 4px 20px rgba(121,87,242,0.3) !important;
+}
 
 
 @media (max-width: 900px) {
   .aboutus-horizontal-accordion {
     flex-direction: column;
-    gap: 1.2rem;
-    width: 100vw;
+    gap: 2rem;
+    width: 100%;
     align-items: center;
+    padding: 0 1.5rem;
   }
+  
   .aboutus-container {
-    padding-top: 3.5rem;
+    padding-top: 4rem;
     justify-content: flex-start;
+  }
+
+  .aboutus-h-accordion-card {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .aboutus-subtitle::before,
+  .aboutus-subtitle::after {
+    width: 20px;
   }
 }
 
 @media (max-width: 600px) {
-  .aboutus-title { font-size: 2.1rem; }
-  .aboutus-subtitle { font-size: 1.2rem; }
-  .aboutus-container { padding-top: 3.5rem; }
+  .aboutus-title { 
+    font-size: 2.3rem;
+    letter-spacing: 2px;
+    padding: 0 1rem;
+  }
+
+  .aboutus-subtitle { 
+    font-size: 1.8rem;
+    margin: 3rem 0 1.5rem 0;
+  }
+
+  .aboutus-container { 
+    padding-top: 4rem;
+  }
+
+  .aboutus-h-accordion-title {
+    font-size: 1.5rem;
+  }
+
+  .aboutus-h-accordion-content {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .carousel {
+    padding: 0.5rem;
+  }
+
+  .carousel-button {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 24px !important;
+  }
 }
