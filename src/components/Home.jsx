@@ -4,15 +4,16 @@ import Header from "./Header";
 import { useLoader } from "../context/LoaderContext";
 
 export default function Home() {
-  const { setLoading } = useLoader();
+  const { showGlobalLoader, hideGlobalLoader } = useLoader();
+  
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 900);
+    showGlobalLoader("Cargando página principal...");
+    const timer = setTimeout(() => hideGlobalLoader(), 900);
     return () => {
-      setLoading(false);
+      hideGlobalLoader();
       clearTimeout(timer);
     };
-  }, [setLoading]);
+  }, [showGlobalLoader, hideGlobalLoader]);
 
   return (
     <>
