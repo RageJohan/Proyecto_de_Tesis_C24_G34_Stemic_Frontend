@@ -7,6 +7,7 @@ import {
   deleteAlliance
 } from "../services/api";
 import AdminAllianceForm from "./AdminAllianceForm";
+import ConfirmDialog from "./ConfirmDialog";
 import "../styles/AdminAlliancesPanel.css";
 
 function EstadoBadge({ activo }) {
@@ -31,6 +32,16 @@ export default function AdminAlliancesPanel() {
   const [total, setTotal] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [editingAllianceId, setEditingAllianceId] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    details: null,
+    confirmText: '',
+    confirmButtonClass: '',
+    onConfirm: null,
+    icon: null
+  });
 
   const refresh = () => setFiltros(f => ({ ...f }));
 
@@ -44,19 +55,68 @@ export default function AdminAlliancesPanel() {
       .finally(() => setLoading(false));
   }, [filtros]);
 
-  const handleActivar = async (id) => {
-    await activateAlliance(id);
-    refresh();
+  const handleActivar = async (alianza) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Activar Alianza',
+      message: `¿Estás seguro de que deseas activar la alianza "${alianza.nombre}"?`,
+      details: [
+        'La alianza será visible públicamente',
+        'Se podrá acceder a su información desde la página principal',
+        'Los usuarios podrán ver los detalles de la alianza'
+      ],
+      confirmText: 'Activar',
+      confirmButtonClass: 'btn-confirmar',
+      onConfirm: async () => {
+        await activateAlliance(alianza.id);
+        refresh();
+        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+      },
+      icon: '✨'
+    });
   };
-  const handleDesactivar = async (id) => {
-    await deactivateAlliance(id);
-    refresh();
+
+  const handleDesactivar = async (alianza) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Desactivar Alianza',
+      message: `¿Estás seguro de que deseas desactivar la alianza "${alianza.nombre}"?`,
+      details: [
+        'La alianza dejará de ser visible públicamente',
+        'Se mantendrá en el sistema pero no será accesible',
+        'Podrás reactivarla en cualquier momento'
+      ],
+      confirmText: 'Desactivar',
+      confirmButtonClass: 'btn-desactivar',
+      onConfirm: async () => {
+        await deactivateAlliance(alianza.id);
+        refresh();
+        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+      },
+      icon: '⚠️'
+    });
   };
-  const handleEliminar = async (id) => {
-    if (window.confirm("¿Eliminar esta alianza permanentemente?")) {
-      await deleteAlliance(id);
-      refresh();
-    }
+
+  const handleEliminar = async (alianza) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Eliminar Alianza',
+      message: `¿Estás seguro de que deseas eliminar permanentemente la alianza "${alianza.nombre}"?`,
+      details: [
+        'Esta acción no se puede deshacer',
+        'Se perderá toda la información asociada',
+        'El logo y recursos asociados serán eliminados',
+        'Se eliminarán las referencias a esta alianza en el sistema'
+      ],
+      confirmText: 'Eliminar Permanentemente',
+      confirmButtonClass: 'btn-eliminar',
+      onConfirm: async () => {
+        await deleteAlliance(alianza.id);
+        refresh();
+        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+      },
+      icon: '🗑️'
+    });
   };
 
   return (
@@ -117,11 +177,11 @@ export default function AdminAlliancesPanel() {
                         Editar
                       </button>
                       {a.activo ? (
-                        <button onClick={() => handleDesactivar(a.id)} className="btn-desactivar">Desactivar</button>
+                        <button onClick={() => handleDesactivar(a)} className="btn-desactivar">Desactivar</button>
                       ) : (
-                        <button onClick={() => handleActivar(a.id)} className="btn-activar">Activar</button>
+                        <button onClick={() => handleActivar(a)} className="btn-activar">Activar</button>
                       )}
-                      <button onClick={() => handleEliminar(a.id)} className="btn-eliminar">Eliminar</button>
+                      <button onClick={() => handleEliminar(a)} className="btn-eliminar">Eliminar</button>
                     </td>
                   </tr>
                 ))
@@ -159,6 +219,17 @@ export default function AdminAlliancesPanel() {
         )}
       </div>
     </div>
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        details={confirmDialog.details}
+        confirmText={confirmDialog.confirmText}
+        confirmButtonClass={confirmDialog.confirmButtonClass}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+        icon={confirmDialog.icon}
+      />
     </AdminSidebar>
   );
 }
