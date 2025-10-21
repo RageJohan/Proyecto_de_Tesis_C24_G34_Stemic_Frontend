@@ -59,30 +59,30 @@ export default function AdminAlliancesPanel() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <div style={{ minWidth: 220 }}>
-        <AdminSidebar />
-      </div>
-      <div className="admin-alliances-panel" style={{ marginLeft: 220, flex: 1 }}>
-        <h2>Alianzas - Admin</h2>
-        <div className="admin-alliances-filtros">
-          <select value={filtros.activo} onChange={e => setFiltros(f => ({ ...f, activo: e.target.value, page: 1 }))}>
-            <option value="">Todas</option>
-            <option value="true">Activas</option>
-            <option value="false">Inactivas</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={filtros.nombre}
-            onChange={e => setFiltros(f => ({ ...f, nombre: e.target.value, page: 1 }))}
-          />
-          <input
-            type="text"
-            placeholder="Descripción"
-            value={filtros.descripcion}
-            onChange={e => setFiltros(f => ({ ...f, descripcion: e.target.value, page: 1 }))}
-          />
+    <AdminSidebar>
+      <div className="admin-alliances-container">
+        <div className="admin-alliances-header">
+          <h1>Alianzas - Admin</h1>
+        </div>
+        <div className="admin-alliances-panel">
+          <div className="admin-alliances-filtros">
+            <select value={filtros.activo} onChange={e => setFiltros(f => ({ ...f, activo: e.target.value, page: 1 }))}>
+              <option value="">Todas</option>
+              <option value="true">Activas</option>
+              <option value="false">Inactivas</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={filtros.nombre}
+              onChange={e => setFiltros(f => ({ ...f, nombre: e.target.value, page: 1 }))}
+            />
+            <input
+              type="text"
+              placeholder="Descripción"
+              value={filtros.descripcion}
+              onChange={e => setFiltros(f => ({ ...f, descripcion: e.target.value, page: 1 }))}
+            />
         </div>
         <div className="admin-alliances-table-wrap">
           <table className="admin-alliances-table">
@@ -129,9 +129,10 @@ export default function AdminAlliancesPanel() {
           </button>
           <span>Total: {total}</span>
         </div>
-        <div style={{textAlign: "right", marginTop: 16}}>
-          <button className="btn-crear" onClick={() => setShowForm(true)}>Crear nueva alianza</button>
-        </div>
+        <button className="btn-crear" onClick={() => setShowForm(true)}>
+          <i className="fas fa-plus"></i>
+          Crear nueva alianza
+        </button>
         {showForm && (
           <AdminAllianceForm
             onSuccess={() => {
@@ -143,5 +144,6 @@ export default function AdminAlliancesPanel() {
         )}
       </div>
     </div>
+    </AdminSidebar>
   );
 }
