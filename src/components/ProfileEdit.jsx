@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { getProfile, updateProfile } from "../services/api";
 import { getProfileOptions } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import CloudinaryImage from './CloudinaryImage';
 import "../styles/Profile.css";
 
 export default function ProfileEdit() {
@@ -124,7 +125,7 @@ export default function ProfileEdit() {
         </button>
       </div>
       <div className="profile-avatar-wrapper">
-        <img src={avatar} alt="Avatar" className="profile-avatar" />
+        <CloudinaryImage src={avatar} alt="Avatar" className="profile-avatar" />
         <button
           type="button"
           className="profile-avatar-upload-btn"
