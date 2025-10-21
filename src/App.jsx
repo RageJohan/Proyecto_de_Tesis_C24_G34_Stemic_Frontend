@@ -2,6 +2,7 @@ import AppRouter from "./routes/AppRouter";
 import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
 import { LoaderProvider } from "./context/LoaderContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import Loader from "./components/Loader";
 import React from "react";
 import { useLoader } from "./context/LoaderContext";
@@ -14,10 +15,12 @@ function GlobalLoader() {
 function App() {
   return (
     <LoaderProvider>
-      <AuthProvider>
-        <GlobalLoader />
-        <AppRouter />
-      </AuthProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <GlobalLoader />
+          <AppRouter />
+        </AuthProvider>
+      </NotificationProvider>
     </LoaderProvider>
   );
 }
