@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../services/api";
 import "../styles/EventCreateModal.css";
+import AdminSidebar from "./AdminSidebar";
 
 export default function EventCreateView() {
   const [form, setForm] = useState({
@@ -64,8 +65,9 @@ export default function EventCreateView() {
   }
 
   return (
-    <div className="modal-overlay" style={{position:'static',background:'none',minHeight:'100vh'}}>
-      <div className="modal-content" style={{maxWidth:600,margin:'40px auto'}}>
+    <AdminSidebar>
+      <div className="modal-overlay" style={{position:'static',background:'none',padding:0}}>
+        <div className="modal-content" style={{maxWidth:800,margin:'0 auto'}}>
         <h2>Crear nuevo evento</h2>
         <form onSubmit={handleSubmit} className="event-form">
           <label>Título*<input name="titulo" value={form.titulo} onChange={handleChange} required minLength={3} /></label>
@@ -96,6 +98,7 @@ export default function EventCreateView() {
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </AdminSidebar>
   );
 }
