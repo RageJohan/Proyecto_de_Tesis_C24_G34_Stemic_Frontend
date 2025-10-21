@@ -181,6 +181,23 @@
 .admin-alliances-table tr:last-child td {
   border-bottom: none;
 }
+.btn-editar {
+  background: #2196F3;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editar:hover {
+  background: #1976D2;
+  transform: translateY(-1px);
+}
+
 .btn-activar {
   background: #4CAF50;
   color: #fff;

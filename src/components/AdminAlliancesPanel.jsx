@@ -30,6 +30,7 @@ export default function AdminAlliancesPanel() {
   const [filtros, setFiltros] = useState({ activo: "", nombre: "", descripcion: "", page: 1, limit: 10 });
   const [total, setTotal] = useState(0);
   const [showForm, setShowForm] = useState(false);
+  const [editingAllianceId, setEditingAllianceId] = useState(null);
 
   const refresh = () => setFiltros(f => ({ ...f }));
 
@@ -106,6 +107,15 @@ export default function AdminAlliancesPanel() {
                     <td>{a.descripcion}</td>
                     <td><EstadoBadge activo={a.activo} /></td>
                     <td>
+                      <button 
+                        onClick={() => {
+                          setEditingAllianceId(a.id);
+                          setShowForm(true);
+                        }} 
+                        className="btn-editar"
+                      >
+                        Editar
+                      </button>
                       {a.activo ? (
                         <button onClick={() => handleDesactivar(a.id)} className="btn-desactivar">Desactivar</button>
                       ) : (
@@ -135,11 +145,16 @@ export default function AdminAlliancesPanel() {
         </button>
         {showForm && (
           <AdminAllianceForm
+            allianceId={editingAllianceId}
             onSuccess={() => {
               setShowForm(false);
+              setEditingAllianceId(null);
               refresh();
             }}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => {
+              setShowForm(false);
+              setEditingAllianceId(null);
+            }}
           />
         )}
       </div>
