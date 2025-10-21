@@ -1,51 +1,204 @@
 .admin-events-container {
-  max-width: 900px;
-  margin: 40px auto;
-  background: #232347;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
-  padding: 32px;
+  padding: 2rem 3rem;
+  width: 100%;
+  box-sizing: border-box;
 }
-.admin-events-title {
-  font-size: 2rem;
-  margin-bottom: 24px;
+
+@media (max-width: 1024px) {
+  .admin-events-container {
+    padding: 1.5rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-events-container {
+    padding: 1rem;
+  }
+
+  .admin-events-header h1 {
+    font-size: 2rem;
+  }
+
+  .admin-events-panel {
+    padding: 1.5rem;
+  }
+
+  .admin-events-btn.create {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .admin-events-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-events-btn.edit,
+  .admin-events-btn.delete {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-events-container {
+    padding: 0.5rem;
+  }
+
+  .admin-events-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .admin-events-panel {
+    padding: 1rem;
+  }
+
+  .admin-events-table th,
+  .admin-events-table td {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .admin-events-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .admin-events-table td:nth-child(4) {
+    display: none; /* Ocultar columna de descripción en móviles */
+  }
+}
+
+.admin-events-header {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-events-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #fff, #e0e0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.admin-events-panel {
+  background: rgba(24,28,47,0.5);
   color: #fff;
-  text-align: center;
+  padding: 2.5rem;
+  border-radius: 1.2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-sizing: border-box;
 }
 .admin-events-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 16px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(35,38,74,0.5);
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-top: 1.5rem;
 }
+
 .admin-events-table th, .admin-events-table td {
-  padding: 12px 8px;
-  border-bottom: 1px solid #444;
+  padding: 1rem 1.2rem;
   text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   color: #fff;
 }
+
 .admin-events-table th {
-  background: #2d2d5a;
-  color: #ffd700;
+  background: rgba(121,87,242,0.3);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-events-table tr:hover {
+  background: rgba(121,87,242,0.1);
+}
+
+.admin-events-table tr:nth-child(even) {
+  background: rgba(32,35,74,0.3);
+}
+
+.admin-events-table tr:last-child td {
+  border-bottom: none;
 }
 .admin-events-btn {
-  margin-right: 8px;
-  padding: 6px 14px;
+  padding: 0.8rem 1.2rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 0.8rem;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
+.admin-events-panel {
+  padding-bottom: 5rem; /* Espacio para el botón flotante */
+}
+
+.admin-events-btn.create {
+  background: linear-gradient(45deg, #7957F2, #A6249D);
+  color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+}
+
+.admin-events-btn.create:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(121,87,242,0.4);
+}
+
 .admin-events-btn.edit {
-  background: #7957F2;
+  background: rgba(121,87,242,0.2);
   color: #fff;
+  border: 1px solid rgba(121,87,242,0.3);
 }
+
+.admin-events-btn.edit:hover {
+  background: rgba(121,87,242,0.3);
+  transform: translateY(-2px);
+}
+
 .admin-events-btn.delete {
-  background: #d93240;
+  background: rgba(217,50,64,0.2);
   color: #fff;
+  border: 1px solid rgba(217,50,64,0.3);
+}
+
+.admin-events-btn.delete:hover {
+  background: rgba(217,50,64,0.3);
+  transform: translateY(-2px);
 }
 
 .admin-events-actions {
   display: flex;
-  gap: 8px;
+  gap: 0.8rem;
   flex-wrap: wrap;
 }
