@@ -48,28 +48,28 @@ export default function AdminPostulationsPanel() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <div style={{ minWidth: 220 }}>
-        <AdminSidebar />
-      </div>
-      <div className="admin-post-panel" style={{ marginLeft: 220, flex: 1 }}>
-        <h2>Postulaciones</h2>
-        <div className="admin-post-filtros">
-          <select value={filtros.estado} onChange={e => setFiltros(f => ({ ...f, estado: e.target.value, page: 1 }))}>
-            <option value="">Todos los estados</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="aprobada">Aprobada</option>
-            <option value="rechazada">Rechazada</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Carrera/especialidad"
-            value={filtros.carrera}
-            onChange={e => setFiltros(f => ({ ...f, carrera: e.target.value, page: 1 }))}
-          />
+    <AdminSidebar>
+      <div className="admin-post-container">
+        <div className="admin-post-header">
+          <h1>Postulaciones</h1>
         </div>
-        <div className="admin-post-table-wrap">
-          <table className="admin-post-table">
+        <div className="admin-post-panel">
+          <div className="admin-post-filtros">
+            <select value={filtros.estado} onChange={e => setFiltros(f => ({ ...f, estado: e.target.value, page: 1 }))}>
+              <option value="">Todos los estados</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="aprobada">Aprobada</option>
+              <option value="rechazada">Rechazada</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Carrera/especialidad"
+              value={filtros.carrera}
+              onChange={e => setFiltros(f => ({ ...f, carrera: e.target.value, page: 1 }))}
+            />
+          </div>
+          <div className="admin-post-table-wrap">
+            <table className="admin-post-table">
             <thead>
               <tr>
                 <th>Nombre</th>
@@ -112,18 +112,19 @@ export default function AdminPostulationsPanel() {
               )}
             </tbody>
           </table>
-        </div>
-        <div className="admin-post-paginacion">
-          <button disabled={filtros.page === 1} onClick={() => setFiltros(f => ({ ...f, page: f.page - 1 }))}>
-            Anterior
-          </button>
-          <span>Página {filtros.page}</span>
-          <button disabled={postulaciones.length < filtros.limit} onClick={() => setFiltros(f => ({ ...f, page: f.page + 1 }))}>
-            Siguiente
-          </button>
-          <span>Total: {total}</span>
-        </div>
+          </div>
+          <div className="admin-post-paginacion">
+            <button disabled={filtros.page === 1} onClick={() => setFiltros(f => ({ ...f, page: f.page - 1 }))}>
+              Anterior
+            </button>
+            <span>Página {filtros.page}</span>
+            <button disabled={postulaciones.length < filtros.limit} onClick={() => setFiltros(f => ({ ...f, page: f.page + 1 }))}>
+              Siguiente
+            </button>
+            <span>Total: {total}</span>
+          </div>
       </div>
-    </div>
+      </div>
+    </AdminSidebar>
   );
 }
