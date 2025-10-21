@@ -53,6 +53,37 @@ export async function createAlliance(formData) {
   const json = await res.json();
   return json.data || null;
 }
+
+// Actualizar alianza (admin)
+export async function updateAlliance(id, formData) {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas/${id}`, {
+    method: 'PATCH',
+    body: formData,
+  });
+  if (!res.ok) {
+    let errorMessage = 'No se pudo actualizar la alianza';
+    try {
+      const errorData = await res.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch {}
+    throw new Error(errorMessage);
+  }
+  const json = await res.json();
+  return json.data || null;
+}
+
+// Obtener alianza por ID (admin)
+export async function getAllianceById(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/alianzas/${id}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo obtener la alianza');
+  const json = await res.json();
+  return json.data || null;
+}
 // Obtener todas las alianzas (admin)
 export async function getAdminAlliances({ activo = '', nombre = '', descripcion = '', page = 1, limit = 10 }) {
   const params = [];
