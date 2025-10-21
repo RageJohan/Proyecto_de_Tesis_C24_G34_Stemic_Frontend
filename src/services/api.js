@@ -264,12 +264,29 @@ export async function getProfileOptions() {
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export async function apiFetch(endpoint, options = {}) {
+export async function apiFetch(endpoint, options = {}, requiresAuth = false) {
   const url = `${API_URL}${endpoint}`;
-  const res = await fetchWithAuth(url, options);
-  if (!res.ok) {
-    throw new Error(`Error: ${res.status}`);
+  let res;
+  
+  if (requiresAuth) {
+    res = await fetchWithAuth(url, options);
+  } else {
+    res = await fetch(url, options);
   }
+  
+  if (!res.ok) {
+    let errorMessage = `Error: ${res.status}`;
+    try {
+      const errorData = await res.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch {
+      // Si no podemos parsear el error, usamos el mensaje por defecto
+    }
+    throw new Error(errorMessage);
+  }
+  
   return res.json();
 }
 
