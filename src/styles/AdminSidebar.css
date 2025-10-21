@@ -1,62 +1,190 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #030c40;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #030c40;
+  position: relative;
+  overflow-x: hidden;
+}
+
 .admin-sidebar {
-  width: 220px;
+  width: 280px;
+  min-width: 280px;
   height: 100vh;
-  background: linear-gradient(135deg, #030c40 30%, #D93240 100%);
+  background: rgba(3,12,64,0.95);
   color: #fff;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 12px rgba(0,0,0,0.08);
-  position: fixed;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+  position: sticky;
   left: 0;
   top: 0;
   z-index: 100;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.admin-content {
+  flex: 1;
+  min-height: 100vh;
+  background: #030c40;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
 }
 
 .sidebar-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  padding: 2rem 1.5rem 1rem 1.5rem;
-  letter-spacing: 1px;
-  border-bottom: 1px solid #3e4a6b;
+  font-size: 1.8rem;
+  font-weight: 800;
+  padding: 2rem 1.5rem 1.5rem;
+  letter-spacing: 2px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+  background: linear-gradient(45deg, #fff, #e0e0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.8rem;
   padding: 2rem 1.5rem;
 }
 
 .sidebar-nav a {
   color: #fff;
   text-decoration: none;
-  font-size: 1.08rem;
-  padding: 0.7rem 1rem;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
+  font-size: 1.1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
-.sidebar-nav a.active,
+.sidebar-nav a.active {
+  background: rgba(121,87,242,0.2);
+  border-color: rgba(121,87,242,0.4);
+  transform: translateX(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
 .sidebar-nav a:hover {
-  background: #7957f28c;
-  color: #fff;
+  background: rgba(121,87,242,0.15);
+  transform: translateX(5px);
 }
 
 .sidebar-back-btn {
   display: block;
-  width: 100%;
+  width: calc(100% - 3rem);
+  margin: 0 1.5rem;
   text-align: center;
-  background: #fff;
-  color: #2e3a59;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 0.7rem 1rem;
-  margin-top: 2rem;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(47, 58, 89, 0.08);
-  transition: background 0.2s, color 0.2s;
-}
-.sidebar-back-btn:hover {
-  background: #ffffff66;
+  background: rgba(255,255,255,0.1);
   color: #fff;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 1rem;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.sidebar-back-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 1024px) {
+  .admin-content {
+    padding-left: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    min-width: unset;
+    padding: 1rem 0;
+  }
+
+  .admin-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .sidebar-title {
+    font-size: 1.5rem;
+    padding: 1rem;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 1rem;
+    gap: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar-nav a {
+    white-space: nowrap;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+
+  .sidebar-nav a.active {
+    transform: translateX(0) translateY(-3px);
+  }
+
+  .sidebar-nav a:hover {
+    transform: translateX(0) translateY(-2px);
+  }
+
+  .sidebar-back-btn {
+    width: calc(100% - 2rem);
+    margin: 0.5rem 1rem;
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-content {
+    padding: 0.5rem;
+  }
+
+  .sidebar-nav {
+    padding: 0.5rem;
+  }
+
+  .sidebar-nav a {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
 }
