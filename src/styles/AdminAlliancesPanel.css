@@ -101,8 +101,8 @@
   margin: 0 auto;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
   border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-sizing: border-box;
 }
 .admin-alliances-panel h2 {
@@ -125,8 +125,8 @@
   font-size: 1rem;
   background: rgba(35,38,74,0.5);
   color: #fff;
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   transition: all 0.3s ease;
 }
 
