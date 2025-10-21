@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getEventById, updateEvent } from "../services/api";
 import "../styles/EventCreateModal.css";
+import AdminSidebar from "./AdminSidebar";
 
 export default function EventEditView() {
   const { id } = useParams();
@@ -67,8 +68,9 @@ export default function EventEditView() {
   if (loading || !form) return <div className="orgs-loading">Loading event...</div>;
 
   return (
-    <div className="modal-overlay" style={{position:'static',background:'none',minHeight:'100vh'}}>
-      <div className="modal-content" style={{maxWidth:600,margin:'40px auto'}}>
+    <AdminSidebar>
+      <div className="modal-overlay" style={{position:'static',background:'none',padding:0}}>
+        <div className="modal-content" style={{maxWidth:800,margin:'0 auto'}}>
         <h2>Edit event</h2>
         <form onSubmit={handleSubmit} className="event-form">
           <label>Title*<input name="titulo" value={form.titulo} onChange={handleChange} required minLength={3} /></label>
@@ -98,6 +100,7 @@ export default function EventEditView() {
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </AdminSidebar>
   );
 }
