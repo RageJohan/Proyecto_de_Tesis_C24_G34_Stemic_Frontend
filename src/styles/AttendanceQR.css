@@ -1,0 +1,129 @@
+.attendance-qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(3, 12, 64, 0.85); /* Usando el color de fondo base */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Asegurar que esté por encima de otros elementos */
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+  box-sizing: border-box;
+  animation: qrFadeIn 0.3s ease-out;
+}
+
+@keyframes qrFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.attendance-qr-modal-content {
+  background: rgba(35, 38, 74, 0.98); /* Fondo ligeramente más claro */
+  color: #fff;
+  padding: 2rem;
+  border-radius: 1.2rem;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  position: relative;
+  animation: qrSlideIn 0.3s ease-out;
+}
+
+@keyframes qrSlideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.attendance-qr-modal-content h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-acento, #7957F2); /* Color acento para el título */
+}
+
+.qr-event-info {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+
+.qr-event-info p {
+  margin: 0.3rem 0;
+}
+
+.qr-code-container {
+  margin: 1.5rem auto;
+  padding: 1rem;
+  background-color: white; /* Fondo blanco para el QR */
+  border-radius: 1rem;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code-image {
+  display: block;
+  max-width: 280px; /* Tamaño máximo del QR */
+  width: 100%;
+  height: auto;
+  border-radius: 4px; /* Pequeño borde redondeado si la imagen no lo tiene */
+}
+
+.qr-instructions {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1.5rem;
+}
+
+.qr-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.8rem;
+  padding: 0.7rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+.qr-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.qr-close-btn.top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0.3rem 0.7rem;
+  font-size: 1.2rem;
+  margin-top: 0;
+  line-height: 1;
+  background: transparent;
+  border: none;
+}
+
+.qr-close-btn.bottom {
+  min-width: 120px;
+}
+
+@media (max-width: 600px) {
+  .attendance-qr-modal-content {
+    padding: 1.5rem;
+  }
+  .attendance-qr-modal-content h2 {
+    font-size: 1.5rem;
+  }
+  .qr-code-container {
+    padding: 0.8rem;
+  }
+  .qr-code-image {
+    max-width: 240px;
+  }
+}
