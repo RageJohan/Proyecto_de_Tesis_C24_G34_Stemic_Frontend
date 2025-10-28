@@ -453,3 +453,37 @@ export async function getEventOptions() {
   const json = await res.json();
   return json;
 }
+/**
+ * Genera un código QR de asistencia para un evento específico.
+ * Requiere rol de organizador o admin.
+ * @param {string} eventId - El ID del evento para el cual generar el QR.
+ * @returns {Promise<object>} - Una promesa que resuelve con los datos del QR generado, incluyendo la imagen en formato data URL.
+ * @throws {Error} - Lanza un error si la petición falla.
+ */
+export async function generateAttendanceQR(eventId) {
+  if (!eventId) {
+    throw new Error('El ID del evento es requerido para generar el QR.');
+  }
+  const res = await fetchWithAuth(`${API_URL}/api/attendance/generate-qr`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ evento_id: eventId }),
+  });
+
+  if (!res.ok) {
+    let msg = 'No se pudo generar el código QR';
+    try {
+      const err = await res.json();
+      if (err && err.message) msg = err.message;
+    } catch {
+      // Ignorar error de parseo
+    }
+    throw new Error(msg);
+  }
+
+  const json = await res.json();
+  // Asegúrate de devolver el objeto 'data' que contiene la info del QR
+  return json.data || json;
+}
