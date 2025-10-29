@@ -202,3 +202,110 @@
   gap: 0.8rem;
   flex-wrap: wrap;
 }
+
+/* Estilo para los subtítulos (ej. "Resumen General") */
+.panel-subtitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #e0d7ff;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  border-bottom: 1px solid #7957F240;
+  padding-bottom: 0.5rem;
+}
+
+/* Grilla para las tarjetas de KPIs */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Estilo de las tarjetas de KPI (Métricas) */
+.metric-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1.2rem;
+  border-radius: 12px;
+  border-left: 5px solid; /* El color se aplica inline desde el componente */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card-info {
+  text-align: left;
+}
+
+.metric-card-title {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.metric-card-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  /* El color se aplica inline */
+}
+
+.metric-card-icon {
+  font-size: 2rem;
+  opacity: 0.6;
+  /* El color se aplica inline */
+}
+
+/* Fila para los gráficos */
+.dashboard-charts-row {
+  display: grid;
+  /* Dos columnas: la primera más pequeña para el Pie, la segunda más grande para el Bar */
+  grid-template-columns: 1fr 1.5fr; 
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Contenedor individual para cada gráfico */
+.chart-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-container h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #e0d7ff;
+  font-weight: 600;
+}
+
+/* Estilos para el Tooltip (leyenda emergente) de Recharts para tema oscuro */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #2a2a3e !important; /* Fondo oscuro */
+  border: 1px solid #7957F280 !important; /* Borde morado */
+  border-radius: 8px;
+}
+.recharts-tooltip-label {
+  color: #e0d7ff !important; /* Texto de etiqueta */
+}
+
+/* Responsive para los gráficos */
+@media (max-width: 900px) {
+  .dashboard-charts-row {
+    grid-template-columns: 1fr; /* Apila los gráficos en pantallas pequeñas */
+  }
+  .chart-container {
+    padding: 1rem;
+  }
+}
