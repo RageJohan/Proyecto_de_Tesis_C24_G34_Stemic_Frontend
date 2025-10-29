@@ -32,7 +32,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
     setNavOpen(false);
     if (view === "home") navigate("/");
     else if (view === "eventos") navigate("/events");
-  else if (view === "organizaciones") navigate("/organizations");
+    else if (view === "organizaciones") navigate("/organizations");
     else if (view === "join-us") navigate("/join-us");
     else if (view === "sobre") navigate("/about-us");
   };
@@ -127,6 +127,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
             </button>
             {profileOpen && (
               <div className="header-profile-dropdown">
+                {/* Enlace para Admin */}
                 {user?.rol === "admin" && (
                   <button
                     className="header-profile-item"
@@ -138,9 +139,28 @@ export default function Header({ onLogout, onProfileUpdate }) {
                     Admin Panel
                   </button>
                 )}
+
+                {/* --- INICIO DE MODIFICACIÓN --- */}
+                {/* Enlace para Organizador */}
+                {user?.rol === "organizador" && (
+                  <button
+                    className="header-profile-item"
+                    onClick={() => {
+                      setProfileOpen(false);
+                      navigate("/organizer-dashboard"); // Ruta al nuevo dashboard
+                    }}
+                  >
+                    Panel de Organizador
+                  </button>
+                )}
+                {/* --- FIN DE MODIFICACIÓN --- */}
+
                 <button
                   className="header-profile-item"
-                  onClick={() => navigate("/participations")}
+                  onClick={() => {
+                      setProfileOpen(false); // Cierra el dropdown
+                      navigate("/participations");
+                  }}
                 >
                   Participaciones
                 </button>
@@ -156,6 +176,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
                 <button
                   className="header-profile-item"
                   onClick={async () => {
+                    setProfileOpen(false); // Cierra el dropdown
                     if (onLogout) {
                       await onLogout();
                     } else {
