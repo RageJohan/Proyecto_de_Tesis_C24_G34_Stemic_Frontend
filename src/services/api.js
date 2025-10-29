@@ -487,3 +487,87 @@ export async function generateAttendanceQR(eventId) {
   // Asegúrate de devolver el objeto 'data' que contiene la info del QR
   return json.data || json;
 }
+/**
+ * Obtiene métricas generales del sistema. Accesible para organizadores y admins.
+ * GET /api/dashboard/system/metrics
+ * @returns {Promise<object>} - Métricas del sistema.
+ */
+export async function getSystemMetrics() {
+  const res = await fetchWithAuth(`${API_URL}/api/dashboard/system/metrics`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener las métricas del sistema');
+  const json = await res.json();
+  return json.data || {}; // El backend devuelve { success: true, data: { ... } }
+}
+
+/**
+ * Obtiene los eventos creados por el usuario autenticado (organizador).
+ * GET /api/events/user/my-events
+ * @returns {Promise<Array<object>>} - Lista de eventos del organizador.
+ */
+export async function getMyEventsForOrganizer() {
+  const res = await fetchWithAuth(`${API_URL}/api/events/user/my-events`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  // Si no hay eventos, el backend puede devolver 204 No Content
+  if (res.status === 204) return [];
+  if (!res.ok) throw new Error('No se pudieron obtener tus eventos');
+  const json = await res.json();
+  // El backend devuelve { success: true, data: events, meta: { ... } }
+  return json.data || [];
+}
+
+/**
+ * Obtiene datos de participación de eventos para reportes (organizador/admin).
+ * GET /api/reports/participation
+ * @param {object} filters - Filtros opcionales (ej: { evento_id: 'uuid' }).
+ * @returns {Promise<object>} - Datos y metadatos.
+ */
+export async function getParticipationData(filters = {}) {
+  const params = new URLSearchParams(filters).toString();
+  const res = await fetchWithAuth(`${API_URL}/api/reports/participation?${params}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener los datos de participación');
+  const json = await res.json();
+  // Devuelve { success: true, data: [...], meta: {...} }
+  return json;
+}
+
+/**
+ * Obtiene datos de satisfacción de eventos para reportes (organizador/admin).
+ * GET /api/reports/satisfaction
+ * @param {object} filters - Filtros opcionales (ej: { evento_id: 'uuid' }).
+ * @returns {Promise<object>} - Datos y metadatos.
+ */
+export async function getSatisfactionData(filters = {}) {
+  const params = new URLSearchParams(filters).toString();
+  const res = await fetchWithAuth(`${API_URL}/api/reports/satisfaction?${params}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener los datos de satisfacción');
+  const json = await res.json();
+  // Devuelve { success: true, data: [...], meta: {...} }
+  return json;
+}
+
+/**
+ * Obtiene historial de reportes generados por el usuario (organizador/admin).
+ * GET /api/reports/history
+ * @returns {Promise<Array<object>>} - Lista de registros del historial.
+ */
+export async function getReportHistory() {
+  const res = await fetchWithAuth(`${API_URL}/api/reports/history`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudo obtener el historial de reportes');
+  const json = await res.json();
+  // Devuelve { success: true, data: [...], meta: {...} }
+  return json.data || [];
+}
