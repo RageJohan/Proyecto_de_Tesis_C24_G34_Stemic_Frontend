@@ -571,3 +571,40 @@ export async function getReportHistory() {
   // Devuelve { success: true, data: [...], meta: {...} }
   return json.data || [];
 }
+
+// ... (deja todo el código existente de api.js)
+
+/**
+ * Verifica la asistencia de un usuario enviando el token escaneado de un QR.
+ * El usuario debe estar autenticado.
+ * El backend (controlador verifyAttendance) valida el token, la inscripción
+ * y que no se haya registrado asistencia previa.
+ *
+ * @param {string} token - El contenido (string) escaneado del QR.
+ * @returns {Promise<object>} - La respuesta del servidor (ej. { message: 'Asistencia verificada' }).
+ * @throws {Error} Lanza un error si la verificación falla (ej. "QR inválido", "Usuario no inscrito").
+ */
+export async function verifyAttendance(token) {
+  
+  const res = await fetchWithAuth(`${API_URL}/api/attendance/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ qr_data: token }), // El backend espera el campo "qr_data"
+  });
+
+  // Si la respuesta no es OK (ej. 400, 401, 404, 500)
+  if (!res.ok) {
+    let errorMsg = 'No se pudo verificar la asistencia';
+    try {
+      // Intentamos leer el mensaje de error específico del backend
+      const errData = await res.json();
+      errorMsg = errData.message || errorMsg;
+    } catch {
+      // Si el cuerpo no es JSON, mantenemos el mensaje genérico
+    }
+    throw new Error(errorMsg);
+  }
+  
+  // Si la respuesta es OK (ej. 200, 201)
+  return await res.json();
+}
