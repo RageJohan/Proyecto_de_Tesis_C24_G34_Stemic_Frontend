@@ -1,11 +1,28 @@
+/**
+ * @file src/components/EventDetail.jsx
+ * @description Vista de detalle para un evento, mostrando información
+ * y permitiendo la inscripción, cancelación y registro de asistencia por QR.
+ * @author Tu Nombre
+ * @requires react
+ * @requires react-router-dom
+ * @requires ../services/api
+ * @requires ../context/AuthContext
+ * @requires ./Header
+ * @requires ./AttendanceScanner
+ * @requires ../styles/EventDetail.css
+ */
+
 "use client"
 
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import Header from "./Header"
+// Importamos la nueva función de api
 import { apiFetch, inscribirseEvento, cancelarInscripcionEvento, estadoInscripcionEvento } from "../services/api"
 import "../styles/EventDetail.css"
 import { useAuth } from "../context/AuthContext"
+// Importamos el nuevo componente de escáner
+import AttendanceScanner from "./AttendanceScanner" 
 
 export default function EventDetail() {
   const { isAuthenticated } = useAuth()
@@ -17,6 +34,13 @@ export default function EventDetail() {
   const [inscribiendo, setInscribiendo] = useState(false)
   const [inscripcionMsg, setInscripcionMsg] = useState("")
   const [inscrito, setInscrito] = useState(false)
+
+  // --- NUEVOS ESTADOS ---
+  /** Estado para mostrar/ocultar el modal del escáner QR */
+  const [showScanner, setShowScanner] = useState(false);
+  /** Estado para saber si el usuario ya marcó asistencia */
+  const [asistenciaRegistrada, setAsistenciaRegistrada] = useState(false);
+  // ---------------------
 
   const handleInscribirse = async () => {
     setInscribiendo(true)
@@ -51,6 +75,8 @@ export default function EventDetail() {
     Promise.all([
       apiFetch(`/api/events/public/${id}`),
       isAuthenticated ? estadoInscripcionEvento(id) : Promise.resolve(false),
+      // Podríamos añadir una llamada aquí para verificar si ya tiene asistencia,
+      // pero por ahora lo manejaremos con un estado simple.
     ])
       .then(([eventData, isInscribed]) => {
         setEvent(eventData.data || eventData.event || eventData)
@@ -100,6 +126,21 @@ export default function EventDetail() {
   return (
     <>
       <Header />
+
+      {/* --- RENDERIZADO CONDICIONAL DEL MODAL --- */}
+      {showScanner && (
+        <AttendanceScanner 
+          onClose={() => setShowScanner(false)}
+          onSuccess={(data) => {
+            // Callback al verificar asistencia con éxito
+            setAsistenciaRegistrada(true);
+            setInscripcionMsg(data.message || "¡Asistencia registrada con éxito!");
+            setShowScanner(false); // Cierra el modal
+          }}
+        />
+      )}
+      {/* ------------------------------------------ */}
+
       <div className="event-detail-view">
         <div className="event-detail-main-box">
           <div className="event-detail-img-box">
@@ -179,6 +220,7 @@ export default function EventDetail() {
           </div>
         </div>
 
+        {/* --- GRUPO DE BOTONES MODIFICADO --- */}
         <div className="button-group">
           {!requierePostulacion &&
             (isAuthenticated ? (
@@ -204,16 +246,40 @@ export default function EventDetail() {
                 Inicia sesión para inscribirte
               </button>
             ))}
+
+          {/* Botón de Escanear QR:
+              - Solo aparece si estás autenticado.
+              - Llama a setShowScanner(true) al hacer clic.
+              - Se deshabilita y cambia de color/texto si la asistencia ya fue registrada.
+          */}
+          {isAuthenticated && (
+            <button
+              className="event-detail-back btn-scan-qr" // Nueva clase para estilos
+              onClick={() => setShowScanner(true)}
+              disabled={asistenciaRegistrada}
+            >
+              {asistenciaRegistrada ? "Asistencia Registrada" : "Escanear QR Asistencia"}
+            </button>
+          )}
+          
           <button className="event-detail-back" onClick={() => navigate(-1)}>
             Volver
           </button>
         </div>
+        {/* ------------------------------------- */}
 
+        {/* --- MENSAJE DE ESTADO MODIFICADO --- */}
         {inscripcionMsg && (
-          <div className={`inscripcion-msg ${inscripcionMsg.includes("exitosa") ? "success" : "error"}`}>
+          <div className={`inscripcion-msg ${
+            // Acepta "exitosa" O "registrada" como éxito
+            inscripcionMsg.includes("exitosa") || inscripcionMsg.includes("registrada")
+              ? "success" 
+              : "error"
+          }`}>
             {inscripcionMsg}
           </div>
         )}
+        {/* ----------------------------------- */}
       </div>
     </>
   )

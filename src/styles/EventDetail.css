@@ -355,3 +355,18 @@
     font-size: 1.2em;
   }
 }
+
+.btn-scan-qr {
+  background: linear-gradient(135deg, #00796b 0%, #00897b 100%);
+}
+
+.btn-scan-qr:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00897b 0%, #009688 100%);
+}
+
+.btn-scan-qr:disabled {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  opacity: 0.8; 
+  cursor: default;
+}
