@@ -1,187 +1,328 @@
-/**
- * @file src/components/OrganizerDashboard.jsx
- * @description Panel principal para el rol de Organizador.
- * Muestra métricas clave, gráficos de participación y actividad reciente.
- * @requires react
- * @requires recharts
- * @requires ./OrganizerSidebar
- * @requires ../context/AuthContext
- * @requires ../styles/OrganizerDashboard.css
- */
-
-import React from 'react';
-import OrganizerSidebar from './OrganizerSidebar';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import '../styles/OrganizerDashboard.css'; // Importamos los nuevos estilos
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+// import { useLoader } from '../context/LoaderContext'; // <-- Ya no lo necesitamos
+import { useNotification } from '../context/NotificationContext';
+import { getSystemMetrics } from '../services/api';
+import OrganizerSidebar from './OrganizerSidebar';
 
-// --- Datos de ejemplo (reemplazar con llamadas a la API) ---
+// --- IMPORTS PARA CHART.JS ---
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
 
-// Datos para el gráfico de barras (Participación por Evento)
-const participationData = [
-  { name: 'Evento A', participantes: 45, maximo: 100 },
-  { name: 'Evento B', participantes: 89, maximo: 100 },
-  { name: 'Evento C', participantes: 67, maximo: 80 },
-  { name: 'Evento D', participantes: 120, maximo: 120 },
-  { name: 'Evento E', participantes: 34, maximo: 50 },
-];
+// --- IMPORTS PARA REACT-ICONS ---
+import { FaCalendarAlt, FaCalendarCheck, FaClock, FaUsers, FaUserCheck, FaChartBar, FaStar } from 'react-icons/fa';
 
-// Datos para el gráfico de torta (Categorías de Eventos)
-const categoryData = [
-  { name: 'Talleres', value: 4 },
-  { name: 'Conferencias', value: 3 },
-  { name: 'Webinars', value: 5 },
-  { name: 'Hackathons', value: 1 },
-];
-const COLORS = ['#7957F2', '#A6249D', '#BF2A52', '#D93240'];
+// --- Estilos ---
+import "../styles/AdminEventsPanel.css"; 
+import "../styles/OrganizerDashboard.css"; 
 
-// Datos para la tabla de actividad reciente
-const recentActivity = [
-  { id: 1, type: 'Nuevo Evento', description: 'Se creó "Taller de IA".', time: 'hace 2h' },
-  { id: 2, type: 'Inscripción', description: 'Usuario X se unió a "Taller de IA".', time: 'hace 3h' },
-  { id: 3, type: 'Reporte', description: 'Se generó reporte de "Evento B".', time: 'hace 1d' },
-  { id: 4, type: 'Inscripción', description: 'Usuario Y se unió a "Taller de IA".', time: 'hace 2d' },
-];
-
-// --------------------------------------------------------
+// Registrar Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 /**
- * Componente StatCard
- * Tarjeta individual para mostrar una métrica clave.
- * @param {object} props
- * @param {string} props.title - Título de la métrica (ej. "Total Eventos")
- * @param {string} props.value - El valor de la métrica (ej. "12")
- * @param {string} [props.subtitle] - (Opcional) Contexto de la métrica (ej. "+2 este mes")
+ * Componente de Tarjeta de Métrica (KPI)
  */
-const StatCard = ({ title, value, subtitle }) => (
-  <div className="stat-card">
-    <div className="stat-card-title">{title}</div>
-    <div className="stat-card-value">{value}</div>
-    {subtitle && <div className="stat-card-subtitle">{subtitle}</div>}
+const StatsCard = ({ title, value, icon, color }) => (
+  <div className="metric-card" style={{ borderLeftColor: color }}>
+    <div className="metric-card-info">
+      <div className="metric-card-title">{title}</div>
+      <div className="metric-card-value" style={{ color: color }}>{value}</div>
+    </div>
+    <div className="metric-card-icon" style={{ color: color }}>
+      {icon}
+    </div>
   </div>
 );
 
 /**
- * Componente OrganizerDashboard
- * Vista principal del panel de organizador.
+ * Componente Principal del Dashboard
  */
 export default function OrganizerDashboard() {
-  const { user } = useAuth(); // Obtenemos el usuario para el saludo
+  const { user } = useAuth();
+  // const { showLoader, hideLoader } = useLoader(); // <-- Eliminado
+  const { showNotification } = useNotification();
+  const [metrics, setMetrics] = useState(null);
+  const [loading, setLoading] = useState(true); // <-- Este es nuestro único control de carga
 
-  // TODO: Reemplazar 'user.nombre' si el nombre está en 'user.profile.nombre'
-  const userName = user?.nombre || 'Organizador';
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      // No usamos showLoader()
+      setLoading(true); // <-- Usamos el estado local
+      try {
+        const data = await getSystemMetrics();
+        setMetrics(data || {}); 
+      } catch (error) {
+        console.error('Error fetching dashboard metrics:', error);
+        showNotification(error.message || 'No se pudieron cargar las métricas', 'error');
+        setMetrics(null); 
+      } finally {
+        // No usamos hideLoader()
+        setLoading(false); // <-- Usamos el estado local
+      }
+    };
+    
+    fetchMetrics();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // <-- ¡LA CLAVE! Array vacío para que se ejecute 1 SOLA VEZ.
+
+  // Funciones de formato
+  const formatNumber = (num) => (num || 0).toLocaleString('es-ES');
+  const formatPercentage = (num) => `${(Number(num) || 0).toFixed(2)}%`;
+
+  // --- Lógica de Renderizado ---
+
+  // 1. Estado de Carga (ahora funciona correctamente)
+  if (loading) {
+    return (
+      <OrganizerSidebar>
+        <div className="admin-events-container">
+          <div className="admin-events-header">
+            <h1>Dashboard de Organizador</h1>
+          </div>
+          <div className="dashboard-loading" style={{ padding: '2rem', textAlign: 'center' }}>
+            Cargando métricas...
+          </div>
+        </div>
+      </OrganizerSidebar>
+    );
+  }
+
+  // 2. Estado de Error
+  if (metrics === null) {
+    return (
+      <OrganizerSidebar>
+        <div className="admin-events-container">
+          <div className="admin-events-header">
+            <h1>Dashboard de Organizador</h1>
+          </div>
+          <div className="form-error" style={{ margin: '2rem' }}>
+            No se pudieron cargar las métricas. Revisa las notificaciones o intente más tarde.
+          </div>
+        </div>
+      </OrganizerSidebar>
+    );
+  }
+  
+  // 3. Estado de Éxito
+  const { 
+    overview = { total_eventos: 0, eventos_realizados: 0, eventos_programados: 0, total_inscripciones: 0, total_asistencias: 0, porcentaje_asistencia: 0 }, 
+    satisfaccion_general = null, 
+    eventos_populares = [],
+    modalidad_distribution = { virtual: 0, presencial: 0, hibrido: 0 }
+  } = metrics;
 
   return (
-    <OrganizerSidebar>
-      <div className="dashboard-container">
+    <OrganizerSidebar> 
+      <div className="admin-events-container"> 
         
-        {/* --- Encabezado --- */}
-        <header className="dashboard-header">
-          <h1>¡Hola de nuevo, {userName}!</h1>
-          <p>Aquí tienes un resumen de la actividad de tus eventos.</p>
-        </header>
-
-        {/* --- Grid de Tarjetas de Estadísticas --- */}
-        <section className="stat-cards-grid">
-          {/* TODO: Reemplazar 'value' con datos reales de la API (endpoints de dashboard) */}
-          <StatCard title="Eventos Creados" value="12" subtitle="2 activos" />
-          <StatCard title="Participantes Totales" value="1,284" subtitle="56 inscritos hoy" />
-          <StatCard title="Próximos Eventos" value="3" subtitle="En los siguientes 30 días" />
-          <StatCard title="Tasa de Asistencia" value="82%" subtitle="Promedio de todos los eventos" />
-        </section>
-
-        {/* --- Grid de Gráficos --- */}
-        <section className="charts-grid">
+        <div className="admin-events-header">
+          <h1>Dashboard de Organizador</h1>
+          <h3 style={{ color: "#e0d7ff" }}>
+            Bienvenido, {user?.nombre || user?.email}
+          </h3>
+        </div>
+        
+        <div className="admin-events-panel" style={{ padding: "1.5rem" }}>
           
-          {/* Gráfico Principal (Barras) */}
-          <div className="chart-wrapper">
-            <h3>Participación por Evento (Últimos 5)</h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={participationData} margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-                <XAxis dataKey="name" stroke="rgba(255, 255, 255, 0.7)" />
-                <YAxis stroke="rgba(255, 255, 255, 0.7)" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(30, 30, 50, 0.9)',
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '0.5rem'
-                  }}
-                  cursor={{ fill: 'rgba(121, 87, 242, 0.2)' }}
-                />
-                <Legend />
-                <Bar dataKey="participantes" fill="#7957F2" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <h2 className="panel-subtitle">Resumen General</h2>
+          <div className="metrics-grid">
+            <StatsCard
+              title="Eventos Registrados"
+              value={formatNumber(overview.total_eventos)}
+              icon={<FaCalendarAlt />}
+              color="#7957F2"
+            />
+            <StatsCard
+              title="Eventos Pasados"
+              value={formatNumber(overview.eventos_realizados)}
+              icon={<FaCalendarCheck />}
+              color="#BF2A52"
+            />
+            <StatsCard
+              title="Eventos Próximos"
+              value={formatNumber(overview.eventos_programados)}
+              icon={<FaClock />}
+              color="#2196F3"
+            />
+            <StatsCard
+              title="Total de Inscripciones"
+              value={formatNumber(overview.total_inscripciones)}
+              icon={<FaUsers />}
+              color="#4CAF50"
+            />
+            <StatsCard
+              title="Asistencias Verificadas"
+              value={formatNumber(overview.total_asistencias)}
+              icon={<FaUserCheck />}
+              color="#FFC107"
+            />
+            <StatsCard
+              title="Tasa de Asistencia"
+              value={formatPercentage(overview.porcentaje_asistencia)}
+              icon={<FaChartBar />}
+              color="#A6249D"
+            />
+            <StatsCard
+              title="Satisfacción General"
+              value={`${(satisfaccion_general?.promedio_general || 0).toFixed(2)} / 5`}
+              icon={<FaStar />}
+              color="#00BCD4"
+            />
           </div>
 
-          {/* Gráfico Secundario (Torta) */}
-          <div className="chart-wrapper">
-            <h3>Tipos de Eventos</h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(30, 30, 50, 0.9)',
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '0.5rem'
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* --- Fila de Gráficos (con chart.js) --- */}
+          <div className="dashboard-charts-row">
+            
+            <div className="chart-container">
+              <h3>Distribución por Modalidad</h3>
+              <GeneralModalityChart stats={modalidad_distribution} />
+            </div>
+            
+            <div className="chart-container">
+              <h3>Inscripciones vs. Asistencias</h3>
+              <GeneralAttendanceChart stats={overview} />
+            </div>
+          
           </div>
-        </section>
-
-        {/* --- Sección de Actividad Reciente --- */}
-        <section className="recent-activity-wrapper">
-          <h3>Actividad Reciente</h3>
-          <table className="recent-activity-table">
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Descripción</th>
-                <th>Tiempo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* TODO: Reemplazar con datos reales de la API */}
-              {recentActivity.map((activity) => (
-                <tr key={activity.id}>
-                  <td>{activity.type}</td>
-                  <td>{activity.description}</td>
-                  <td>{activity.time}</td>
+          
+          {/* --- Tabla de Eventos Populares --- */}
+          <div className="table-container" style={{ marginTop: '2rem' }}>
+            <h2 className="panel-subtitle">Eventos Populares</h2>
+            <table className="admin-events-table">
+              <thead>
+                <tr>
+                  <th>Evento</th>
+                  <th>Fecha</th>
+                  <th>Modalidad</th>
+                  <th>Inscritos</th>
+                  <th>Asistentes</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
+              </thead>
+              <tbody>
+                {eventos_populares.length > 0 ? (
+                  eventos_populares.map(evento => (
+                    <tr key={evento.id}>
+                      <td>{evento.titulo}</td>
+                      <td>{new Date(evento.fecha_hora).toLocaleString('es-PE')}</td>
+                      <td className="capitalize">{evento.modalidad}</td>
+                      <td>{evento.total_inscripciones}</td>
+                      <td>{evento.total_asistencias}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No hay eventos para mostrar.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </OrganizerSidebar>
   );
 }
+
+/**
+ * Gráfico de Barras (chart.js) para Inscripciones vs Asistencia
+ */
+const GeneralAttendanceChart = ({ stats }) => {
+  const data = {
+    labels: ['Participación'], 
+    datasets: [
+      {
+        label: 'Inscripciones',
+        data: [stats?.total_inscripciones || 0],
+        backgroundColor: '#4CAF50',
+        borderRadius: 4,
+      },
+      {
+        label: 'Asistencias',
+        data: [stats?.total_asistencias || 0],
+        backgroundColor: '#FFC107',
+        borderRadius: 4,
+      },
+    ],
+  };
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y', 
+    scales: {
+      x: { 
+        beginAtZero: true, 
+        ticks: { color: '#ccc' },
+        grid: { color: '#ffffff20' }
+      },
+      y: { 
+        ticks: { color: '#ccc' },
+        grid: { display: false }
+      }
+    },
+    plugins: {
+      legend: { 
+        position: 'bottom', 
+        labels: { color: '#ccc' }
+      },
+    },
+  };
+  return (
+    <div className="chart-wrapper" style={{ height: '300px' }}>
+      <Bar data={data} options={options} />
+    </div>
+  );
+};
+
+/**
+ * Gráfico de Pie (chart.js) para Modalidad
+ */
+const GeneralModalityChart = ({ stats }) => {
+  const chartData = [
+    stats?.virtual || 0,
+    stats?.presencial || 0,
+    stats?.hibrido || 0
+  ];
+  const total = chartData.reduce((a, b) => a + b, 0);
+
+  const data = {
+    labels: ['Virtual', 'Presencial', 'Híbrido'],
+    datasets: [{
+      data: chartData,
+      backgroundColor: ['#7957F2', '#2196F3', '#BF2A52'],
+      borderColor: '#2a2a3e', 
+      borderWidth: 2,
+    }],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { 
+        position: 'bottom', 
+        labels: { color: '#ccc' } 
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.label || '';
+            if (label) label += ': ';
+            const value = context.raw;
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
+            return `${label} ${value} (${percentage}%)`;
+          }
+        }
+      }
+    },
+  };
+
+  return (
+    <div className="chart-wrapper" style={{ height: '300px' }}>
+      {total > 0 ? (
+        <Pie data={data} options={options} />
+      ) : (
+        <p style={{ textAlign: 'center', color: '#ccc', paddingTop: '1rem' }}>No hay datos de modalidad para mostrar.</p>
+      )}
+    </div>
+  );
+};
