@@ -181,6 +181,30 @@ export async function getEvents() {
   if (Array.isArray(json)) return json;
   return json.data || [];
 }
+
+/**
+ * Obtiene los eventos recomendados para el usuario autenticado.
+ * Llama al endpoint GET /api/recommendations/events
+ * @returns {Promise<object>} - Una promesa que resuelve con el objeto de respuesta 
+ * (ej. { events: [...], total: N, recommendation_type: '...' }).
+ * @throws {Error} - Lanza un error si la petición falla (ej. "Sesión expirada").
+ */
+export async function getRecommendedEvents() {
+  const res = await fetchWithAuth(`${API_URL}/api/recommendations/events`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  // El backend devuelve { success: true, data: { events: [], total: 0, ... } }
+  const json = await res.json();
+  
+  if (!res.ok) {
+    throw new Error(json.message || 'No se pudieron obtener las recomendaciones');
+  }
+  
+  // Devolvemos el objeto 'data' que contiene los eventos y el total
+  return json.data || { events: [], total: 0, recommendation_type: 'unknown' };
+}
 // Obtener todas las alianzas
 export async function getAlliances() {
   const res = await fetchWithAuth(`${API_URL}/api/alianzas`, {
