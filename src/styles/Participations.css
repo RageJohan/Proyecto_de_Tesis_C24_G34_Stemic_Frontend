@@ -64,3 +64,26 @@
     font-size: 0.95rem;
   }
 }
+
+.participations-table .btn-evaluate {
+  background-color: var(--color-principal);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.participations-table .btn-evaluate:hover {
+  background-color: var(--color-secundario);
+}
+
+.participations-table .evaluate-na {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
