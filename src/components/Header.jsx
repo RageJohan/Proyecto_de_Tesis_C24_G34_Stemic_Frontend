@@ -71,7 +71,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
                 className="header-link"
                 onClick={() => handleNav("organizaciones")}
               >
-                Organizaciones
+                Alianzas {/* <--- CAMBIO AQUÍ */}
               </button>
               <button
                 className="header-link"
@@ -102,7 +102,7 @@ export default function Header({ onLogout, onProfileUpdate }) {
               className="header-link"
               onClick={() => handleNav("organizaciones")}
             >
-              Organizaciones
+              Alianzas {/* <--- CAMBIO AQUÍ */}
             </button>
             <button
               className="header-link"
