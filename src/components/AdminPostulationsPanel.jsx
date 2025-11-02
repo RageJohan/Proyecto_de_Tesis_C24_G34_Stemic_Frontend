@@ -39,12 +39,25 @@ export default function AdminPostulationsPanel() {
   }, [filtros]);
 
   const handleAprobar = async (id) => {
-    await approvePostulation(id);
-    setFiltros({ ...filtros }); // Refresca
+    try {
+      const updatedPostulation = await approvePostulation(id);
+      setPostulaciones((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, estado: 'aprobada' } : p))
+      );
+    } catch (error) {
+      console.error('Error al aprobar la postulación:', error);
+    }
   };
+
   const handleRechazar = async (id) => {
-    await rejectPostulation(id);
-    setFiltros({ ...filtros });
+    try {
+      const updatedPostulation = await rejectPostulation(id);
+      setPostulaciones((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, estado: 'rechazada' } : p))
+      );
+    } catch (error) {
+      console.error('Error al rechazar la postulación:', error);
+    }
   };
 
   return (
@@ -100,11 +113,13 @@ export default function AdminPostulationsPanel() {
                           : ''
                     }</td>
                     <td>
-                      {p.estado === "pendiente" && (
+                      {p.estado === "pendiente" ? (
                         <>
                           <button onClick={() => handleAprobar(p.id)} className="btn-aprobar">Aprobar</button>
                           <button onClick={() => handleRechazar(p.id)} className="btn-rechazar">Rechazar</button>
                         </>
+                      ) : (
+                        <button onClick={() => alert('Acción no disponible')} className="btn-disabled" disabled>Acción no disponible</button>
                       )}
                     </td>
                   </tr>
