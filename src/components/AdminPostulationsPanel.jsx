@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { getAdminPostulations, approvePostulation, rejectPostulation } from "../services/api";
+import ReactModal from "react-modal";
 import "../styles/AdminPostulationsPanel.css";
+import "../styles/MotivationModal.css";
+
+// Configurar el elemento principal de la aplicación para ReactModal
+ReactModal.setAppElement("#root");
 
 function EstadoBadge({ estado }) {
   const color =
@@ -27,6 +32,7 @@ export default function AdminPostulationsPanel() {
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({ estado: "", carrera: "", page: 1, limit: 10 });
   const [total, setTotal] = useState(0);
+  const [selectedMotivation, setSelectedMotivation] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -58,6 +64,14 @@ export default function AdminPostulationsPanel() {
     } catch (error) {
       console.error('Error al rechazar la postulación:', error);
     }
+  };
+
+  const openMotivationModal = (motivation) => {
+    setSelectedMotivation(motivation);
+  };
+
+  const closeMotivationModal = () => {
+    setSelectedMotivation(null);
   };
 
   return (
@@ -117,6 +131,7 @@ export default function AdminPostulationsPanel() {
                         <>
                           <button onClick={() => handleAprobar(p.id)} className="btn-aprobar">Aprobar</button>
                           <button onClick={() => handleRechazar(p.id)} className="btn-rechazar">Rechazar</button>
+                          <button onClick={() => openMotivationModal(p.motivacion)} className="btn-motivation">Ver Motivación</button>
                         </>
                       ) : (
                         <button onClick={() => alert('Acción no disponible')} className="btn-disabled" disabled>Acción no disponible</button>
@@ -140,6 +155,17 @@ export default function AdminPostulationsPanel() {
           </div>
       </div>
       </div>
+      <ReactModal
+        isOpen={!!selectedMotivation}
+        onRequestClose={closeMotivationModal}
+        contentLabel="Motivación del Postulante"
+        className="motivation-modal"
+        overlayClassName="motivation-overlay"
+      >
+        <h2>Motivación del Postulante</h2>
+        <p>{selectedMotivation}</p>
+        <button onClick={closeMotivationModal} className="btn-close">Cerrar</button>
+      </ReactModal>
     </AdminSidebar>
   );
 }
