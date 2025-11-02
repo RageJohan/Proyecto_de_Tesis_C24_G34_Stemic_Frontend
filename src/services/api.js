@@ -596,8 +596,21 @@ export async function getReportHistory() {
   return json.data || [];
 }
 
-// ... (deja todo el código existente de api.js)
-
+// Eliminar evento
+export async function deleteEvent(id) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    let msg = 'No se pudo eliminar el evento';
+    try {
+      const err = await res.json();
+      if (err && err.message) msg = err.message;
+    } catch {}
+    throw new Error(msg);
+  }
+  return await res.json();
+}
 /**
  * Verifica la asistencia de un usuario enviando el token escaneado de un QR.
  * El usuario debe estar autenticado.
@@ -675,5 +688,22 @@ export async function submitEvaluation(evaluationData) {
   }
 
   return json;
+}
+
+// Descargar archivo de reporte
+export async function getReportFile({ reportType, format, filters }) {
+  const params = new URLSearchParams(filters).toString();
+  const url = `${API_URL}/api/reports/${reportType}/${format}?${params}`;
+
+  const res = await fetchWithAuth(url, {
+    method: 'GET',
+  });
+
+  if (!res.ok) {
+    throw new Error('Error al descargar el archivo');
+  }
+
+  const blob = await res.blob();
+  return blob;
 }
 
