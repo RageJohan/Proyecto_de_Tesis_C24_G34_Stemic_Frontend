@@ -109,7 +109,7 @@ export default function AppRouter() {
         element={<ProtectedRoute element={<Participations />} requiredRoles={['usuario', 'organizador']} />} 
       />
       <Route 
-        path="/survey" 
+        path="/survey/:eventId" 
         element={<ProtectedRoute element={<SurveyView />} requiredRoles={['usuario', 'organizador']} />} 
       />
 
