@@ -73,7 +73,10 @@ export default function OrganizerReportsPanel() {
         },
         { sectionId: 'reportPreview', message: `Cargando vista previa...` }
       )
-      .then((reportData) => setData(reportData))
+      .then((reportData) => {
+        console.log('Datos cargados:', reportData);
+        setData(reportData);
+      })
       .catch((err) => setReportError(err.message || `Error al obtener datos`));
     }
   }, [eventId, reportType, withLoader]);
@@ -157,13 +160,13 @@ export default function OrganizerReportsPanel() {
                           <td>{row.correo || 'N/A'}</td>
                           <td>{new Date(row.fecha_inscripcion).toLocaleDateString()}</td>
                         </>
-                      ) : (
+                      ) : reportType === 'satisfaction' ? (
                         <>
                           <td>{row.nombre_completo || 'N/A'}</td>
-                          <td>{row.respuestas?.pregunta_1 || 'N/A'}</td>
-                          <td>{(row.respuestas?.pregunta_13 || 'N/A').substring(0, 50)}...</td>
+                          <td>{row.calificacion_general || 'N/A'}</td>
+                          <td>{row.lo_que_mas_gusto || 'N/A'}</td>
                         </>
-                      )}
+                      ) : null}
                     </tr>
                   ))}
                   {data.length > 5 && <tr><td colSpan={3} style={{textAlign: 'center'}}>... y {data.length - 5} más.</td></tr>}
