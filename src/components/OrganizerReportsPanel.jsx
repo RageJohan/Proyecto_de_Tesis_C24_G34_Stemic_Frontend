@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import OrganizerSidebar from "./OrganizerSidebar";
-import { getMyEventsForOrganizer, getParticipationData, getSatisfactionData, getReportHistory } from "../services/api";
+import { getMyEventsForOrganizer, getParticipationData, getSatisfactionData, getReportHistory, getReportFile } from "../services/api";
 import { useLoader } from "../context/LoaderContext";
 // Reutiliza los estilos existentes
 import "../styles/AdminEventsPanel.css"; 
@@ -85,6 +85,31 @@ export default function OrganizerReportsPanel() {
     return `${import.meta.env.VITE_API_URL}/api/reports/${reportType}/${format}?${params}`;
   };
 
+  const handleDownload = async (format) => {
+    if (!eventId) return;
+
+    try {
+      withLoader(async () => {
+        const blob = await getReportFile({
+          reportType,
+          format,
+          filters: { evento_id: eventId },
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reporte_${reportType}_${format}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }, { message: 'Descargando reporte...' });
+    } catch (error) {
+      setReportError(error.message || 'Error al descargar el reporte');
+    }
+  };
+
   return (
     <OrganizerSidebar>
       <div className="admin-events-container">
@@ -156,14 +181,14 @@ export default function OrganizerReportsPanel() {
             <button
               className="admin-events-btn edit"
               disabled={!eventId || !data || data.length === 0 || previewLoading}
-              onClick={() => window.open(getExportUrl('excel'), '_blank')}
+              onClick={() => handleDownload('excel')}
             >
               <i className="fas fa-file-excel"></i> Exportar a Excel
             </button>
             <button
               className="admin-events-btn delete"
               disabled={!eventId || !data || data.length === 0 || previewLoading}
-              onClick={() => window.open(getExportUrl('pdf'), '_blank')}
+              onClick={() => handleDownload('pdf')}
             >
               <i className="fas fa-file-pdf"></i> Exportar a PDF
             </button>
