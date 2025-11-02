@@ -632,3 +632,48 @@ export async function verifyAttendance(token) {
   // Si la respuesta es OK (ej. 200, 201)
   return await res.json();
 }
+
+/**
+ * Obtiene la estructura de preguntas para las encuestas.
+ * GET /api/preguntas-evaluaciones
+ * @returns {Promise<Array<object>>} - Una promesa que resuelve con la lista de preguntas.
+ */
+export async function getEvaluationQuestions() {
+  const res = await fetchWithAuth(`${API_URL}/api/preguntas-evaluaciones`, { // <--- ESTA ES LA LÍNEA CORREGIDA
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('No se pudieron cargar las preguntas de la encuesta');
+  const json = await res.json();
+  
+  // Tu backend puede devolver el array directamente o dentro de 'data' o 'preguntas'
+  return json.data || json.preguntas || json || [];
+}
+
+/**
+ * Envía la evaluación (encuesta) para un evento específico.
+ * POST /api/evaluations
+ * @param {object} evaluationData - Los datos de la evaluación.
+ * (ej. { evento_id: 'uuid', respuestas: [...], comentario: '...' })
+ * @returns {Promise<object>} - Una promesa que resuelve con la respuesta del backend.
+ * @throws {Error} - Lanza un error si la petición falla (ej. "Ya has enviado una evaluación").
+ */
+export async function submitEvaluation(evaluationData) {
+  const res = await fetchWithAuth(`${API_URL}/api/evaluaciones`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(evaluationData),
+  });
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    // Si el backend envía un error (ej. "No se registró tu asistencia"), lo lanzamos
+    throw new Error(json.message || 'No se pudo enviar la evaluación');
+  }
+
+  return json;
+}
+
