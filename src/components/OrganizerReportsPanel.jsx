@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import OrganizerSidebar from "./OrganizerSidebar";
-import { getMyEventsForOrganizer, getParticipationData, getSatisfactionData, getReportHistory, getReportFile } from "../services/api";
+import { getMyEventsForOrganizer, getParticipationData, getSatisfactionData, getReportHistory, getReportFile, getAllEvents } from "../services/api";
 import { useLoader } from "../context/LoaderContext";
 // Reutiliza los estilos existentes
 import "../styles/AdminEventsPanel.css"; 
@@ -40,19 +40,19 @@ export default function OrganizerReportsPanel() {
   useEffect(() => {
     withLoader(
       async () => {
-        const [myEvents, historyData] = await Promise.all([
-          getMyEventsForOrganizer().catch(() => []),
-          getReportHistory().catch(() => [])
+        const [allEvents, historyData] = await Promise.all([
+          getAllEvents().catch(() => []),
+          getReportHistory().catch(() => []),
         ]);
-        return { myEvents, historyData };
+        return { allEvents, historyData };
       },
       { message: "Cargando datos iniciales..." }
     )
-    .then(({ myEvents, historyData }) => {
-      setEvents(myEvents);
-      const myEventIds = myEvents.map(e => e.id);
-      const filteredHistory = historyData.filter(h =>
-        h.filters?.evento_id && myEventIds.includes(h.filters.evento_id)
+    .then(({ allEvents, historyData }) => {
+      setEvents(allEvents);
+      const allEventIds = allEvents.map((e) => e.id);
+      const filteredHistory = historyData.filter(
+        (h) => h.filters?.evento_id && allEventIds.includes(h.filters.evento_id)
       );
       setReportHistory(filteredHistory);
     })
@@ -99,7 +99,8 @@ export default function OrganizerReportsPanel() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `reporte_${reportType}_${format}.${format}`;
+        const extension = format === 'excel' ? 'xlsx' : format;
+        a.download = `reporte_${reportType}_${format}.${extension}`;
         document.body.appendChild(a);
         a.click();
         a.remove();

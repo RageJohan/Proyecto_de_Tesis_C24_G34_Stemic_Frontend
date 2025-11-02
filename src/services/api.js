@@ -707,3 +707,15 @@ export async function getReportFile({ reportType, format, filters }) {
   return blob;
 }
 
+// Obtener todos los eventos
+export async function getAllEvents() {
+  const res = await fetchWithAuth(`${API_URL}/api/events`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (res.status === 204) return [];
+  if (!res.ok) throw new Error('No se pudieron obtener los eventos');
+  const json = await res.json();
+  return json.data || [];
+}
+
