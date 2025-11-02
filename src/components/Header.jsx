@@ -140,21 +140,22 @@ export default function Header({ onLogout, onProfileUpdate }) {
                   </button>
                 )}
 
-                {/* --- INICIO DE MODIFICACIÓN --- */}
                 {/* Enlace para Organizador */}
                 {user?.rol === "organizador" && (
                   <button
                     className="header-profile-item"
                     onClick={() => {
                       setProfileOpen(false);
-                      navigate("/organizer-dashboard"); // Ruta al nuevo dashboard
+                      navigate("/organizer-dashboard");
                     }}
                   >
                     Panel de Organizador
                   </button>
                 )}
-                {/* --- FIN DE MODIFICACIÓN --- */}
-
+                
+                {/* ================================== */}
+                {/* ======   BOTÓN UNIFICADO    ====== */}
+                {/* ================================== */}
                 <button
                   className="header-profile-item"
                   onClick={() => {
@@ -162,8 +163,10 @@ export default function Header({ onLogout, onProfileUpdate }) {
                       navigate("/participations");
                   }}
                 >
-                  Participaciones
+                  Participaciones y Encuestas
                 </button>
+                {/* ================================== */}
+
                 <button
                   className="header-profile-item"
                   onClick={() => {
