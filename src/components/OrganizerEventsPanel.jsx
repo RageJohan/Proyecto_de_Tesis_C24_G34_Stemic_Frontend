@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import OrganizerSidebar from "./OrganizerSidebar";
-import { getMyEventsForOrganizer, generateAttendanceQR } from "../services/api";
+import { getEvents, getMyEventsForOrganizer, generateAttendanceQR, deleteEvent } from "../services/api";
 import AttendanceQR from "./AttendanceQR";
 import { useNavigate } from "react-router-dom";
 import { useLoader } from "../context/LoaderContext";
 // Reutiliza estilos existentes
 import "../styles/AdminEventsPanel.css";
-import "../styles/AttendanceQR.css"; // Para el modal del QR
+import "../styles/AttendanceQR.css";
 
 export default function OrganizerEventsPanel() {
   const [events, setEvents] = useState([]);
@@ -20,23 +20,22 @@ export default function OrganizerEventsPanel() {
   const [qrError, setQrError] = useState("");
   const qrLoading = isLoading('qrGeneration'); // Loader específico para el QR
   const pageLoading = isLoading(); // Loader general de la página
+  const [showAllEvents, setShowAllEvents] = useState(false);
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    fetchEvents(showAllEvents);
+  }, [showAllEvents]);
 
-  const fetchEvents = () => {
-    withLoader(
-      getMyEventsForOrganizer,
-      { message: 'Cargando tus eventos...' }
-    )
+  const fetchEvents = (allEvents) => {
+    const fetchFunction = allEvents ? getEvents : getMyEventsForOrganizer;
+    withLoader(fetchFunction, { message: allEvents ? 'Cargando todos los eventos...' : 'Cargando tus eventos...' })
       .then((data) => {
-        const eventsArray = Array.isArray(data) ? data : data.data || [];
+        const eventsArray = data?.data || (Array.isArray(data) ? data : []);
         setEvents(eventsArray);
         setError("");
       })
       .catch((err) => {
-        setError(err.message || "No se pudieron cargar tus eventos");
+        setError(err.message || "No se pudieron cargar los eventos");
       });
   };
 
@@ -73,20 +72,41 @@ export default function OrganizerEventsPanel() {
     setQrError("");
   };
 
+  const handleDeleteEvent = (eventId) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este evento?")) {
+      withLoader(() => deleteEvent(eventId), { message: "Eliminando evento..." })
+        .then(() => {
+          setEvents((prevEvents) => prevEvents.filter((ev) => ev.id !== eventId));
+          alert("Evento eliminado exitosamente.");
+        })
+        .catch((err) => {
+          alert(err.message || "Error al eliminar el evento.");
+        });
+    }
+  };
+
   return (
     <OrganizerSidebar>
       <div className="admin-events-container">
         <div className="admin-events-header">
-          <h1>Mis Eventos</h1>
+          <h1>{showAllEvents ? "Todos los Eventos" : "Mis Eventos"}</h1>
+          <div className="admin-events-header-buttons">
+            <button
+              className="admin-events-btn toggle"
+              onClick={() => setShowAllEvents((prev) => !prev)}
+            >
+              {showAllEvents ? "Ver Mis Eventos" : "Ver Todos los Eventos"}
+            </button>
+            <button
+              className="admin-events-btn create"
+              onClick={() => navigate("/organizer-events/create")}
+            >
+              <i className="fas fa-plus"></i>
+              Crear nuevo evento
+            </button>
+          </div>
         </div>
         <div className="admin-events-panel">
-          <button
-            className="admin-events-btn create"
-            onClick={() => navigate("/organizer-events/create")}
-          >
-            <i className="fas fa-plus"></i>
-            Crear nuevo evento
-          </button>
           
           {pageLoading && !error && (
             <div className="orgs-loading">Cargando...</div>
@@ -108,7 +128,6 @@ export default function OrganizerEventsPanel() {
                     <th>Nombre</th>
                     <th>Fecha</th>
                     <th>Modalidad</th>
-                    <th>Activo</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -118,7 +137,6 @@ export default function OrganizerEventsPanel() {
                       <td>{ev.titulo}</td>
                       <td>{new Date(ev.fecha_hora).toLocaleString()}</td>
                       <td>{ev.modalidad}</td>
-                      <td>{ev.activo ? 'Sí' : 'No'}</td>
                       <td>
                         <div className="admin-events-actions">
                           <button
@@ -147,6 +165,15 @@ export default function OrganizerEventsPanel() {
                             style={{ background: 'rgba(33, 150, 243, 0.2)', border: '1px solid rgba(33, 150, 243, 0.3)', color: '#fff'}}
                           >
                             <i className="fas fa-eye"></i> Detalles
+                          </button>
+
+                          <button
+                            className="admin-events-btn delete"
+                            onClick={() => handleDeleteEvent(ev.id)}
+                            aria-label={`Eliminar evento ${ev.titulo}`}
+                            style={{ background: "rgba(244, 67, 54, 0.2)", border: "1px solid rgba(244, 67, 54, 0.3)", color: "#fff" }}
+                          >
+                            <i className="fas fa-trash"></i> Eliminar
                           </button>
                         </div>
                       </td>
