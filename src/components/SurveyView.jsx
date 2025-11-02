@@ -1,20 +1,24 @@
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  getEventById,
+  getEvaluationQuestions,
+  submitEvaluation,
+} from "../services/api";
+import Header from "./Header";
+import "../styles/SurveyView.css";
+import Loader from "./Loader";
 
-import React, { useState, useEffect } from 'react';
-import { fetchWithAuth } from '../services/api';
-import '../styles/SurveyView.css';
-
-// Componente simple de estrellas
-const StarRating = ({ value, onChange, name }) => {
+// Componente para las estrellas de puntuación
+const StarRating = ({ rating, onRatingChange, disabled = false }) => {
   return (
     <div className="star-rating">
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={star}
-          className={star <= value ? 'star filled' : 'star'}
-          onClick={() => onChange(name, star)}
-          style={{ cursor: 'pointer', fontSize: '1.5rem', color: star <= value ? '#FFD700' : '#ccc' }}
-          role="button"
-          aria-label={`Calificar con ${star} estrellas`}
+          className={star <= rating ? "star-filled" : "star-empty"}
+          onClick={() => !disabled && onRatingChange(star)}
+          style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}
         >
           ★
         </span>
@@ -23,127 +27,170 @@ const StarRating = ({ value, onChange, name }) => {
   );
 };
 
-const SurveyView = () => {
+export default function SurveyView() {
+  const { eventId } = useParams();
+  const navigate = useNavigate();
+  const [event, setEvent] = useState(null);
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
-  const [eventoId, setEventoId] = useState('');
+  
+  // 'responses' será el objeto plano que espera el backend
+  const [responses, setResponses] = useState({});
+  
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const loadData = async () => {
       try {
-        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/preguntas-evaluaciones`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
+        setLoading(true);
+        setError(null);
+        const [eventData, questionsData] = await Promise.all([
+          getEventById(eventId),
+          getEvaluationQuestions(),
+        ]);
+
+        setEvent(eventData);
+        setQuestions(questionsData);
+
+        // Inicializar el estado de las respuestas
+        const initialResponses = {};
+        questionsData.forEach((q) => {
+          if (q.tipo === "escala") {
+            // Usamos un string vacío para 'sin responder' (lo validaremos al enviar)
+            initialResponses[q.id] = ""; 
+          } else if (q.tipo === "texto") {
+            initialResponses[q.id] = ""; // string vacío para texto
+          }
         });
-        if (!response.ok) throw new Error('Error al obtener las preguntas');
-        const data = await response.json();
-        console.log('Respuesta de preguntas-evaluaciones:', data);
-        // Soportar respuesta como array directo o como objeto con propiedad
-        let questionsArray = [];
-        if (Array.isArray(data)) {
-          questionsArray = data;
-        } else if (Array.isArray(data.preguntas)) {
-          questionsArray = data.preguntas;
-        } else if (Array.isArray(data.data)) {
-          questionsArray = data.data;
-        } else {
-          throw new Error('La respuesta de preguntas-evaluaciones no es un array ni contiene un array');
-        }
-        setQuestions(questionsArray);
-        // Inicializar las respuestas con un objeto vacío
-        const initialAnswers = {};
-        questionsArray.forEach(question => {
-          initialAnswers[question.id] = '';
-        });
-        setAnswers(initialAnswers);
-      } catch (error) {
-        console.error('Error al cargar las preguntas:', error);
+        setResponses(initialResponses);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Error al cargar los datos de la encuesta.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchQuestions();
-  }, []);
+    loadData();
+  }, [eventId]);
 
-
-  const handleAnswerChange = (questionId, value) => {
-    setAnswers(prev => ({
+  // Handler unificado para cualquier tipo de respuesta
+  const handleResponseChange = (questionId, value) => {
+    setResponses((prev) => ({
       ...prev,
-      [questionId]: value
+      [questionId]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
+
+    // 1. Validar que todas las preguntas de ESCALA estén respondidas
+    // (Tu backend valida de "pregunta_1" a "pregunta_12")
+    const scaleQuestions = questions.filter(q => q.tipo === 'escala');
+    const incompleteScale = scaleQuestions.some(
+      (q) => !responses[q.id] || responses[q.id] === ""
+    );
+
+    if (incompleteScale) {
+      setError("Por favor, responde todas las preguntas de calificación (estrellas).");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // =======================================================
+    // AQUÍ ESTÁ LA CORRECCIÓN CLAVE:
+    // Construimos el payload EXACTO que espera tu backend.
+    // =======================================================
+    const payload = {
+      evento_id: eventId,
+      respuestas: responses, // 'responses' es el objeto plano { pregunta_1: 5, ... }
+    };
+
     try {
-      if (!eventoId) {
-        alert('Por favor ingresa el ID del evento');
-        return;
-      }
-      const payload = {
-        evento_id: eventoId,
-        respuestas: answers
-      };
-      const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/evaluaciones`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error('Error al enviar la encuesta');
-      alert('Encuesta enviada con éxito');
-    } catch (error) {
-      console.error('Error al enviar la encuesta:', error);
-      alert('Error al enviar la encuesta');
+      // 3. Llamar a la función de la API
+      // Esta función (submitEvaluation) ya apunta a POST /api/evaluations
+      const result = await submitEvaluation(payload);
+      setSuccess(result.message || "¡Evaluación enviada con éxito! Gracias.");
+      setIsSubmitting(true);
+      setTimeout(() => navigate("/participations"), 2500);
+    } catch (err) {
+      // Aquí se manejan los errores de la API (ej. "No se registró tu asistencia")
+      setError(err.message || "No se pudo enviar la evaluación.");
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) {
-    return <div>Cargando preguntas...</div>;
-  }
+  if (loading) return <Loader />;
 
   return (
-    <div className="survey-container">
-      <h2>Encuesta de Evaluación</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="question-container">
-          <label htmlFor="evento_id">ID del Evento</label>
-          <input
-            type="text"
-            id="evento_id"
-            value={eventoId}
-            onChange={e => setEventoId(e.target.value)}
-            placeholder="Ingresa el ID del evento"
-            required
-          />
-        </div>
-        {questions.map((question, idx) => (
-          <div key={question.id} className="question-container">
-            <label>{question.pregunta || question.texto || `Pregunta ${idx + 1}`}</label>
-            {idx < 12 ? (
-              <StarRating
-                value={Number(answers[question.id]) || 0}
-                onChange={handleAnswerChange}
-                name={question.id}
-              />
-            ) : (
-              <input
-                type="text"
-                value={answers[question.id] || ''}
-                onChange={e => handleAnswerChange(question.id, e.target.value)}
-                placeholder="Escribe tu respuesta"
-                required
-              />
-            )}
-          </div>
-        ))}
-        <button type="submit" className="submit-button">
-          Enviar Encuesta
-        </button>
-      </form>
-    </div>
-  );
-};
+    <>
+      <Header />
+      <div className="survey-container">
+        {event && (
+          <h1 className="survey-title">
+            Encuesta de Satisfacción:{" "}
+            <span className="survey-event-name">{event.titulo}</span>
+          </h1>
+        )}
 
-export default SurveyView;
+        {error && <div className="survey-message survey-error">{error}</div>}
+        {success && <div className="survey-message survey-success">{success}</div>}
+
+        {!error && !success && (
+          <p className="survey-description">
+            Tu opinión es muy importante para nosotros. Por favor, califica tu
+            experiencia.
+          </p>
+        )}
+
+        <form className="survey-form" onSubmit={handleSubmit}>
+          
+          {questions.map((q) => (
+            <div className="survey-question" key={q.id}>
+              
+              <label className="survey-question-label" htmlFor={q.id}>
+                {q.pregunta}
+                {/* Añadimos un indicador de 'requerido' para las de escala */}
+                {q.tipo === 'escala' && <span style={{ color: 'red' }}> *</span>}
+              </label>
+              
+              {q.tipo === "escala" && (
+                <StarRating
+                  rating={responses[q.id] || 0} // Si es "" o 0, muestra 0 estrellas
+                  onRatingChange={(rating) => handleResponseChange(q.id, rating)}
+                  disabled={isSubmitting}
+                />
+              )}
+              
+              {q.tipo === "texto" && (
+                <textarea
+                  id={q.id}
+                  className="survey-textarea"
+                  rows="3"
+                  placeholder={q.placeholder || "Escribe tu respuesta..."}
+                  value={responses[q.id] || ""}
+                  onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                  disabled={isSubmitting}
+                />
+              )}
+            </div>
+          ))}
+
+          <button
+            type="submit"
+            className="survey-submit-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Enviando..." : "Enviar Evaluación"}
+          </button>
+        </form>
+      </div>
+    </>
+  );
+}
