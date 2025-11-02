@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react"; // Importamos useMemo
 import "../styles/Events.css";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
-// Importamos la nueva función 'getRecommendedEvents' en lugar de 'apiFetch'
 import { getRecommendedEvents } from "../services/api";
 
 const PAGE_SIZE = 6;
@@ -36,36 +35,49 @@ function Pagination({ page, total, onPageChange }) {
 
 export default function Events() {
   const [page, setPage] = useState(1);
-  const [events, setEvents] = useState([]);
-  const [total, setTotal] = useState(0); // El total ahora vendrá de la API
+  const [events, setEvents] = useState([]); // Todos los eventos de la API
+  // const [total, setTotal] = useState(0); // No lo necesitamos para paginación FE
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [modalidades, setModalidades] = useState([]);
-  const [modalityFilter, setModalityFilter] = useState("");
   const navigate = useNavigate();
+
+  // --- Estados para los filtros ---
+  const [modalidades, setModalidades] = useState([]); // Dinámico + 'Virtual'
+  const [allTags, setAllTags] = useState([]); // Para el filtro de categorías
+  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [modalityFilter, setModalityFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("proximo"); // Opciones: 'proximo', 'semana', 'mes'
+  // --- Fin estados para filtros ---
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    // Usamos la nueva función autenticada 'getRecommendedEvents'
     getRecommendedEvents()
       .then((data) => {
-        // La 'data' ahora es un objeto: { events: [...], total: N, recommendation_type: '...' }
         const eventos = data.events || [];
-        const totalEventos = data.total || 0;
-
         setEvents(eventos);
-        // Usamos el total de la paginación que provee el backend
-        setTotal(totalEventos);
 
-        // Extraer modalidades únicas del backend
+        // --- Lógica para poblar los filtros ---
+
+        // 1. Modalidades (Dinámico + 'Virtual' como solicitaste)
         const mods = Array.from(
           new Set(eventos.map((ev) => ev.modalidad).filter(Boolean))
         );
-        setModalidades(mods);
+        if (!mods.includes("Virtual")) {
+          mods.push("Virtual"); // Añadimos 'Virtual' si no viene de la API
+        }
+        setModalidades(mods.sort());
 
-        // Opcional: Log para saber qué tipo de recomendación se está mostrando
+        // 2. Categorías (Extrayendo todos los tags únicos)
+        const allEventTags = eventos.flatMap(ev => ev.tags || ev.etiquetas || []);
+        const uniqueTags = Array.from(new Set(allEventTags));
+        setAllTags(uniqueTags.sort());
+        
+        // --- Fin lógica filtros ---
+
         if (data.recommendation_type === 'interest_based') {
           console.log("Mostrando eventos recomendados por interés.");
         } else if (data.recommendation_type === 'recent_events') {
@@ -76,8 +88,6 @@ export default function Events() {
         console.error(err);
         setError(err.message || "Error al cargar eventos recomendados");
         
-        // Si el error es por falta de autenticación (detectado por fetchWithAuth),
-        // redirigimos al login.
         if (err.message.toLowerCase().includes("sesión expirada") || 
             err.message.toLowerCase().includes("token") ||
             err.message.toLowerCase().includes("inicia sesión")) {
@@ -85,16 +95,75 @@ export default function Events() {
         }
       })
       .finally(() => setLoading(false));
-  }, [navigate]); // Añadimos navigate como dependencia
+  }, [navigate]);
 
-  // Lógica de paginación y filtrado (el filtrado de modalidad sigue siendo en frontend)
-  const filteredEvents = (Array.isArray(events) ? events : [])
-    .filter((ev) => !modalityFilter || ev.modalidad === modalityFilter);
+  // Lógica de filtrado y ordenación con useMemo para eficiencia
+  const filteredEvents = useMemo(() => {
+    let eventsToFilter = Array.isArray(events) ? [...events] : []; // Copiamos para no mutar
+    const now = new Date(); // Para filtrar fechas
+
+    // --- 1. Aplicar Filtros ---
+
+    // Filtro de Búsqueda (por título)
+    if (searchTerm) {
+      eventsToFilter = eventsToFilter.filter((ev) =>
+        (ev.titulo || ev.title || "").toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filtro de Modalidad
+    if (modalityFilter) {
+      eventsToFilter = eventsToFilter.filter(
+        (ev) => ev.modalidad === modalityFilter
+      );
+    }
+
+    // Filtro de Categoría (Tags)
+    if (categoryFilter) {
+      eventsToFilter = eventsToFilter.filter((ev) =>
+        (ev.tags || ev.etiquetas || []).includes(categoryFilter)
+      );
+    }
+
+    // --- 2. Aplicar Filtro/Ordenación por Fecha ---
+
+    // Primero, siempre filtramos eventos pasados y ordenamos por "Más próximo"
+    eventsToFilter = eventsToFilter
+      .filter((ev) => {
+        const eventDateStr = ev.fecha_hora || ev.date || ev.fecha;
+        if (!eventDateStr) return false; // Descartar eventos sin fecha
+        const eventDate = new Date(eventDateStr);
+        return eventDate >= now; // Solo eventos futuros
+      })
+      .sort((a, b) => {
+        // Ordenar ascendente (más próximo primero)
+        const dateA = new Date(a.fecha_hora || a.date || a.fecha);
+        const dateB = new Date(b.fecha_hora || b.date || b.fecha);
+        return dateA - dateB;
+      });
+
+    // Si el filtro es "semana" o "mes", aplicamos un filtro de rango adicional
+    if (dateFilter === "semana") {
+      const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      eventsToFilter = eventsToFilter.filter((ev) => {
+        const eventDate = new Date(ev.fecha_hora || ev.date || ev.fecha);
+        return eventDate <= oneWeekFromNow;
+      });
+    } else if (dateFilter === "mes") {
+      // Usamos 30 días desde hoy
+      const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); 
+      eventsToFilter = eventsToFilter.filter((ev) => {
+        const eventDate = new Date(ev.fecha_hora || ev.date || ev.fecha);
+        return eventDate <= oneMonthFromNow;
+      });
+    }
+    // Si dateFilter es "proximo", ya está ordenado y no necesita más filtro.
+
+    return eventsToFilter;
     
-  // La paginación ahora la gestiona el backend, pero si queremos paginar en frontend 
-  // sobre los resultados filtrados, mantenemos el slice.
-  // Nota: Lo ideal sería pasar los filtros (ej. modalidad) a la API 
-  // para que el backend haga todo el trabajo.
+  }, [events, searchTerm, modalityFilter, categoryFilter, dateFilter]); // Dependencias del useMemo
+    
+  // La paginación ahora funciona sobre la lista ya filtrada y ordenada
   const paginatedEvents = filteredEvents.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
@@ -110,23 +179,43 @@ export default function Events() {
             | Entérate de los próximos eventos y regístrate
           </span>
         </h2>
-        {/* Filtros UI */}
+        
+        {/* --- Filtros UI (Actualizados) --- */}
         <div className="events-filters">
           <input
             className="events-filter-input"
             type="text"
             placeholder="Buscar evento..."
-            disabled // La API de recomendación no soporta búsqueda de texto aún
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1); // Resetear paginación
+            }}
           />
-          <select className="events-filter-select" disabled>
-            <option>Todas las categorías</option>
+          <select 
+            className="events-filter-select"
+            value={categoryFilter}
+            onChange={(e) => {
+              setCategoryFilter(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">Todas las categorías</option>
+            {allTags.map((tag, i) => {
+              const displayTag = tag.replace(/[{}]/g, "").toUpperCase();
+              return (
+                <option value={tag} key={i}>
+                  {displayTag}
+                </option>
+              );
+            })}
           </select>
           <select
             className="events-filter-select"
             value={modalityFilter}
             onChange={(e) => {
               setModalityFilter(e.target.value);
-              setPage(1); // Resetear paginación al cambiar filtro
+              setPage(1);
             }}
           >
             <option value="">Todas las modalidades</option>
@@ -136,11 +225,20 @@ export default function Events() {
               </option>
             ))}
           </select>
-          <select className="events-filter-select" disabled>
-            <option>Más próximo</option> 
-            {/* La API ya ordena por relevancia y fecha */}
+          <select 
+            className="events-filter-select"
+            value={dateFilter}
+            onChange={(e) => {
+              setDateFilter(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="proximo">Más próximo</option> 
+            <option value="semana">Próx. en la semana</option>
+            <option value="mes">Próx. en el mes</option>
           </select>
         </div>
+        
         {loading ? (
           <div style={{ textAlign: "center", margin: "2rem" }}>
             Cargando eventos recomendados...
@@ -152,12 +250,12 @@ export default function Events() {
         ) : (
           <>
             <div className="events-cards">
-              {filteredEvents.length === 0 ? ( // Usar filteredEvents.length para el mensaje
+              {filteredEvents.length === 0 ? ( // Usar filteredEvents para el conteo
                 <div style={{ textAlign: "center", width: "100%" }}>
                   No hay eventos disponibles que coincidan con tus intereses o filtros.
                 </div>
               ) : (
-                paginatedEvents.map((event, idx) => { // Usar paginatedEvents para el map
+                paginatedEvents.map((event, idx) => { // Usar paginatedEvents para el render
                     const image =
                       event.imagen_url ||
                       event.image ||
@@ -168,10 +266,6 @@ export default function Events() {
                       event.fecha_hora || event.date || event.fecha || "";
                     const tags = event.tags || event.etiquetas || [];
                     
-                    // Opcional: Resaltar visualmente por qué es recomendado
-                    const relevance = event.relevancia || 0; 
-                    const matches = event.intereses_coincidentes || 0;
-
                     return (
                       <div
                         className="event-card"
@@ -212,8 +306,8 @@ export default function Events() {
             </div>
             <Pagination
               page={page}
-              // El total de la paginación debe basarse en los eventos filtrados
-              total={filteredEvents.length}
+              // El total de la paginación se basa en los eventos *filtrados*
+              total={filteredEvents.length} 
               onPageChange={setPage}
             />
           </>
