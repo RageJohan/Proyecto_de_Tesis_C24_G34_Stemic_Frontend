@@ -527,6 +527,36 @@ export async function getSystemMetrics() {
 }
 
 /**
+ * Obtiene métricas detalladas de un evento específico.
+ * GET /api/dashboard/events/:eventId/metrics
+ * Accesible para administradores y organizadores (solo sus eventos).
+ * @param {string} eventId - Identificador del evento.
+ * @returns {Promise<object>} Métricas del evento.
+ */
+export async function getEventMetrics(eventId) {
+  if (!eventId) {
+    throw new Error('El identificador del evento es requerido');
+  }
+
+  const res = await fetchWithAuth(`${API_URL}/api/dashboard/events/${eventId}/metrics`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!res.ok) {
+    let message = 'No se pudieron obtener las métricas del evento';
+    try {
+      const error = await res.json();
+      if (error && error.message) message = error.message;
+    } catch {}
+    throw new Error(message);
+  }
+
+  const json = await res.json();
+  return json.data || {};
+}
+
+/**
  * Obtiene los eventos creados por el usuario autenticado (organizador).
  * GET /api/events/user/my-events
  * @returns {Promise<Array<object>>} - Lista de eventos del organizador.
