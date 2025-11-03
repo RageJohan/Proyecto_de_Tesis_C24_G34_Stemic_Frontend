@@ -8,6 +8,10 @@ const AdminSidebar = ({ children }) => {
       <aside className="admin-sidebar">
         <div className="sidebar-title">STEMIC</div>
         <nav className="sidebar-nav">
+          <NavLink to="/admin-dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
+            <i className="fas fa-chart-line"></i>
+            Dashboard
+          </NavLink>
           <NavLink to="/admin-alliances" className={({ isActive }) => isActive ? 'active' : ''}>
             <i className="fas fa-handshake"></i>
             Alianzas
@@ -19,6 +23,10 @@ const AdminSidebar = ({ children }) => {
           <NavLink to="/admin-applications" className={({ isActive }) => isActive ? 'active' : ''}>
             <i className="fas fa-file-alt"></i>
             Postulaciones
+          </NavLink>
+          <NavLink to="/admin-reports" className={({ isActive }) => isActive ? 'active' : ''}>
+            <i className="fas fa-chart-pie"></i>
+            Reportes
           </NavLink>
         </nav>
         <div style={{ marginTop: "auto", marginBottom: "2rem" }}>
