@@ -12,6 +12,10 @@ const AdminSidebar = ({ children }) => {
             <i className="fas fa-chart-line"></i>
             Dashboard
           </NavLink>
+          <NavLink to="/event-dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
+            <i className="fas fa-chart-area"></i>
+            Dashboard Evento
+          </NavLink>
           <NavLink to="/admin-alliances" className={({ isActive }) => isActive ? 'active' : ''}>
             <i className="fas fa-handshake"></i>
             Alianzas
