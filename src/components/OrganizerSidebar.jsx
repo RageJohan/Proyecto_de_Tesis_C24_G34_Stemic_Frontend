@@ -31,6 +31,13 @@ const OrganizerSidebar = ({ children }) => {
             Mis Eventos
           </NavLink>
           <NavLink
+            to="/organizer-event-postulations"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <i className="fas fa-list-alt"></i>
+            Postulaciones evento
+          </NavLink>
+          <NavLink
             to="/organizer-reports"
             className={({ isActive }) => (isActive ? "active" : "")}
           >

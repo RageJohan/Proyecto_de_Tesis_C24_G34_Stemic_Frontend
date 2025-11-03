@@ -302,6 +302,93 @@ export async function inscribirseEvento(eventId) {
   if (!res.ok) throw new Error('No se pudo inscribir al evento');
   return await res.json();
 }
+
+// Formularios de postulación basados en SurveyJS
+export async function getEventPostulationForm(eventId) {
+  const res = await fetch(`${API_URL}/api/events/${eventId}/postulation-form`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!res.ok) {
+    throw new Error('No se pudo cargar el formulario del evento');
+  }
+  const json = await res.json();
+  return json.data;
+}
+
+export async function saveEventPostulationForm(eventId, { schema, allowCustomForm }) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/postulation-form`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ schema, allowCustomForm })
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'No se pudo guardar el formulario');
+  }
+  return json.data;
+}
+
+export async function submitEventPostulation(eventId, responses) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/postulations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ responses })
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'No se pudo enviar tu postulación');
+  }
+  return json.data;
+}
+
+export async function getMyEventPostulation(eventId) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/postulations/me`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (res.status === 404) {
+    return null;
+  }
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'No se pudo obtener tu postulación');
+  }
+  return json.data;
+}
+
+export async function getEventPostulations(eventId, { estado = '', search = '', page = 1, limit = 10 } = {}) {
+  const params = [];
+  if (estado) params.push(`estado=${encodeURIComponent(estado)}`);
+  if (search) params.push(`search=${encodeURIComponent(search)}`);
+  if (page) params.push(`page=${page}`);
+  if (limit) params.push(`limit=${limit}`);
+  const query = params.length ? `?${params.join('&')}` : '';
+
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/postulations${query}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'No se pudo cargar la lista de postulaciones');
+  }
+  return json;
+}
+
+export async function updateEventPostulationStatus(eventId, postulationId, { estado, comentarios }) {
+  const res = await fetchWithAuth(`${API_URL}/api/events/${eventId}/postulations/${postulationId}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ estado, comentarios })
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'No se pudo actualizar la postulación');
+  }
+  return json.data;
+}
 // src/services/api.js
 
 // Obtener opciones de perfil (géneros, intereses, etc)

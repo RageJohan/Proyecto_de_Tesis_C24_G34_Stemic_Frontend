@@ -18,11 +18,12 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import Header from "./Header"
 // Importamos la nueva función de api
-import { apiFetch, inscribirseEvento, cancelarInscripcionEvento, estadoInscripcionEvento } from "../services/api"
+import { apiFetch, inscribirseEvento, cancelarInscripcionEvento, estadoInscripcionEvento, getMyEventPostulation } from "../services/api"
 import "../styles/EventDetail.css"
 import { useAuth } from "../context/AuthContext"
 // Importamos el nuevo componente de escáner
 import AttendanceScanner from "./AttendanceScanner" 
+import EventPostulationModal from "./EventPostulationModal"
 
 export default function EventDetail() {
   const { isAuthenticated } = useAuth()
@@ -34,6 +35,8 @@ export default function EventDetail() {
   const [inscribiendo, setInscribiendo] = useState(false)
   const [inscripcionMsg, setInscripcionMsg] = useState("")
   const [inscrito, setInscrito] = useState(false)
+  const [showPostulation, setShowPostulation] = useState(false)
+  const [myPostulation, setMyPostulation] = useState(null)
 
   // --- NUEVOS ESTADOS ---
   /** Estado para mostrar/ocultar el modal del escáner QR */
@@ -71,20 +74,61 @@ export default function EventDetail() {
   }
 
   useEffect(() => {
-    setLoading(true)
-    Promise.all([
-      apiFetch(`/api/events/public/${id}`),
-      isAuthenticated ? estadoInscripcionEvento(id) : Promise.resolve(false),
-      // Podríamos añadir una llamada aquí para verificar si ya tiene asistencia,
-      // pero por ahora lo manejaremos con un estado simple.
-    ])
-      .then(([eventData, isInscribed]) => {
-        setEvent(eventData.data || eventData.event || eventData)
-        setInscrito(isInscribed)
-      })
-      .catch(() => setError("No se pudo cargar el evento"))
-      .finally(() => setLoading(false))
-  }, [id, isAuthenticated, navigate])
+    let isMounted = true
+
+    async function load() {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const eventResponse = await apiFetch(`/api/events/public/${id}`)
+        if (!isMounted) return
+
+        const eventData = eventResponse.data || eventResponse.event || eventResponse
+        setEvent(eventData)
+
+        if (isAuthenticated) {
+          const [isInscribed, submission] = await Promise.all([
+            estadoInscripcionEvento(id).catch(() => false),
+            (eventData.requiere_postulacion || eventData.requierePostulacion)
+              ? getMyEventPostulation(id).catch(() => null)
+              : Promise.resolve(null)
+          ])
+
+          if (!isMounted) return
+          setInscrito(Boolean(isInscribed))
+          setMyPostulation(submission)
+        } else {
+          setInscrito(false)
+          setMyPostulation(null)
+        }
+      } catch (err) {
+        if (!isMounted) return
+        setError("No se pudo cargar el evento")
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    load()
+
+    return () => {
+      isMounted = false
+    }
+  }, [id, isAuthenticated])
+
+  const refreshMyPostulation = async () => {
+    if (!isAuthenticated) return
+    try {
+      const submission = await getMyEventPostulation(id)
+      setMyPostulation(submission)
+      setInscripcionMsg("Postulación enviada correctamente")
+    } catch {
+      setMyPostulation(null)
+    }
+  }
 
   if (loading)
     return (
@@ -247,6 +291,21 @@ export default function EventDetail() {
               </button>
             ))}
 
+          {requierePostulacion && (
+            isAuthenticated ? (
+              <button
+                className="event-detail-back btn-inscribirse"
+                onClick={() => setShowPostulation(true)}
+              >
+                {myPostulation ? "Ver mi postulación" : "Postularme"}
+              </button>
+            ) : (
+              <button className="event-detail-back btn-login" onClick={() => navigate("/login")}>
+                Inicia sesión para postularte
+              </button>
+            )
+          )}
+
           {/* Botón de Escanear QR:
               - Solo aparece si estás autenticado.
               - Llama a setShowScanner(true) al hacer clic.
@@ -272,7 +331,9 @@ export default function EventDetail() {
         {inscripcionMsg && (
           <div className={`inscripcion-msg ${
             // Acepta "exitosa" O "registrada" como éxito
-            inscripcionMsg.includes("exitosa") || inscripcionMsg.includes("registrada")
+            inscripcionMsg.includes("exitosa") ||
+            inscripcionMsg.includes("registrada") ||
+            inscripcionMsg.includes("Postulación enviada")
               ? "success" 
               : "error"
           }`}>
@@ -280,7 +341,31 @@ export default function EventDetail() {
           </div>
         )}
         {/* ----------------------------------- */}
+
+        {myPostulation && (
+          <div className="event-detail-section">
+            <h3 className="event-detail-section-title">Estado de mi postulación</h3>
+            <div className="event-detail-postulation-status">
+              <span className={`postulation-badge postulation-badge--${myPostulation.estado}`}>
+                {myPostulation.estado.replace(/_/g, " ")}
+              </span>
+              {myPostulation.comentarios_revision && (
+                <p className="postulation-note">{myPostulation.comentarios_revision}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
+      <EventPostulationModal
+        eventId={id}
+        open={showPostulation}
+        onClose={() => setShowPostulation(false)}
+        onSubmitted={() => {
+          setShowPostulation(false)
+          refreshMyPostulation()
+        }}
+      />
     </>
   )
 }

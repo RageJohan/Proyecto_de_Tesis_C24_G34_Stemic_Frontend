@@ -203,6 +203,10 @@ export default function EventDashboard() {
     evaluaciones: [],
   };
   const feedback = metrics?.feedback ?? [];
+  const postulaciones = metrics?.postulaciones ?? {
+    resumen: {},
+    recientes: [],
+  };
   const hasEvents = events.length > 0;
 
   useEffect(() => {
@@ -370,7 +374,40 @@ export default function EventDashboard() {
                   icon={<FaSmile />}
                   color="#00BCD4"
                 />
+                <StatsCard
+                  title="Postulaciones"
+                  value={formatNumber(postulaciones.resumen?.total)}
+                  icon={<FaClipboardList />}
+                  color="#22d3ee"
+                />
+                <StatsCard
+                  title="Postulaciones aprobadas"
+                  value={formatNumber(postulaciones.resumen?.aprobados)}
+                  icon={<FaUserCheck />}
+                  color="#34d399"
+                />
               </div>
+
+              {postulaciones.resumen?.total ? (
+                <div className="postulation-status-grid">
+                  {[
+                    { label: "Pendientes", value: postulaciones.resumen.pendientes, color: "#fbbf24" },
+                    { label: "En revisión", value: postulaciones.resumen.en_revision, color: "#38bdf8" },
+                    { label: "Preseleccionadas", value: postulaciones.resumen.preseleccionados, color: "#a855f7" },
+                    { label: "Aprobadas", value: postulaciones.resumen.aprobados, color: "#22c55e" },
+                    { label: "Rechazadas", value: postulaciones.resumen.rechazados, color: "#ef4444" },
+                  ].map((item) => (
+                    <div key={item.label} className="postulation-status-card">
+                      <span className="postulation-status-label" style={{ color: item.color }}>
+                        {item.label}
+                      </span>
+                      <span className="postulation-status-value">
+                        {formatNumber(item.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
 
               <div className="dashboard-charts-row">
                 <div className="chart-container">
@@ -471,6 +508,36 @@ export default function EventDashboard() {
                       </table>
                     ) : (
                       <div className="orgs-empty" style={{ padding: "1rem 0" }}>
+                    <div className="table-container" style={{ marginTop: 0 }}>
+                      <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Postulaciones</h3>
+                      {postulaciones.recientes.length > 0 ? (
+                        <table className="admin-events-table">
+                          <thead>
+                            <tr>
+                              <th>Postulante</th>
+                              <th>Estado</th>
+                              <th>Fecha</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {postulaciones.recientes.map((item) => (
+                              <tr key={item.id}>
+                                <td>
+                                  <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <span>{item.nombre}</span>
+                                    <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>{item.correo}</span>
+                                  </div>
+                                </td>
+                                <td style={{ textTransform: "capitalize" }}>{item.estado.replace(/_/g, " ")}</td>
+                                <td>{formatDateTime(item.fecha_postulacion)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div className="table-empty">Sin postulaciones recientes.</div>
+                      )}
+                    </div>
                         Sin evaluaciones recientes.
                       </div>
                     )}

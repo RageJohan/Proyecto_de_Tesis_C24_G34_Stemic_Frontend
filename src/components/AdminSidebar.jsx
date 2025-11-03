@@ -28,6 +28,10 @@ const AdminSidebar = ({ children }) => {
             <i className="fas fa-file-alt"></i>
             Postulaciones
           </NavLink>
+          <NavLink to="/admin-event-postulations" className={({ isActive }) => isActive ? 'active' : ''}>
+            <i className="fas fa-list-alt"></i>
+            Formularios Evento
+          </NavLink>
           <NavLink to="/admin-reports" className={({ isActive }) => isActive ? 'active' : ''}>
             <i className="fas fa-chart-pie"></i>
             Reportes

@@ -24,6 +24,8 @@ import AdminReportsPanel from "../components/AdminReportsPanel";
 import EventDashboard from "../components/EventDashboard";
 import EventCreateView from "../components/EventCreateView";
 import EventEditView from "../components/EventEditView";
+import EventFormBuilder from "../components/EventFormBuilder";
+import EventPostulationsPanel from "../components/EventPostulationsPanel";
 
 // --- NUEVOS IMPORTS DE ORGANIZADOR ---
 import OrganizerDashboard from "../components/OrganizerDashboard";
@@ -142,8 +144,16 @@ export default function AppRouter() {
         element={<ProtectedRoute element={<EventEditView />} requiredRoles={['admin']} />}
       />
       <Route
+        path="/admin-events/:id/form-builder"
+        element={<ProtectedRoute element={<EventFormBuilder />} requiredRoles={['admin']} />}
+      />
+      <Route
         path="/admin-applications"
         element={<ProtectedRoute element={<AdminPostulationsPanel />} requiredRoles={['admin']} />}
+      />
+      <Route
+        path="/admin-event-postulations"
+        element={<ProtectedRoute element={<EventPostulationsPanel />} requiredRoles={['admin']} />}
       />
       <Route
         path="/admin-alliances"
@@ -168,6 +178,14 @@ export default function AppRouter() {
       <Route
         path="/organizer-events/edit/:id"
         element={<ProtectedRoute element={<EventEditView />} requiredRoles={['organizador']} />}
+      />
+      <Route
+        path="/organizer-events/:id/form-builder"
+        element={<ProtectedRoute element={<EventFormBuilder />} requiredRoles={['organizador']} />}
+      />
+      <Route
+        path="/organizer-event-postulations"
+        element={<ProtectedRoute element={<EventPostulationsPanel />} requiredRoles={['organizador']} />}
       />
       <Route
         path="/organizer-reports"

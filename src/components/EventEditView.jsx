@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getEventById, updateEvent } from "../services/api";
 import "../styles/EventCreateModal.css";
 import AdminSidebar from "./AdminSidebar";
+import OrganizerSidebar from "./OrganizerSidebar";
+import { useAuth } from "../context/AuthContext";
 
 export default function EventEditView() {
   const { id } = useParams();
@@ -11,6 +13,7 @@ export default function EventEditView() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     getEventById(id)
@@ -20,6 +23,7 @@ export default function EventEditView() {
           skills: Array.isArray(eventData.skills) ? eventData.skills : [],
           tags: Array.isArray(eventData.tags) ? eventData.tags : [],
           modalidad: eventData.modalidad || "virtual",
+          allow_custom_form: eventData.allow_custom_form ?? false,
         });
       })
       .catch(() => setError("Error al cargar datos del evento"))
@@ -47,7 +51,14 @@ export default function EventEditView() {
     setError("");
     try {
       const formData = new FormData();
+      const skipKeys = new Set([
+        "postulation_schema",
+        "postulation_schema_version"
+      ]);
       Object.entries(form).forEach(([key, value]) => {
+        if (skipKeys.has(key)) {
+          return;
+        }
         if (key === "imagen" && value) {
           formData.append("imagen", value);
         } else if (Array.isArray(value)) {
@@ -67,11 +78,34 @@ export default function EventEditView() {
 
   if (loading || !form) return <div className="orgs-loading">Loading event...</div>;
 
+  const Sidebar = user?.rol === "admin" ? AdminSidebar : OrganizerSidebar;
+  const builderPath = user?.rol === "admin"
+    ? `/admin-events/${id}/form-builder`
+    : `/organizer-events/${id}/form-builder`;
+
   return (
-    <AdminSidebar>
+    <Sidebar>
       <div className="modal-overlay" style={{position:'static',background:'none',padding:0}}>
         <div className="modal-content" style={{maxWidth:800,margin:'0 auto'}}>
         <h2>Edit event</h2>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1rem'}}>
+          <label style={{display:'flex',alignItems:'center',gap:'.5rem'}}>
+            <input
+              type="checkbox"
+              name="allow_custom_form"
+              checked={form.allow_custom_form || false}
+              onChange={handleChange}
+            />
+            Habilitar formulario personalizado
+          </label>
+          <Link
+            to={builderPath}
+            className="event-detail-back btn-inscribirse"
+            style={{textDecoration:'none'}}
+          >
+            Configurar preguntas
+          </Link>
+        </div>
         <form onSubmit={handleSubmit} className="event-form">
           <label>Title*<input name="titulo" value={form.titulo} onChange={handleChange} required minLength={3} /></label>
           <label>Description*<textarea name="descripcion" value={form.descripcion} onChange={handleChange} required minLength={10} /></label>
@@ -101,6 +135,6 @@ export default function EventEditView() {
         </form>
       </div>
       </div>
-    </AdminSidebar>
+    </Sidebar>
   );
 }
