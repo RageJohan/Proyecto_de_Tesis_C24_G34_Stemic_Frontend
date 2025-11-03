@@ -19,6 +19,8 @@ import SurveyView from "../components/SurveyView";
 import AdminEventsPanel from "../components/AdminEventsPanel";
 import AdminPostulationsPanel from "../components/AdminPostulationsPanel";
 import AdminAlliancesPanel from "../components/AdminAlliancesPanel";
+import AdminDashboard from "../components/AdminDashboard";
+import AdminReportsPanel from "../components/AdminReportsPanel";
 import EventCreateView from "../components/EventCreateView";
 import EventEditView from "../components/EventEditView";
 
@@ -59,7 +61,7 @@ export default function AppRouter() {
   
   // Redirección inteligente post-login (desde /dashboard)
   const getDashboardPath = () => {
-    if (user?.rol === 'admin') return '/admin-events';
+  if (user?.rol === 'admin') return '/admin-dashboard';
     if (user?.rol === 'organizador') return '/organizer-dashboard'; // NUEVO
     return '/'; // Ruta por defecto para usuarios normales
   };
@@ -117,6 +119,14 @@ export default function AppRouter() {
       <Route
         path="/admin-events"
         element={<ProtectedRoute element={<AdminEventsPanel />} requiredRoles={['admin']} />}
+      />
+      <Route
+        path="/admin-reports"
+        element={<ProtectedRoute element={<AdminReportsPanel />} requiredRoles={['admin']} />}
+      />
+      <Route
+        path="/admin-dashboard"
+        element={<ProtectedRoute element={<AdminDashboard />} requiredRoles={['admin']} />}
       />
        <Route
         path="/admin-events/create"
