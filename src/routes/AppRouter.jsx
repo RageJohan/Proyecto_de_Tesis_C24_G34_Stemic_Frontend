@@ -21,6 +21,7 @@ import AdminPostulationsPanel from "../components/AdminPostulationsPanel";
 import AdminAlliancesPanel from "../components/AdminAlliancesPanel";
 import AdminDashboard from "../components/AdminDashboard";
 import AdminReportsPanel from "../components/AdminReportsPanel";
+import EventDashboard from "../components/EventDashboard";
 import EventCreateView from "../components/EventCreateView";
 import EventEditView from "../components/EventEditView";
 
@@ -123,6 +124,10 @@ export default function AppRouter() {
       <Route
         path="/admin-reports"
         element={<ProtectedRoute element={<AdminReportsPanel />} requiredRoles={['admin']} />}
+      />
+      <Route
+        path="/event-dashboard"
+        element={<ProtectedRoute element={<EventDashboard />} requiredRoles={['organizador']} />}
       />
       <Route
         path="/admin-dashboard"
