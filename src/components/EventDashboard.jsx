@@ -385,8 +385,14 @@ export default function EventDashboard() {
 
               <div className="table-container" style={{ marginTop: "2rem" }}>
                 <h2 className="panel-subtitle">Actividad reciente</h2>
-                <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
-                  <div>
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "1.5rem",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                  }}
+                >
+                  <div className="table-container" style={{ marginTop: 0 }}>
                     <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Inscripciones</h3>
                     {recentActivity.inscripciones.length > 0 ? (
                       <table className="admin-events-table">
@@ -414,7 +420,7 @@ export default function EventDashboard() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="table-container" style={{ marginTop: 0 }}>
                     <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Asistencias</h3>
                     {recentActivity.asistencias.length > 0 ? (
                       <table className="admin-events-table">
@@ -442,7 +448,7 @@ export default function EventDashboard() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="table-container" style={{ marginTop: 0 }}>
                     <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Evaluaciones</h3>
                     {recentActivity.evaluaciones.length > 0 ? (
                       <table className="admin-events-table">
