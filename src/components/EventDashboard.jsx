@@ -210,7 +210,7 @@ export default function EventDashboard() {
       setLoadingEvents(true);
       setError(null);
       try {
-        const list = isAdmin ? await getAllEvents() : await getMyEventsForOrganizer();
+        const list = await getAllEvents();
         setEvents(list);
         setSelectedEventId((current) => {
           if (!list || list.length === 0) {
