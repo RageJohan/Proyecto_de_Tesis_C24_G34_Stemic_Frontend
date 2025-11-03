@@ -6,7 +6,6 @@ import OrganizerSidebar from "./OrganizerSidebar";
 import {
   getAllEvents,
   getEventPostulations,
-  getMyEventsForOrganizer,
   updateEventPostulationStatus,
 } from "../services/api";
 import "../styles/EventPostulationsPanel.css";
@@ -69,7 +68,7 @@ export default function EventPostulationsPanel() {
       setLoadingEvents(true);
       setError("");
       try {
-        const list = isAdmin ? await getAllEvents() : await getMyEventsForOrganizer();
+        const list = await getAllEvents();
         setEvents(list);
         setSelectedEvent((prev) => {
           if (prev && list.some((event) => event.id === prev)) return prev;
@@ -85,7 +84,7 @@ export default function EventPostulationsPanel() {
     };
 
     fetchEvents();
-  }, [isAdmin, showNotification]);
+  }, [showNotification]);
 
   useEffect(() => {
     if (!selectedEvent) {
