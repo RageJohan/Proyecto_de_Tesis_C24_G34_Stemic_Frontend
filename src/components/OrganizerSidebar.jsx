@@ -17,6 +17,13 @@ const OrganizerSidebar = ({ children }) => {
             Dashboard
           </NavLink>
           <NavLink
+            to="/event-dashboard"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <i className="fas fa-chart-area"></i>
+            Dashboard Evento
+          </NavLink>
+          <NavLink
             to="/organizer-events"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
