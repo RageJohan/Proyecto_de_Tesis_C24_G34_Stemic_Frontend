@@ -1,219 +1,312 @@
-.event-postulations-panel {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+:root {
+  --primary: #38bdf8;       /* Azul celeste brillante para acciones */
+  --text-main: #ffffff;     /* TEXTO BLANCO PRINCIPAL */
+  --text-muted: #cbd5e1;    /* Texto gris claro para subtítulos */
+  --border-glass: rgba(255, 255, 255, 0.15); /* Bordes sutiles semitransparentes */
+  --bg-glass: rgba(255, 255, 255, 0.05);     /* Fondo muy sutil para hover */
 }
 
+/* PANEL PRINCIPAL: Transparente y limpio */
+.event-postulations-panel {
+  padding: 2rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-main);
+  background: transparent;
+  min-height: 80vh;
+}
+
+/* HEADER */
 .event-postulations-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  margin-bottom: 2.5rem;
 }
 
 .event-postulations-header h1 {
-  margin: 0;
-  font-size: 1.75rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.025em;
 }
 
 .event-postulations-header p {
+  color: var(--text-muted);
+  font-size: 1rem;
   margin: 0;
-  color: #64748b;
 }
 
-.event-postulations-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-end;
+/* BARRA DE FILTROS */
+.filters-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr; /* Ajuste para mejor distribución */
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  align-items: end;
 }
 
-.event-postulations-controls label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #0f172a;
-  min-width: 200px;
-}
-
-.event-postulations-controls select,
-.event-postulations-controls input[type="search"] {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #cbd5f5;
-  border-radius: 0.75rem;
-  background: #fff;
-}
-
-.postulation-user {
+.filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.6rem;
 }
 
-.postulation-user-name {
+.filter-group label {
+  font-size: 0.9rem;
   font-weight: 600;
+  color: var(--text-muted); /* Etiqueta gris claro */
+  margin-left: 0.25rem;
 }
 
-.postulation-user-email {
-  font-size: 0.875rem;
-  color: #64748b;
-}
-
-.status-select {
-  padding: 0.35rem 0.5rem;
+/* INPUTS: Blancos para máximo contraste y legibilidad */
+.modern-select,
+.modern-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
   border-radius: 0.75rem;
-  border: 1px solid #94a3b8;
-  font-weight: 600;
-  background-color: #f8fafc;
+  background-color: #ffffff; 
+  color: #0f172a; /* Texto interno oscuro para leer bien lo que escribes */
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
 }
 
-.status-pendiente {
-  color: #f59e0b;
-}
-
-.status-en_revision {
-  color: #38bdf8;
-}
-
-.status-preseleccionado {
-  color: #a855f7;
-}
-
-.status-aprobado {
-  color: #22c55e;
-}
-
-.status-rechazado {
-  color: #ef4444;
-}
-
-.event-postulations-table-wrapper {
-  border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  overflow: hidden;
-  background: #fff;
+.modern-select:focus,
+.modern-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.4); /* Glow azul al enfocar */
 }
 
 .postulation-status-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 2.5rem;
+  width: 100%;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-glass);
 }
 
-.postulation-status-card {
-  padding: 1.25rem;
-  border-radius: 1rem;
-  background: #f8fafc;
+.postulation-stat-item {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
+  min-width: 0; 
+  position: relative;
 }
 
-.postulation-status-label {
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.9;
+}
+
+.stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 8px currentColor; /* Pequeño brillo neon */
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+/* TABLA: Estilo "Glass" (Vidrio) */
+.event-postulations-table-wrapper {
+  overflow-x: auto;
+  /* Sin bordes duros, solo el contenido flotando */
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: separate; /* Necesario para bordes redondeados en filas si quisieras */
+  border-spacing: 0;
+}
+
+.modern-table th {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.modern-table td {
+  padding: 1.25rem 1.5rem;
+  vertical-align: middle;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.modern-table tr:hover td {
+  background-color: var(--bg-glass); /* Ilumina la fila al pasar el mouse */
+}
+
+/* CELDAS DE USUARIO */
+.user-cell {
+  display: flex;
+  flex-direction: column;
+}
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+.user-email {
+  font-size: 0.85rem;
+  color: var(--text-muted); /* Gris claro para el correo */
+  opacity: 0.8;
+}
+
+/* BADGES DE ESTADO: Diseño limpio tipo "Pill" */
+.status-badge-container {
+  display: inline-flex;
+}
+
+.status-select-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  text-align: center;
+  /* Los badges mantienen sus colores brillantes pero adaptados */
 }
 
-.postulation-status-value {
-  font-size: 1.75rem;
-  font-weight: 700;
+/* Colores vibrantes que resaltan sobre fondo oscuro */
+.status-pendiente .status-select-badge { background: #fff7ed; color: #ea580c; }
+.status-en_revision .status-select-badge { background: #eff6ff; color: #2563eb; }
+.status-preseleccionado .status-select-badge { background: #faf5ff; color: #9333ea; }
+.status-aprobado .status-select-badge { background: #f0fdf4; color: #16a34a; }
+.status-rechazado .status-select-badge { background: #fef2f2; color: #dc2626; }
+
+/* BOTONES DE ACCIÓN */
+.action-btn {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: var(--primary);
+  color: #0f172a; /* Texto oscuro sobre botón brillante */
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+/* PAGINACIÓN */
+.pagination-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-glass);
+  color: var(--text-muted);
+}
+
+.page-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-glass);
+  background: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--primary);
+  border-color: var(--primary);
   color: #0f172a;
 }
 
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.pagination-controls button {
-  padding: 0.5rem 1.25rem;
-  border-radius: 9999px;
-  border: none;
-  background: #0ea5e9;
-  color: #fff;
-  cursor: pointer;
-}
-
-.pagination-controls button:disabled {
-  background: #cbd5f5;
+.page-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.event-postulations-modal {
+/* MODAL: Mantenemos fondo blanco para lectura clara */
+.modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2000;
   padding: 1.5rem;
-  z-index: 1000;
 }
 
-.event-postulations-modal-content {
-  position: relative;
-  background: #fff;
-  border-radius: 1.25rem;
-  max-width: 640px;
+.modal-card {
+  background: #ffffff;
+  border-radius: 1.5rem;
   width: 100%;
-  max-height: 80vh;
-  padding: 2rem;
-  overflow-y: auto;
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+  max-width: 650px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: #0f172a; /* Reset de color para el modal */
 }
 
-.event-postulations-modal-close {
+.postulation-stat-item:not(:last-child)::after {
+  content: '';
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+  right: -1.25rem;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: var(--border-glass);
+  opacity: 0.5;
 }
 
-.event-postulations-modal-body {
-  margin-top: 1.5rem;
-}
+/* Ajustes de color dentro del modal (donde el fondo es blanco) */
+.modal-card h2, .modal-card h3, .modal-card strong { color: #0f172a; }
+.modal-card p, .modal-card span { color: #475569; }
+.modal-header { border-bottom: 1px solid #e2e8f0; }
+.modal-footer { border-top: 1px solid #e2e8f0; }
 
-.event-postulations-modal-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.event-postulations-modal-list li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.85rem;
-  background: #f8fafc;
-}
-
-.event-postulations-modal-list strong {
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.event-postulations-modal-list span {
-  color: #475569;
-  white-space: pre-wrap;
-}
-
+/* Responsividad */
 @media (max-width: 768px) {
-  .event-postulations-controls {
-    flex-direction: column;
-    align-items: stretch;
+  .filters-toolbar {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
-
-  .event-postulations-modal-content {
-    max-height: 90vh;
-    padding: 1.5rem;
+  .postulation-status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-glass);
   }
-}
+  .postulation-stat-item::after {
+    display: none; /* Quitamos las líneas en móvil */
+  }
+};
