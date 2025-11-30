@@ -836,3 +836,36 @@ export async function getAllEvents() {
   return json.data || [];
 }
 
+/**
+ * Obtiene el QR activo de un evento si existe.
+ * GET /api/attendance/event/:evento_id/qr
+ * @param {string} eventId
+ * @returns {Promise<object>} Respuesta del servidor con los datos del QR.
+ */
+export async function getActiveAttendanceQR(eventId) {
+  try {
+    // Usamos tu función fetchWithAuth y la constante API_URL existente
+    const res = await fetchWithAuth(`${API_URL}/api/attendance/event/${eventId}/qr`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    
+    const json = await res.json();
+    return json;
+
+  } catch (error) {
+    // IMPORTANTE: Tu función fetchWithAuth lanza un Error genérico con el mensaje del backend,
+    // pero no adjunta el código de estado (status). 
+    // Para que la lógica que te di en AdminEventsPanel funcione (donde verificamos error.response.status === 404),
+    // debemos interceptar el error específico de "No encontrado" y simular esa estructura.
+
+    if (error.message === 'No hay QR activo para este evento') {
+      const notFoundError = new Error(error.message);
+      notFoundError.response = { status: 404 };
+      throw notFoundError;
+    }
+    
+    // Si es otro error, lo relanzamos tal cual
+    throw error;
+  }
+}

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "./AdminSidebar";
-import { getEvents, generateAttendanceQR } from "../services/api";
+import {
+  getEvents,
+  generateAttendanceQR,
+  getActiveAttendanceQR,
+} from "../services/api";
 import AttendanceQR from "./AttendanceQR";
 import "../styles/AdminEventsPanel.css";
 import { useNavigate } from "react-router-dom";
@@ -51,34 +55,66 @@ export default function AdminEventsPanel() {
   const handleGenerateQR = async (event) => {
     setQrLoading(true);
     setQrError("");
-    setCurrentQRData(null); // Clear previous data
-    setShowQRModal(true); // Show modal immediately with loading/initial state
+    setCurrentQRData(null);
+    setShowQRModal(true); // Mostrar modal cargando
 
     try {
       if (!event || !event.id) {
         throw new Error("Datos del evento inválidos.");
       }
-      // Call the API function to generate the QR
-      const qrData = await generateAttendanceQR(event.id);
 
-      // Check if the response contains the QR image data
+      let qrData = null;
+
+      // PASO 1: Intentar obtener un QR activo existente
+      try {
+        const response = await getActiveAttendanceQR(event.id);
+        // Dependiendo de tu backend, la info suele venir en response.data
+        if (response.success && response.data) {
+          qrData = response.data;
+          // console.log("QR existente encontrado");
+        }
+      } catch (error) {
+        // Si el error es 404 (Not Found), significa que NO hay QR, así que continuamos para crearlo.
+        // Si es otro error (ej. 500), lo dejamos pasar al catch principal.
+        if (error.response && error.response.status !== 404) {
+          throw error;
+        }
+        // Si es 404, simplemente qrData se mantiene null y seguimos al paso 2
+      }
+
+      // PASO 2: Si no se encontró QR activo, generamos uno nuevo
+      if (!qrData) {
+        // console.log("Generando nuevo QR...");
+        const newQrResponse = await generateAttendanceQR(event.id);
+        // generateAttendanceQR en tu api.js devuelve json.data o json directamente
+        qrData = newQrResponse;
+      }
+
+      // PASO 3: Mostrar el resultado
       if (qrData && qrData.qr_code_image) {
         setCurrentQRData({
           qrCodeImage: qrData.qr_code_image,
-          eventInfo: { // Pass necessary event info to the QR component
+          eventInfo: {
             titulo: event.titulo,
             fecha_hora: event.fecha_hora,
           },
         });
+
+        // Opcional: Actualizar el estado local para que el botón cambie de texto en la UI inmediatamente
+        // Esto marca el evento actual como "con QR" en la lista visual
+        setEvents((prevEvents) =>
+          prevEvents.map((ev) =>
+            ev.id === event.id ? { ...ev, hasQR: true } : ev
+          )
+        );
       } else {
-        // Handle cases where the backend response might be missing the image
-        console.error("Respuesta del backend inesperada:", qrData);
-        throw new Error("No se recibió la imagen del QR desde el backend.");
+        throw new Error("No se recibió la imagen del QR desde el servidor.");
       }
     } catch (err) {
-      setQrError(err.message || "Error desconocido al generar el QR.");
+      console.error(err);
+      setQrError(err.message || "Error al procesar el código QR.");
     } finally {
-      setQrLoading(false); // Stop loading state regardless of outcome
+      setQrLoading(false);
     }
   };
 
@@ -139,7 +175,9 @@ export default function AdminEventsPanel() {
                           {/* Edit Button */}
                           <button
                             className="admin-events-btn edit"
-                            onClick={() => navigate(`/admin-events/edit/${ev.id}`)}
+                            onClick={() =>
+                              navigate(`/admin-events/edit/${ev.id}`)
+                            }
                             aria-label={`Editar evento ${ev.titulo}`}
                           >
                             <i className="fas fa-edit"></i> Editar
@@ -147,13 +185,27 @@ export default function AdminEventsPanel() {
 
                           {/* QR Code Button */}
                           <button
-                            className="admin-events-btn qr" // Added specific class for styling if needed
+                            className="admin-events-btn qr"
                             onClick={() => handleGenerateQR(ev)}
-                            disabled={qrLoading} // Disable while loading QR
-                            aria-label={`Generar QR para ${ev.titulo}`}
-                            style={{ background: 'rgba(76, 175, 80, 0.2)', border: '1px solid rgba(76, 175, 80, 0.3)', color: '#fff'}} // Inline style for distinction
+                            disabled={qrLoading}
+                            aria-label={`QR para ${ev.titulo}`}
+                            style={{
+                              background: ev.hasQR
+                                ? "rgba(33, 150, 243, 0.2)"
+                                : "rgba(76, 175, 80, 0.2)", // Azul si ya tiene, Verde si es nuevo
+                              border: ev.hasQR
+                                ? "1px solid rgba(33, 150, 243, 0.3)"
+                                : "1px solid rgba(76, 175, 80, 0.3)",
+                              color: "#fff",
+                            }}
                           >
-                            <i className="fas fa-qrcode"></i> QR Asistencia
+                            <i
+                              className={`fas ${
+                                ev.hasQR ? "fa-eye" : "fa-qrcode"
+                              }`}
+                            ></i>
+                            {/* Cambia el texto si sabemos localmente que ya tiene QR */}
+                            {ev.hasQR ? " Ver QR" : " Generar QR"}
                           </button>
 
                           {/* Delete Button */}
@@ -162,7 +214,7 @@ export default function AdminEventsPanel() {
                             aria-label={`Eliminar evento ${ev.titulo}`}
                             // Add onClick handler for delete functionality later
                           >
-                             <i className="fas fa-trash"></i> Eliminar
+                            <i className="fas fa-trash"></i> Eliminar
                           </button>
                         </div>
                       </td>
@@ -176,25 +228,44 @@ export default function AdminEventsPanel() {
       </div>
 
       {/* Conditional rendering for the QR Modal */}
-      {showQRModal && (
-        qrLoading ? (
+      {showQRModal &&
+        (qrLoading ? (
           // Loading state inside the modal overlay
           <div className="attendance-qr-modal-overlay">
-            <div className="attendance-qr-modal-content" style={{ padding: '2rem', textAlign: 'center' }}>
-              <p style={{fontSize: '1.2rem', fontWeight: 'bold'}}>Generando código QR...</p>
+            <div
+              className="attendance-qr-modal-content"
+              style={{ padding: "2rem", textAlign: "center" }}
+            >
+              <p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                Generando código QR...
+              </p>
               {/* Optional: Add a spinner component here */}
-              <div className="loader-spinner loader-spinner-medium" style={{ margin: '1rem auto' }}></div>
+              <div
+                className="loader-spinner loader-spinner-medium"
+                style={{ margin: "1rem auto" }}
+              ></div>
             </div>
           </div>
         ) : qrError ? (
-           // Error state inside the modal overlay
+          // Error state inside the modal overlay
           <div className="attendance-qr-modal-overlay">
             <div className="attendance-qr-modal-content">
               {/* Added close button also for error state */}
-              <button onClick={handleCloseQRModal} className="qr-close-btn top-right" aria-label="Cerrar">×</button>
+              <button
+                onClick={handleCloseQRModal}
+                className="qr-close-btn top-right"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
               <h2>Error al generar QR</h2>
-              <p style={{ color: '#ff5252', margin: '1rem 0' }}>{qrError}</p>
-              <button onClick={handleCloseQRModal} className="qr-close-btn bottom">Cerrar</button>
+              <p style={{ color: "#ff5252", margin: "1rem 0" }}>{qrError}</p>
+              <button
+                onClick={handleCloseQRModal}
+                className="qr-close-btn bottom"
+              >
+                Cerrar
+              </button>
             </div>
           </div>
         ) : currentQRData ? (
@@ -204,8 +275,8 @@ export default function AdminEventsPanel() {
             eventInfo={currentQRData.eventInfo}
             onClose={handleCloseQRModal} // Pass the close handler
           />
-        ) : null // Render nothing if modal is closed or data is not ready (and not loading/error)
-      )}
+        ) : null) // Render nothing if modal is closed or data is not ready (and not loading/error)
+      }
     </AdminSidebar>
   );
 }
