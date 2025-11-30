@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import OrganizerSidebar from "./OrganizerSidebar";
-import { getEvents, getMyEventsForOrganizer, generateAttendanceQR, deleteEvent } from "../services/api";
+// IMPORTANTE: Agregamos getActiveAttendanceQR a los imports
+import { getEvents, getMyEventsForOrganizer, generateAttendanceQR, deleteEvent, getActiveAttendanceQR } from "../services/api";
 import AttendanceQR from "./AttendanceQR";
 import { useNavigate } from "react-router-dom";
 import { useLoader } from "../context/LoaderContext";
@@ -39,6 +40,13 @@ export default function OrganizerEventsPanel() {
       });
   };
 
+  /**
+   * Maneja la generación y visualización del código QR.
+   * Lógica mejorada:
+   * 1. Intenta buscar un QR activo existente.
+   * 2. Si existe, lo muestra.
+   * 3. Si no existe (error 404), genera uno nuevo.
+   */
   const handleGenerateQR = (event) => {
     setQrError("");
     setCurrentQRData(null);
@@ -47,7 +55,34 @@ export default function OrganizerEventsPanel() {
     withLoader(
       async () => {
         if (!event || !event.id) throw new Error("Datos del evento inválidos.");
-        const qrData = await generateAttendanceQR(event.id);
+
+        let qrData = null;
+
+        // PASO 1: Intentar obtener un QR activo existente
+        try {
+          const response = await getActiveAttendanceQR(event.id);
+          if (response.success && response.data) {
+            qrData = response.data;
+          }
+        } catch (error) {
+          // Si el error es 404, significa que NO hay QR, así que continuamos para crearlo.
+          if (error.response && error.response.status !== 404) {
+            throw error;
+          }
+        }
+
+        // PASO 2: Si no se encontró QR activo, generamos uno nuevo
+        if (!qrData) {
+          const response = await generateAttendanceQR(event.id);
+          qrData = response.data || response;
+          
+           // Actualizamos estado local para reflejar que ya tiene QR (para cambiar texto del botón)
+           setEvents(prevEvents => 
+            prevEvents.map(e => e.id === event.id ? { ...e, hasQR: true } : e)
+          );
+        }
+
+        // PASO 3: Mostrar el QR
         if (qrData && qrData.qr_code_image) {
           return {
             qrCodeImage: qrData.qr_code_image,
@@ -60,7 +95,7 @@ export default function OrganizerEventsPanel() {
           throw new Error("No se recibió la imagen del QR desde el backend.");
         }
       },
-      { sectionId: 'qrGeneration', message: 'Generando código QR...' }
+      { sectionId: 'qrGeneration', message: 'Procesando código QR...' }
     )
     .then(data => setCurrentQRData(data))
     .catch(err => setQrError(err.message || "Error al generar el QR."));
@@ -152,9 +187,17 @@ export default function OrganizerEventsPanel() {
                               className="admin-events-btn qr"
                               onClick={() => handleGenerateQR(ev)}
                               disabled={qrLoading}
-                              aria-label={`Generar QR para ${ev.titulo}`}
+                              aria-label={`QR para ${ev.titulo}`}
+                              style={{ 
+                                // Estilos dinámicos para diferenciar "Generar" de "Ver"
+                                background: ev.hasQR ? 'rgba(33, 150, 243, 0.2)' : 'rgba(76, 175, 80, 0.2)', 
+                                border: ev.hasQR ? '1px solid rgba(33, 150, 243, 0.3)' : '1px solid rgba(76, 175, 80, 0.3)',
+                                color: '#fff'
+                              }}
                             >
-                              <i className="fas fa-qrcode"></i> QR Asistencia
+                              <i className={`fas ${ev.hasQR ? 'fa-eye' : 'fa-qrcode'}`}></i> 
+                              {/* Texto dinámico */}
+                              {ev.hasQR ? " Ver QR" : " Generar QR"}
                             </button>
                           )}
                           
@@ -192,13 +235,13 @@ export default function OrganizerEventsPanel() {
           <div className="attendance-qr-modal-content">
             {qrLoading ? (
               <>
-                <p style={{fontSize: '1.2rem', fontWeight: 'bold'}}>Generando código QR...</p>
+                <p style={{fontSize: '1.2rem', fontWeight: 'bold'}}>Procesando código QR...</p>
                 <div className="loader-spinner loader-spinner-medium" style={{ margin: '1rem auto' }}></div>
               </>
             ) : qrError ? (
               <>
                 <button onClick={handleCloseQRModal} className="qr-close-btn top-right" aria-label="Cerrar">×</button>
-                <h2>Error al generar QR</h2>
+                <h2>Error</h2>
                 <p style={{ color: '#ff5252', margin: '1rem 0' }}>{qrError}</p>
                 <button onClick={handleCloseQRModal} className="qr-close-btn bottom">Cerrar</button>
               </>
