@@ -4,7 +4,6 @@ import { useNotification } from "../context/NotificationContext";
 import {
   getAllEvents,
   getEventMetrics,
-  getMyEventsForOrganizer,
 } from "../services/api";
 import AdminSidebar from "./AdminSidebar";
 import OrganizerSidebar from "./OrganizerSidebar";
@@ -191,6 +190,9 @@ export default function EventDashboard() {
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Estado para controlar la pestaña activa en Actividad Reciente
+  const [activeTab, setActiveTab] = useState("inscripciones");
 
   const isAdmin = user?.rol === "admin";
   const Layout = useMemo(() => (isAdmin ? AdminSidebar : OrganizerSidebar), [isAdmin]);
@@ -261,6 +263,119 @@ export default function EventDashboard() {
     fetchMetrics();
   }, [selectedEventId, showNotification]);
 
+  // Renderizado condicional de las tablas según la pestaña activa
+  const renderActivityTable = () => {
+    switch (activeTab) {
+      case "inscripciones":
+        return recentActivity.inscripciones.length > 0 ? (
+          <table className="admin-events-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentActivity.inscripciones.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.nombre || "N/A"}</td>
+                  <td>{item.correo || "N/A"}</td>
+                  <td>{formatDateTime(item.fecha)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="orgs-empty" style={{ padding: "2rem 0" }}>Sin inscripciones recientes.</div>
+        );
+
+      case "asistencias":
+        return recentActivity.asistencias.length > 0 ? (
+          <table className="admin-events-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentActivity.asistencias.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.nombre || "N/A"}</td>
+                  <td>{item.correo || "N/A"}</td>
+                  <td>{formatDateTime(item.fecha)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="orgs-empty" style={{ padding: "2rem 0" }}>Sin asistencias registradas aún.</div>
+        );
+
+      case "evaluaciones":
+        return recentActivity.evaluaciones.length > 0 ? (
+          <table className="admin-events-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Calificación</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentActivity.evaluaciones.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.nombre || "N/A"}</td>
+                  <td>{item.calificacion_general ? item.calificacion_general.toFixed(1) : "N/A"}</td>
+                  <td>{formatDateTime(item.fecha)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="orgs-empty" style={{ padding: "2rem 0" }}>Sin evaluaciones recientes.</div>
+        );
+
+      case "postulaciones":
+        return postulaciones.recientes.length > 0 ? (
+          <table className="admin-events-table">
+            <thead>
+              <tr>
+                <th>Postulante</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {postulaciones.recientes.map((item) => (
+                <tr key={item.id}>
+                  <td>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <span>{item.nombre}</span>
+                      <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>{item.correo}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`status-badge status-${item.estado}`}>
+                        {item.estado.replace(/_/g, " ")}
+                    </span>
+                  </td>
+                  <td>{formatDateTime(item.fecha_postulacion)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="orgs-empty" style={{ padding: "2rem 0" }}>Sin postulaciones recientes.</div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <Layout>
       <div className="admin-events-container">
@@ -285,6 +400,7 @@ export default function EventDashboard() {
         </div>
 
         <div className="admin-events-panel" style={{ padding: "1.5rem" }}>
+          {/* Selector de Evento */}
           <div
             style={{
               display: "flex",
@@ -388,8 +504,9 @@ export default function EventDashboard() {
                 />
               </div>
 
-              {postulaciones.resumen?.total ? (
-                <div className="postulation-status-grid">
+              {/* Status de Postulaciones (si aplica) */}
+              {postulaciones.resumen?.total > 0 && (
+                <div className="postulation-status-grid" style={{ marginBottom: '2rem' }}>
                   {[
                     { label: "Pendientes", value: postulaciones.resumen.pendientes, color: "#fbbf24" },
                     { label: "En revisión", value: postulaciones.resumen.en_revision, color: "#38bdf8" },
@@ -407,8 +524,9 @@ export default function EventDashboard() {
                     </div>
                   ))}
                 </div>
-              ) : null}
+              )}
 
+              {/* Gráficos */}
               <div className="dashboard-charts-row">
                 <div className="chart-container">
                   <h3>Inscripciones vs. Asistencias</h3>
@@ -420,131 +538,80 @@ export default function EventDashboard() {
                 </div>
               </div>
 
+              {/* SECCIÓN MEJORADA DE ACTIVIDAD RECIENTE CON TABS */}
               <div className="table-container" style={{ marginTop: "2rem" }}>
-                <h2 className="panel-subtitle">Actividad reciente</h2>
-                <div
-                  style={{
-                    display: "grid",
-                    gap: "1.5rem",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                  }}
-                >
-                  <div className="table-container" style={{ marginTop: 0 }}>
-                    <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Inscripciones</h3>
-                    {recentActivity.inscripciones.length > 0 ? (
-                      <table className="admin-events-table">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Correo</th>
-                            <th>Fecha</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {recentActivity.inscripciones.map((item) => (
-                            <tr key={item.id}>
-                              <td>{item.nombre || "N/A"}</td>
-                              <td>{item.correo || "N/A"}</td>
-                              <td>{formatDateTime(item.fecha)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <div className="orgs-empty" style={{ padding: "1rem 0" }}>
-                        Sin inscripciones recientes.
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="table-container" style={{ marginTop: 0 }}>
-                    <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Asistencias</h3>
-                    {recentActivity.asistencias.length > 0 ? (
-                      <table className="admin-events-table">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Correo</th>
-                            <th>Fecha</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {recentActivity.asistencias.map((item) => (
-                            <tr key={item.id}>
-                              <td>{item.nombre || "N/A"}</td>
-                              <td>{item.correo || "N/A"}</td>
-                              <td>{formatDateTime(item.fecha)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <div className="orgs-empty" style={{ padding: "1rem 0" }}>
-                        Sin asistencias registradas aún.
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="table-container" style={{ marginTop: 0 }}>
-                    <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Evaluaciones</h3>
-                    {recentActivity.evaluaciones.length > 0 ? (
-                      <table className="admin-events-table">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Calificación</th>
-                            <th>Fecha</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {recentActivity.evaluaciones.map((item) => (
-                            <tr key={item.id}>
-                              <td>{item.nombre || "N/A"}</td>
-                              <td>{item.calificacion_general ? item.calificacion_general.toFixed(1) : "N/A"}</td>
-                              <td>{formatDateTime(item.fecha)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <div className="orgs-empty" style={{ padding: "1rem 0" }}>
-                    <div className="table-container" style={{ marginTop: 0 }}>
-                      <h3 style={{ color: "#e0d7ff", marginBottom: "0.75rem" }}>Postulaciones</h3>
-                      {postulaciones.recientes.length > 0 ? (
-                        <table className="admin-events-table">
-                          <thead>
-                            <tr>
-                              <th>Postulante</th>
-                              <th>Estado</th>
-                              <th>Fecha</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {postulaciones.recientes.map((item) => (
-                              <tr key={item.id}>
-                                <td>
-                                  <div style={{ display: "flex", flexDirection: "column" }}>
-                                    <span>{item.nombre}</span>
-                                    <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>{item.correo}</span>
-                                  </div>
-                                </td>
-                                <td style={{ textTransform: "capitalize" }}>{item.estado.replace(/_/g, " ")}</td>
-                                <td>{formatDateTime(item.fecha_postulacion)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        <div className="table-empty">Sin postulaciones recientes.</div>
-                      )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #334155', paddingBottom: '0.5rem' }}>
+                    <h2 className="panel-subtitle" style={{margin: 0}}>Actividad reciente</h2>
+                    <div className="tabs-container" style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button 
+                            className={`tab-button ${activeTab === 'inscripciones' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('inscripciones')}
+                            style={{ 
+                                background: activeTab === 'inscripciones' ? '#7957F2' : 'transparent',
+                                color: activeTab === 'inscripciones' ? '#fff' : '#94a3b8',
+                                border: '1px solid #334155',
+                                borderRadius: '6px',
+                                padding: '0.5rem 1rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Inscripciones
+                        </button>
+                        <button 
+                            className={`tab-button ${activeTab === 'asistencias' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('asistencias')}
+                            style={{ 
+                                background: activeTab === 'asistencias' ? '#4CAF50' : 'transparent',
+                                color: activeTab === 'asistencias' ? '#fff' : '#94a3b8',
+                                border: '1px solid #334155',
+                                borderRadius: '6px',
+                                padding: '0.5rem 1rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Asistencias
+                        </button>
+                        <button 
+                            className={`tab-button ${activeTab === 'evaluaciones' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('evaluaciones')}
+                            style={{ 
+                                background: activeTab === 'evaluaciones' ? '#FFC107' : 'transparent',
+                                color: activeTab === 'evaluaciones' ? '#000' : '#94a3b8',
+                                fontWeight: activeTab === 'evaluaciones' ? 'bold' : 'normal',
+                                border: '1px solid #334155',
+                                borderRadius: '6px',
+                                padding: '0.5rem 1rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Evaluaciones
+                        </button>
+                        <button 
+                            className={`tab-button ${activeTab === 'postulaciones' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('postulaciones')}
+                            style={{ 
+                                background: activeTab === 'postulaciones' ? '#22d3ee' : 'transparent',
+                                color: activeTab === 'postulaciones' ? '#000' : '#94a3b8',
+                                fontWeight: activeTab === 'postulaciones' ? 'bold' : 'normal',
+                                border: '1px solid #334155',
+                                borderRadius: '6px',
+                                padding: '0.5rem 1rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Postulaciones
+                        </button>
                     </div>
-                        Sin evaluaciones recientes.
-                      </div>
-                    )}
-                  </div>
                 </div>
+                
+                {renderActivityTable()}
               </div>
 
+              {/* Feedback */}
               <div className="table-container" style={{ marginTop: "2rem" }}>
                 <h2 className="panel-subtitle">Retroalimentación destacada</h2>
                 {feedback.length > 0 ? (
