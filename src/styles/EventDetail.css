@@ -12,7 +12,7 @@
 }
 
 .event-detail-wrapper {
-  background-color: var(#030c40);
+  background-color: #030c40;
   min-height: 100vh;
   padding-bottom: 4rem;
   color: var(--text-main);
