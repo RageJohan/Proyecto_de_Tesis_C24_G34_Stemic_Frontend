@@ -9,19 +9,39 @@ import Header from "./Header";
 import "../styles/SurveyView.css";
 import Loader from "./Loader";
 
-// Componente para las estrellas de puntuación
+// Iconos SVG (Inline para evitar dependencias extra)
+const Icons = {
+  Star: ({ filled, onClick, className }) => (
+    <svg 
+      className={`${className} ${filled ? 'star-filled' : 'star-empty'}`} 
+      onClick={onClick}
+      viewBox="0 0 24 24" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+    </svg>
+  ),
+  CheckCircle: () => <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+  AlertCircle: () => <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+};
+
+// Componente para las estrellas de puntuación (Mejorado con SVG)
 const StarRating = ({ rating, onRatingChange, disabled = false }) => {
+  // Estado para el hover (efecto visual al pasar el mouse)
+  const [hoverRating, setHoverRating] = useState(0);
+
   return (
-    <div className="star-rating">
+    <div className={`star-rating ${disabled ? 'disabled' : ''}`} onMouseLeave={() => setHoverRating(0)}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <span
+        <Icons.Star
           key={star}
-          className={star <= rating ? "star-filled" : "star-empty"}
+          className="star-icon"
+          // Lógica de llenado: si el hover es mayor o igual al star, O si no hay hover y el rating guardado es mayor
+          filled={star <= (hoverRating || rating)}
           onClick={() => !disabled && onRatingChange(star)}
-          style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}
-        >
-          ★
-        </span>
+          onMouseEnter={() => !disabled && setHoverRating(star)}
+          style={{ cursor: disabled ? 'default' : 'pointer' }}
+        />
       ))}
     </div>
   );
@@ -32,10 +52,7 @@ export default function SurveyView() {
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [questions, setQuestions] = useState([]);
-  
-  // 'responses' será el objeto plano que espera el backend
   const [responses, setResponses] = useState({});
-  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -54,15 +71,9 @@ export default function SurveyView() {
         setEvent(eventData);
         setQuestions(questionsData);
 
-        // Inicializar el estado de las respuestas
         const initialResponses = {};
         questionsData.forEach((q) => {
-          if (q.tipo === "escala") {
-            // Usamos un string vacío para 'sin responder' (lo validaremos al enviar)
-            initialResponses[q.id] = ""; 
-          } else if (q.tipo === "texto") {
-            initialResponses[q.id] = ""; // string vacío para texto
-          }
+          initialResponses[q.id] = ""; 
         });
         setResponses(initialResponses);
       } catch (err) {
@@ -76,7 +87,6 @@ export default function SurveyView() {
     loadData();
   }, [eventId]);
 
-  // Handler unificado para cualquier tipo de respuesta
   const handleResponseChange = (questionId, value) => {
     setResponses((prev) => ({
       ...prev,
@@ -90,79 +100,85 @@ export default function SurveyView() {
     setError(null);
     setSuccess(null);
 
-    // 1. Validar que todas las preguntas de ESCALA estén respondidas
-    // (Tu backend valida de "pregunta_1" a "pregunta_12")
     const scaleQuestions = questions.filter(q => q.tipo === 'escala');
     const incompleteScale = scaleQuestions.some(
       (q) => !responses[q.id] || responses[q.id] === ""
     );
 
     if (incompleteScale) {
-      setError("Por favor, responde todas las preguntas de calificación (estrellas).");
+      setError("Por favor, califica todas las preguntas obligatorias.");
       setIsSubmitting(false);
+      // Scroll al top para ver el error
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    // =======================================================
-    // AQUÍ ESTÁ LA CORRECCIÓN CLAVE:
-    // Construimos el payload EXACTO que espera tu backend.
-    // =======================================================
     const payload = {
       evento_id: eventId,
-      respuestas: responses, // 'responses' es el objeto plano { pregunta_1: 5, ... }
+      respuestas: responses,
     };
 
     try {
-      // 3. Llamar a la función de la API
-      // Esta función (submitEvaluation) ya apunta a POST /api/evaluations
       const result = await submitEvaluation(payload);
       setSuccess(result.message || "¡Evaluación enviada con éxito! Gracias.");
-      setIsSubmitting(true);
+      setIsSubmitting(true); // Mantener disabled mientras redirige
       setTimeout(() => navigate("/participations"), 2500);
     } catch (err) {
-      // Aquí se manejan los errores de la API (ej. "No se registró tu asistencia")
       setError(err.message || "No se pudo enviar la evaluación.");
       setIsSubmitting(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   if (loading) return <Loader />;
 
   return (
-    <>
+    <div className="survey-wrapper">
       <Header />
       <div className="survey-container">
-        {event && (
-          <h1 className="survey-title">
-            Encuesta de Satisfacción:{" "}
-            <span className="survey-event-name">{event.titulo}</span>
-          </h1>
+        
+        {/* Cabecera de la Tarjeta */}
+        <div className="survey-header-content">
+          {event && (
+            <h1 className="survey-title">
+              Evaluación de Evento
+              <span className="survey-event-name">{event.titulo}</span>
+            </h1>
+          )}
+          {!error && !success && (
+            <p className="survey-description">
+              Tu opinión nos ayuda a mejorar. Por favor, tómate un momento para calificar tu experiencia.
+            </p>
+          )}
+        </div>
+
+        {/* Mensajes de Feedback */}
+        {error && (
+          <div className="survey-message survey-error">
+            <Icons.AlertCircle />
+            <span>{error}</span>
+          </div>
+        )}
+        {success && (
+          <div className="survey-message survey-success">
+            <Icons.CheckCircle />
+            <span>{success}</span>
+          </div>
         )}
 
-        {error && <div className="survey-message survey-error">{error}</div>}
-        {success && <div className="survey-message survey-success">{success}</div>}
-
-        {!error && !success && (
-          <p className="survey-description">
-            Tu opinión es muy importante para nosotros. Por favor, califica tu
-            experiencia.
-          </p>
-        )}
-
+        {/* Formulario */}
         <form className="survey-form" onSubmit={handleSubmit}>
-          
           {questions.map((q) => (
             <div className="survey-question" key={q.id}>
               
               <label className="survey-question-label" htmlFor={q.id}>
                 {q.pregunta}
-                {/* Añadimos un indicador de 'requerido' para las de escala */}
-                {q.tipo === 'escala' && <span style={{ color: 'red' }}> *</span>}
+                {q.tipo === 'escala' && <span className="required-star">*</span>}
               </label>
               
               {q.tipo === "escala" && (
                 <StarRating
-                  rating={responses[q.id] || 0} // Si es "" o 0, muestra 0 estrellas
+                  rating={responses[q.id] || 0}
                   onRatingChange={(rating) => handleResponseChange(q.id, rating)}
                   disabled={isSubmitting}
                 />
@@ -173,7 +189,7 @@ export default function SurveyView() {
                   id={q.id}
                   className="survey-textarea"
                   rows="3"
-                  placeholder={q.placeholder || "Escribe tu respuesta..."}
+                  placeholder={q.placeholder || "Escribe tu opinión aquí..."}
                   value={responses[q.id] || ""}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
                   disabled={isSubmitting}
@@ -182,15 +198,27 @@ export default function SurveyView() {
             </div>
           ))}
 
-          <button
-            type="submit"
-            className="survey-submit-btn"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Enviando..." : "Enviar Evaluación"}
-          </button>
+          <div className="form-actions">
+            <button
+              type="submit"
+              className="survey-submit-btn"
+              disabled={isSubmitting || success}
+              style={{ width: '100%' }}
+            >
+              {isSubmitting ? "Enviando respuestas..." : "Enviar Evaluación"}
+            </button>
+            
+            <button 
+              type="button" 
+              className="btn-back"
+              onClick={() => navigate(-1)}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </button>
+          </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
