@@ -1,36 +1,65 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Importar Link y useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import "../styles/Participations.css";
-import { getMyInscriptions } from "../services/api";
+import { getMyInscriptions, cancelarInscripcionEvento } from "../services/api";
 
 export default function Participations() {
   const [participations, setParticipations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Hook para navegar
+  const navigate = useNavigate();
 
   useEffect(() => {
+    fetchParticipations();
+  }, []);
+
+  const fetchParticipations = () => {
     setLoading(true);
     getMyInscriptions()
       .then((data) => {
-        // =======================================================
-        // NUEVO: Filtramos las inscripciones que han sido "canceladas"
-        // para que solo se muestren las participaciones activas.
-        // =======================================================
+        // Filtrar inscripciones canceladas
         const activeParticipations = data.filter(
           (p) => p.estado !== "cancelada"
         );
+        // Ordenar por fecha (más recientes primero)
+        activeParticipations.sort((a, b) => {
+          const dateA = new Date(a.evento?.fecha_hora || a.evento_fecha);
+          const dateB = new Date(b.evento?.fecha_hora || b.evento_fecha);
+          return dateB - dateA;
+        });
         setParticipations(activeParticipations);
       })
       .catch((err) => {
         console.error(err);
-        setError("No se pudieron cargar tus participaciones. " + err.message);
+        setError("No se pudieron cargar tus participaciones.");
       })
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  // Función para determinar si el evento ya pasó
+  const handleCancelInscription = async (eventId, eventTitle) => {
+    const confirm = window.confirm(
+      `¿Estás seguro que deseas cancelar tu participación en "${eventTitle}"?`
+    );
+
+    if (!confirm) return;
+
+    try {
+      await cancelarInscripcionEvento(eventId);
+      // Eliminar visualmente la inscripción cancelada
+      setParticipations((prev) => 
+        prev.filter((p) => {
+            const pId = p.evento?.id || p.event?.id || p.evento_id;
+            return pId !== eventId;
+        })
+      );
+      alert("Inscripción cancelada exitosamente.");
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Error al cancelar la inscripción.");
+    }
+  };
+
   const hasEventFinished = (eventDateStr) => {
     if (!eventDateStr) return false;
     const eventDate = new Date(eventDateStr);
@@ -38,82 +67,111 @@ export default function Participations() {
     return eventDate < now;
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "N/A";
+    return new Date(dateStr).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (dateStr) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <>
       <Header />
       <div className="participations-view">
-        <h2 className="participations-title">Mis Participaciones</h2>
-        {loading && <div>Cargando...</div>}
-        {error && <div style={{ color: "red" }}>{error}</div>}
-        <div className="participations-table-box">
-          <table className="participations-table">
-            <thead>
-              <tr>
-                <th>Evento</th>
-                <th>Fecha, Hora</th>
-                <th>Modalidad</th>
-                {/* Columna de Estado ELIMINADA */}
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {participations.length === 0 && !loading ? (
-                <tr>
-                  {/* ColSpan actualizado a 4 */}
-                  <td colSpan={4}>No tienes participaciones registradas.</td>
-                </tr>
-              ) : (
-                participations.map((p, idx) => {
-                  const evento = p.evento || p.event || {};
-                  const eventoId = evento.id || p.evento_id;
-                  
-                  const eventoTitulo = evento.titulo || p.evento_titulo;
-                  const eventoFecha = evento.fecha_hora || p.evento_fecha;
-                  const eventoModalidad = evento.modalidad || p.evento_modalidad;
+        <div className="participations-container">
+          <h2 className="participations-title">Mis Participaciones</h2>
 
-                  return (
-                    <tr key={p.id || idx}>
-                      {/* 1. Evento (con Link) */}
-                      <td>
-                        <Link to={`/event/${eventoId}`}>
-                          {eventoTitulo || "Sin título"}
-                        </Link>
-                      </td>
-                      {/* 2. Fecha, Hora */}
-                      <td>
-                        {eventoFecha
-                          ? new Date(eventoFecha).toLocaleString()
-                          : "N/A"}
-                      </td>
-                      {/* 3. Modalidad */}
-                      <td>{eventoModalidad || "N/A"}</td>
-                      
-                      {/* Columna de Estado ELIMINADA */}
+          {loading && <div className="state-message">Cargando tus eventos...</div>}
+          {error && <div className="state-message error">{error}</div>}
 
-                      {/* 4. Acción (Encuesta) - Lógica simplificada */}
-                      <td>
-                        {
-                        // Como ya filtramos las canceladas,
-                        // solo necesitamos saber si el evento ha terminado.
-                        hasEventFinished(eventoFecha) ? (
-                          <button
-                            className="btn-evaluate"
-                            onClick={() => navigate(`/survey/${eventoId}`)}
-                          >
-                            Evaluar
-                          </button>
-                        ) : (
-                          <span className="evaluate-na">
-                            No disponible
-                          </span>
-                        )}
+          {!loading && !error && (
+            <div className="participations-table-box">
+              <table className="participations-table">
+                <thead>
+                  <tr>
+                    <th>Evento</th>
+                    <th>Fecha</th>
+                    <th>Modalidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {participations.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="empty-message">
+                        No tienes participaciones activas. <br/>
+                        <Link to="/events" className="link-explore">Ver eventos disponibles</Link>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                  ) : (
+                    participations.map((p, idx) => {
+                      const evento = p.evento || p.event || {};
+                      const eventoId = evento.id || p.evento_id;
+                      const eventoTitulo = evento.titulo || p.evento_titulo;
+                      const eventoFecha = evento.fecha_hora || p.evento_fecha;
+                      const eventoModalidad = evento.modalidad || p.evento_modalidad;
+                      
+                      const isFinished = hasEventFinished(eventoFecha);
+
+                      return (
+                        <tr key={p.id || idx}>
+                          <td className="col-event">
+                            <Link to={`/event/${eventoId}`} className="event-link">
+                              {eventoTitulo || "Sin título"}
+                            </Link>
+                          </td>
+                          <td>
+                            <div className="date-wrapper">
+                              <span className="date-date">{formatDate(eventoFecha)}</span>
+                              <span className="date-time">{formatTime(eventoFecha)}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className={`badge modality-${eventoModalidad?.toLowerCase()}`}>
+                              {eventoModalidad || "N/A"}
+                            </span>
+                          </td>
+                          <td>
+                             <span className={`badge status-${isFinished ? 'finished' : 'upcoming'}`}>
+                               {isFinished ? "Finalizado" : "Próximo"}
+                             </span>
+                          </td>
+                          <td>
+                            {isFinished ? (
+                              <button
+                                className="btn-action btn-evaluate"
+                                onClick={() => navigate(`/survey/${eventoId}`)}
+                              >
+                                Evaluar
+                              </button>
+                            ) : (
+                              <button
+                                className="btn-action btn-cancel"
+                                onClick={() => handleCancelInscription(eventoId, eventoTitulo)}
+                              >
+                                Cancelar
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </>

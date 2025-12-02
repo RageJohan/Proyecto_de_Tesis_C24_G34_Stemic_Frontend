@@ -1,89 +1,258 @@
+:root {
+  /* Definimos variables basadas en tu color principal #030C40 */
+  --color-base-dark: #030C40;
+  --color-base-dark-translucent: rgba(3, 12, 64, 0.85);
+  --color-accent: #40c4ff; /* Un azul claro para resaltar sobre el fondo oscuro */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0bec5;
+}
+
 .participations-view {
   min-height: 100vh;
-  padding: 40px 0 0 0;
+  /* Fondo general: un gradiente suave partiendo de tu color base */
+  background: linear-gradient(135deg, var(--color-base-dark) 0%, #051050 100%);
+  padding-top: 100px; /* Espacio para Header */
+  padding-bottom: 50px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.participations-container {
+  width: 90%;
+  max-width: 1200px;
 }
 
 .participations-title {
-  color: #fff;
-  font-size: 2.2rem;
+  color: var(--color-text-primary);
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 32px;
-  letter-spacing: 1px;
-  text-align: left;
-  width: 90%;
-  max-width: 1100px;
+  margin-bottom: 24px;
+  border-left: 4px solid var(--color-accent);
+  padding-left: 16px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .participations-table-box {
-  background: rgba(255,255,255,0.10);
-  border-radius: 18px;
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
-  padding: 32px 24px;
-  width: 90%;
-  max-width: 1100px;
+  /* Usamos tu color con transparencia para el contenedor de la tabla */
+  background: rgba(3, 12, 64, 0.6); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  padding: 24px;
   overflow-x: auto;
 }
 
 .participations-table {
   width: 100%;
-  border-collapse: collapse;
-  color: #fff;
-  font-size: 1.1rem;
-}
-
-.participations-table th, .participations-table td {
-  padding: 14px 18px;
-  border-bottom: 1px solid #3949ab;
-  text-align: left;
+  border-collapse: separate;
+  border-spacing: 0 8px; /* Espacio entre filas */
+  color: var(--color-text-primary);
 }
 
 .participations-table th {
-  background: #2d3870;
+  text-align: left;
+  padding: 16px;
+  /* El encabezado usa tu color principal con un poco más de opacidad */
+  background: rgba(3, 12, 64, 0.9);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(64, 196, 255, 0.3);
+}
+
+.participations-table th:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.participations-table th:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.participations-table tbody tr {
+  transition: transform 0.2s ease, background 0.2s;
+}
+
+.participations-table tbody tr:hover {
+  transform: translateY(-2px);
+}
+
+.participations-table td {
+  padding: 16px;
+  /* Fondo de las filas: ligeramente más claro que el fondo base para contraste */
+  background: rgba(255, 255, 255, 0.03);
+  vertical-align: middle;
+  border: none;
+}
+
+.participations-table td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.participations-table td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Enlaces de Eventos */
+.event-link {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.event-link:hover {
+  color: var(--color-accent);
+}
+
+/* Fechas */
+.date-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.date-date {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.date-time {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+/* Badges (Etiquetas) */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: inline-block;
 }
 
-.participations-table tr:last-child td {
-  border-bottom: none;
+/* Modalidades */
+.modality-virtual {
+  background: rgba(64, 196, 255, 0.15);
+  color: #40c4ff;
+  border: 1px solid rgba(64, 196, 255, 0.3);
+}
+.modality-presencial {
+  background: rgba(255, 171, 0, 0.15);
+  color: #ffab00;
+  border: 1px solid rgba(255, 171, 0, 0.3);
 }
 
-@media (max-width: 700px) {
-  .participations-title, .participations-table-box {
-    width: 98%;
-    padding: 16px 4px;
-  }
-  .participations-title {
-    font-size: 1.3rem;
-    margin-bottom: 18px;
-  }
-  .participations-table th, .participations-table td {
-    padding: 8px 6px;
-    font-size: 0.95rem;
-  }
+/* Estados */
+.status-upcoming {
+  background: rgba(105, 240, 174, 0.15);
+  color: #69f0ae;
+  border: 1px solid rgba(105, 240, 174, 0.3);
+}
+.status-finished {
+  background: rgba(176, 190, 197, 0.15);
+  color: #b0bec5;
+  border: 1px solid rgba(176, 190, 197, 0.3);
 }
 
-.participations-table .btn-evaluate {
-  background-color: var(--color-principal);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-weight: 600;
+/* Botones */
+.btn-action {
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 0.9rem;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-.participations-table .btn-evaluate:hover {
-  background-color: var(--color-secundario);
+.btn-evaluate {
+  background-color: var(--color-accent); /* Cyan/Azul claro para acción positiva */
+  color: #000; /* Texto oscuro para contraste sobre cyan */
+  box-shadow: 0 2px 8px rgba(64, 196, 255, 0.3);
+}
+.btn-evaluate:hover {
+  background-color: #80d8ff;
+  box-shadow: 0 4px 12px rgba(64, 196, 255, 0.5);
 }
 
-.participations-table .evaluate-na {
-  color: #999;
+.btn-cancel {
+  background: transparent;
+  border: 1px solid #ff5252;
+  color: #ff5252;
+}
+.btn-cancel:hover {
+  background: rgba(255, 82, 82, 0.1);
+}
+
+/* Mensajes de Estado */
+.state-message {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+}
+.state-message.error {
+  color: #ff5252;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 40px !important;
+  color: var(--color-text-secondary);
   font-style: italic;
-  font-size: 0.9rem;
+}
+.link-explore {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: bold;
 }
 
+/* Responsive Móvil */
+@media (max-width: 768px) {
+  .participations-table thead {
+    display: none;
+  }
+  
+  .participations-table, .participations-table tbody, .participations-table tr, .participations-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .participations-table tr {
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 12px;
+  }
+
+  .participations-table td {
+    padding: 8px 4px;
+    text-align: left;
+    background: transparent;
+    border-radius: 0;
+  }
+  
+  .participations-table td::before {
+    /* Si quisieras etiquetas en móvil, podrías poner content: attr(data-label); aquí */
+    display: inline-block;
+    width: 100px;
+    font-weight: bold;
+    color: var(--color-text-secondary);
+  }
+
+  .btn-action {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
