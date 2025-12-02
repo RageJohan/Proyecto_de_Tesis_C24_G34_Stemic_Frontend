@@ -1,11 +1,7 @@
 /**
  * @file src/components/AttendanceScanner.jsx
- * @description Componente modal que activa la cámara del usuario para escanear un QR
- * y registrar la asistencia a un evento.
- * @requires react
- * @requires html5-qrcode
- * @requires ../services/api
- * @requires ../styles/AttendanceScanner.css
+ * @description Componente modal que activa la cámara del usuario para escanear un QR.
+ * VERSION OPTIMIZADA: Apaga la cámara inmediatamente al leer un código.
  */
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -13,135 +9,124 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import { verifyAttendance } from '../services/api';
 import '../styles/AttendanceScanner.css';
 
-/**
- * Componente AttendanceScanner
- * Muestra un modal con un visor de cámara para escanear códigos QR.
- * Al escanear un QR válido, llama al endpoint de la API para verificar la asistencia.
- *
- * @param {object} props - Propiedades del componente.
- * @param {function} props.onClose - Función para cerrar el modal.
- * @param {function} [props.onSuccess] - (Opcional) Callback para ejecutar al registrar asistencia exitosamente.
- * @returns {JSX.Element}
- */
 export default function AttendanceScanner({ onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: 'info', text: 'Apunte la cámara al código QR...' });
-  const scannerRef = useRef(null); // Ref para almacenar la instancia del escáner
+  const scannerRef = useRef(null);
+  
+  // Referencia para saber si el componente está montado (evitar errores en promesas)
+  const isMounted = useRef(true);
 
-  // ID único para el contenedor del escáner
   const qrReaderId = "qr-reader-container"; 
 
-  useEffect(() => {
-    // Evita que se inicialice varias veces (ej. por React.StrictMode)
-    if (scannerRef.current) {
-      return;
-    }
+  // Definimos la función de inicialización fuera del useEffect para poder re-llamarla
+  const initScanner = () => {
+    if (scannerRef.current) return;
 
-    // Inicializa el escáner
     const scanner = new Html5QrcodeScanner(
-      qrReaderId, // ID del elemento en el DOM
+      qrReaderId, 
       {
-        fps: 10, // Frames por segundo
-        qrbox: (viewfinderWidth, viewfinderHeight) => {
-          // Calcula el tamaño de la caja de escaneo (ej. 80% del lado más corto)
-          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-          const size = Math.floor(minEdge * 0.8);
-          return { width: size, height: size };
-        },
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0,
+        showTorchButtonIfSupported: false, // Desactivar si causa problemas visuales
         rememberLastUsedCamera: true,
       },
-      false // verbose = false
+      false 
     );
 
     scannerRef.current = scanner;
 
-    /**
-     * Callback de éxito del escaneo.
-     * @param {string} decodedText - El texto decodificado del QR (el token).
-     * @param {object} decodedResult - El resultado completo del escaneo.
-     */
     const onScanSuccess = (decodedText) => {
-      // Detener el escáner y mostrar carga
-      scanner.pause();
-      setLoading(true);
-      setMessage({ type: 'info', text: 'Procesando asistencia...' });
-      
-      // Enviar el token al backend
-      handleVerify(decodedText);
+      // CAMBIO IMPORTANTE: Usamos clear() en lugar de pause()
+      // Esto apaga la luz de la cámara inmediatamente.
+      scanner.clear().then(() => {
+        scannerRef.current = null; // Limpiamos la referencia
+        if (isMounted.current) {
+          setLoading(true);
+          setMessage({ type: 'info', text: 'Procesando asistencia...' });
+          handleVerify(decodedText);
+        }
+      }).catch(err => console.error("Error al detener cámara:", err));
     };
 
-    /**
-     * Callback de fallo del escaneo (opcional).
-     * @param {string} error - El mensaje de error.
-     */
     const onScanFailure = (error) => {
-      // No mostramos errores de "QR no encontrado" porque ocurren en cada frame.
-      console.warn(`Scan failure: ${error}`);
+      // Ignoramos errores de "no QR found"
     };
-    
 
-    // Inicia el renderizado del escáner
     scanner.render(onScanSuccess, onScanFailure);
+  };
 
-    // Hook de limpieza: se ejecuta cuando el componente se desmonta
+  useEffect(() => {
+    isMounted.current = true;
+    // Pequeño timeout para asegurar que el DOM está listo
+    const timer = setTimeout(() => {
+      initScanner();
+    }, 100);
+
     return () => {
+      isMounted.current = false;
+      clearTimeout(timer);
       if (scannerRef.current) {
-        // Detiene la cámara y limpia los recursos
-        scannerRef.current.clear().catch(err => {
-          console.error("Error al limpiar Html5QrcodeScanner:", err);
-        });
+        scannerRef.current.clear().catch(console.error);
         scannerRef.current = null;
       }
     };
-  }, []); // El array vacío es intencional para que solo se ejecute una vez
+  }, []);
 
-  /**
-   * Llama a la API para verificar la asistencia con el token del QR.
-   * @param {string} token - El token escaneado.
-   */
   const handleVerify = async (token) => {
     try {
       const result = await verifyAttendance(token);
+      
+      if (!isMounted.current) return;
+
       setMessage({ type: 'success', text: result.message || '¡Asistencia registrada con éxito!' });
       setLoading(false);
       
-      // Llama al callback de éxito (si existe)
-      if (onSuccess) {
-        onSuccess(result);
-      }
+      if (onSuccess) onSuccess(result);
       
-      // Cierra automáticamente el modal después de 2 segundos
+      // Cerrar modal
       setTimeout(() => {
-        onClose();
+        if (isMounted.current) onClose();
       }, 2000);
 
     } catch (err) {
-      // Muestra el error del backend (ej. "QR inválido", "Asistencia ya registrada")
+      if (!isMounted.current) return;
+
+      // Error en validación
       setMessage({ type: 'error', text: err.message || 'Error al registrar asistencia.' });
       setLoading(false);
       
-      // Reanuda el escáner después de un breve retraso para que el usuario lea el error
+      // CAMBIO: Como apagamos la cámara, debemos reiniciarla si hubo error
+      // Esperamos 2 segundos para que el usuario lea el mensaje de error
       setTimeout(() => {
-        if (scannerRef.current) {
-          scannerRef.current.resume();
-          setMessage({ type: 'info', text: 'Inténtalo de nuevo...' });
+        if (isMounted.current) {
+          setMessage({ type: 'info', text: 'Reiniciando cámara...' });
+          // Reiniciamos el escáner
+          initScanner();
         }
-      }, 2000);
+      }, 2500);
     }
   };
 
   return (
-    <div className="scanner-overlay" onClick={onClose}>
+    <div className="scanner-overlay" onClick={!loading ? onClose : undefined}>
       <div className="scanner-modal" onClick={(e) => e.stopPropagation()}>
         <div className="scanner-header">
           <h3>Registrar Asistencia</h3>
           <button onClick={onClose} className="scanner-close-btn" disabled={loading}>&times;</button>
         </div>
         <div className="scanner-body">
-          {/* El contenedor donde se renderizará el escáner */}
           <div id={qrReaderId} className="scanner-viewport"></div>
           
-          {/* Muestra mensajes de estado (info, éxito, error) */}
+          {/* Si está cargando y la cámara se apagó, mostramos un spinner aquí para que no quede vacío */}
+          {loading && !scannerRef.current && (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
+              <p>Verificando...</p>
+            </div>
+          )}
+
           {message.text && (
             <div className={`scanner-message scanner-${message.type}`}>
               {message.text}
@@ -151,4 +136,4 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
       </div>
     </div>
   );
-}
+}   

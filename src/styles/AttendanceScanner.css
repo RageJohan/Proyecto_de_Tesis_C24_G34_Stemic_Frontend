@@ -3,7 +3,7 @@
  * @description Estilos para el componente modal de escáner QR.
  */
 
-.scanner-overlay {
+ .scanner-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -30,13 +30,13 @@
   border-radius: 1.2rem;
   padding: 1.5rem;
   width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 400px; /* Reducido un poco para que no se vea tan ancho en desktop */
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.1);
   animation: scannerSlideIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes scannerSlideIn {
@@ -55,106 +55,142 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  padding-bottom: 1rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .scanner-header h3 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-acento, #7957F2);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #7957F2; /* Color acento directo */
 }
 
 .scanner-close-btn {
   background: transparent;
   border: none;
-  color: #fff;
-  font-size: 2.2rem;
-  font-weight: 300;
+  color: #94a3b8;
+  font-size: 1.8rem;
   cursor: pointer;
   padding: 0;
   line-height: 1;
-  transition: transform 0.2s;
+  transition: color 0.2s;
 }
 .scanner-close-btn:hover {
-  transform: scale(1.1) rotate(90deg);
-  color: var(--color-principal);
+  color: #fff;
 }
 
 .scanner-body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  align-items: center;
 }
 
+/* --- ESTILOS CRÍTICOS PARA HTML5-QRCODE --- */
+
+/* El contenedor principal */
 .scanner-viewport {
   width: 100%;
-  border: 2px solid rgba(121, 87, 242, 0.3);
-  border-radius: 1rem;
-  overflow: hidden; /* Oculta el desbordamiento del video */
+  overflow: hidden; 
+  border-radius: 12px;
+  background: #000; /* Fondo negro para evitar parpadeos blancos */
+  position: relative;
+  /* Eliminar bordes por defecto de la librería si los hubiera */
+  border: none !important; 
 }
 
-/* Estilos para los elementos de html5-qrcode */
+/* Forzar que el video ocupe todo y mantenga proporción */
 .scanner-viewport video {
   width: 100% !important;
   height: auto !important;
+  object-fit: cover; /* Clave para evitar deformaciones */
+  border-radius: 12px;
   display: block;
 }
 
-/* Botones de "Request Camera Permission" y "Stop Scanning" */
+/* Ocultar elementos duplicados o innecesarios que genera la librería */
+#qr-reader-container__scan_region {
+  /* Asegura que la región de escaneo no tenga estilos raros */
+  background: transparent !important;
+}
+
+/* Ocultar la barra de estado inferior que a veces sale */
+#qr-reader-container__dashboard_section_csr span, 
+#qr-reader-container__dashboard_section_swaplink {
+  display: none !important;
+}
+
+/* Estilo para los botones de permisos/iniciar que genera la librería */
 #qr-reader-container button {
-  background-color: var(--color-principal);
+  background-color: #7957F2;
   color: white;
   border: none;
-  padding: 0.8rem 1rem;
-  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
   margin: 0.5rem auto;
-  display: block;
-  cursor: pointer;
   font-weight: 600;
-  width: 100%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: auto;
   transition: background-color 0.2s;
 }
 
 #qr-reader-container button:hover {
-  background-color: var(--color-secundario);
+  background-color: #6a4ae8;
 }
 
-/* Select de cámara */
+/* Estilo para el select de cámara */
 #qr-reader-container select {
-  background: #181c3a;
-  color: white;
-  border: 1px solid var(--color-acento);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.4rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  outline: none;
   width: 100%;
-  margin-top: 0.5rem;
+  max-width: 300px;
 }
+#qr-reader-container select option {
+  background: #1e293b;
+  color: #fff;
+}
+
+/* Mensaje de overlay "Requesting permissions..." */
+#qr-reader-container img[alt="Info icon"] {
+  display: none; /* Ocultar icono feo por defecto */
+}
+#qr-reader-container div[style*="text-align: center"] {
+  color: #ccc !important; /* Color de texto de mensajes internos */
+}
+
+/* --- FIN ESTILOS HTML5-QRCODE --- */
 
 .scanner-message {
-  padding: 1rem;
-  border-radius: 0.8rem;
-  font-weight: 600;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-weight: 500;
   text-align: center;
   margin: 0;
-  line-height: 1.4;
+  font-size: 0.9rem;
 }
 
 .scanner-info {
-  background: rgba(0, 150, 255, 0.1);
-  color: #66cfff;
-  border: 1px solid rgba(0, 150, 255, 0.2);
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .scanner-success {
-  background: rgba(0, 230, 118, 0.15);
-  color: #00e676;
-  border: 1px solid rgba(0, 230, 118, 0.3);
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .scanner-error {
-  background: rgba(255, 82, 82, 0.15);
-  color: #ff5252;
-  border: 1px solid rgba(255, 82, 82, 0.3);
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
