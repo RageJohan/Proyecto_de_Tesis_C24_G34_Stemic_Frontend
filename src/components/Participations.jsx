@@ -18,16 +18,18 @@ export default function Participations() {
     setLoading(true);
     getMyInscriptions()
       .then((data) => {
-        // Filtrar inscripciones canceladas
+        // 1. Filtramos las canceladas para mostrar solo activas
         const activeParticipations = data.filter(
           (p) => p.estado !== "cancelada"
         );
-        // Ordenar por fecha (más recientes primero)
+        
+        // 2. Ordenar por fecha (los más recientes primero)
         activeParticipations.sort((a, b) => {
           const dateA = new Date(a.evento?.fecha_hora || a.evento_fecha);
           const dateB = new Date(b.evento?.fecha_hora || b.evento_fecha);
           return dateB - dateA;
         });
+        
         setParticipations(activeParticipations);
       })
       .catch((err) => {
@@ -124,6 +126,12 @@ export default function Participations() {
                       
                       const isFinished = hasEventFinished(eventoFecha);
 
+                      const isEvaluated = 
+                        p.ha_evaluado === true || 
+                        p.ha_evaluado === 1 || 
+                        p.has_evaluated === true ||
+                        (p.evaluacion && p.evaluacion !== null);
+
                       return (
                         <tr key={p.id || idx}>
                           <td className="col-event">
@@ -148,19 +156,29 @@ export default function Participations() {
                              </span>
                           </td>
                           <td>
+                            {/* LÓGICA DE ACCIONES */}
                             {isFinished ? (
-                              <button
-                                className="btn-action btn-evaluate"
-                                onClick={() => navigate(`/survey/${eventoId}`)}
-                              >
-                                Evaluar
-                              </button>
+                              isEvaluated ? (
+                                // CASO 1: Evento terminado Y Evaluado -> Mostrar indicador estático
+                                <div className="status-evaluated-badge" title="Encuesta completada">
+                                  <span className="check-icon">✓</span> Completada
+                                </div>
+                              ) : (
+                                // CASO 2: Evento terminado Y NO Evaluado -> Botón Evaluar
+                                <button
+                                  className="btn-action btn-evaluate"
+                                  onClick={() => navigate(`/survey/${eventoId}`)}
+                                >
+                                  Evaluar Experiencia
+                                </button>
+                              )
                             ) : (
+                              // CASO 3: Evento futuro -> Botón Cancelar
                               <button
                                 className="btn-action btn-cancel"
                                 onClick={() => handleCancelInscription(eventoId, eventoTitulo)}
                               >
-                                Cancelar
+                                Cancelar Registro
                               </button>
                             )}
                           </td>
