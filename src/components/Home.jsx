@@ -80,7 +80,7 @@ export default function Home() {
 
           <img
 
-            src="https://res.cloudinary.com/dprknahn8/image/upload/v1762122357/perfil_3_aedmqc.png"
+            src="https://res.cloudinary.com/dprknahn8/image/upload/v1765132678/LEAD_LOGO_pkbqhq.jpg"
 
             alt="Ilustración de LEAD at Tecsup"
 
