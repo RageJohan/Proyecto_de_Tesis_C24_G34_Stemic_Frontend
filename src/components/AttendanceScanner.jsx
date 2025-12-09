@@ -1,7 +1,7 @@
 /**
  * @file src/components/AttendanceScanner.jsx
  * @description Componente modal optimizado usando la API Core de Html5Qrcode.
- * CORRECCIÓN: Soluciona el error "Cannot clear while scan is ongoing".
+ * CORRECCIÓN: Agregado bloqueo (isProcessing) para evitar que Vercel bloquee por spam de peticiones.
  */
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -14,14 +14,17 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
   const [message, setMessage] = useState({ type: 'info', text: 'Apunte la cámara al código QR...' });
   const scannerRef = useRef(null);
   
+  // Bloqueo para evitar múltiples lecturas del mismo QR
+  const isProcessing = useRef(false);
+  
   const isMounted = useRef(true);
   const qrReaderId = "qr-reader-container"; 
 
   useEffect(() => {
     isMounted.current = true;
+    isProcessing.current = false; // Reset al montar
 
     const startScanner = async () => {
-      // Evitar crear múltiples instancias si ya existe una
       if (scannerRef.current) return;
 
       const html5QrCode = new Html5Qrcode(qrReaderId);
@@ -36,6 +39,13 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
             aspectRatio: 1.0
           },
           (decodedText) => {
+            // --- CAMBIO CRÍTICO: BLOQUEO DE PROCESAMIENTO ---
+            // Si ya estamos procesando un código, ignoramos cualquier otra lectura
+            if (isProcessing.current) return;
+            
+            // Activamos el bloqueo inmediatamente
+            isProcessing.current = true;
+            
             handleScanSuccess(html5QrCode, decodedText);
           },
           (errorMessage) => {
@@ -50,19 +60,14 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
       }
     };
 
-    // Delay de 500ms para esperar la animación del modal
     const timer = setTimeout(() => {
       startScanner();
     }, 500);
 
-    // --- CORRECCIÓN CRÍTICA AQUÍ ---
     return () => {
       isMounted.current = false;
       clearTimeout(timer);
       
-      // Al desmontar, solo detenemos el stream de video.
-      // NO llamamos a clear() aquí porque React destruirá el elemento DOM
-      // y llamar a clear() mientras se detiene (stop) causa el error de consola.
       if (scannerRef.current) {
         try {
           if (scannerRef.current.isScanning) {
@@ -77,10 +82,7 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
   }, []);
 
   const handleScanSuccess = (scannerInstance, token) => {
-    // Aquí sí usamos la secuencia stop -> clear porque el componente sigue montado
-    // y queremos mostrar el estado de "Cargando" limpio.
     scannerInstance.stop().then(() => {
-        // Limpiamos el canvas solo si la detención fue exitosa
         try { scannerInstance.clear(); } catch(e) { console.warn(e); }
         
         if (!isMounted.current) return;
@@ -90,7 +92,11 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
         setMessage({ type: 'info', text: 'Procesando asistencia...' });
         
         verifyToken(token);
-    }).catch(err => console.error("Error al detener tras scan:", err));
+    }).catch(err => {
+        console.error("Error al detener tras scan:", err);
+        // Si falla el stop, liberamos el bloqueo para intentar de nuevo
+        isProcessing.current = false; 
+    });
   };
 
   const verifyToken = async (token) => {
@@ -111,13 +117,22 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
     } catch (err) {
       if (!isMounted.current) return;
 
-      setMessage({ type: 'error', text: err.message || 'Error al registrar asistencia.' });
+      console.error("Error de verificación:", err);
+
+      // Si el error es HTML (Vercel Firewall), mostramos mensaje amigable
+      let errorMsg = err.message || 'Error al registrar asistencia.';
+      if (errorMsg.includes("Unexpected token") || errorMsg.includes("text/html")) {
+          errorMsg = "Error de conexión. Intente nuevamente.";
+      }
+
+      setMessage({ type: 'error', text: errorMsg });
       setLoading(false);
       
-      // Reiniciar escáner tras error
-      // Sugerimos al usuario cerrar y abrir para evitar bucles complejos
+      // Permitir reintentar después del error
       setTimeout(() => {
          if (isMounted.current) {
+             // Cerramos el modal para forzar un reinicio limpio del componente
+             // Esto es más seguro que intentar reiniciar la cámara en el mismo estado
              onClose(); 
          }
       }, 2500);
