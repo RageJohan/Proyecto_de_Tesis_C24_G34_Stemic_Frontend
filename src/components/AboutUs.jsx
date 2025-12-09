@@ -27,6 +27,24 @@ const pillars = [
       "Promovemos la conciencia social, el servicio y la solidaridad a través de voluntariados, proyectos y campañas que impacten positivamente en la comunidad y fortalezcan el compromiso ciudadano de nuestros estudiantes.",
     icon: "🌍",
   },
+  {
+    title: "Liderazgo",
+    description:
+      "El pilar de Liderazgo empodera a los estudiantes con habilidades, confianza y visión para liderar, fomentando la toma de decisiones éticas y el servicio a los demás.",
+    icon: "",
+  },
+  {
+    title: "LEAD Academia",
+    description:
+      "LEAD Academia permite a los estudiantes universitarios crear eventos y programas para inspirar y educar a jóvenes, fomentando la creatividad y construyendo un pipeline de futuros líderes.",
+    icon: "",
+  },
+  {
+    title: "Desarrollo del Capitulo",
+    description:
+      "El pilar de desarrollo fortalece las conexiones entre los miembros, creando un ambiente inclusivo y colaborativo que fomenta la participación, el apoyo mutuo y el trabajo en equipo.",
+    icon: "",
+  },
 ];
 
 const values = [
@@ -98,19 +116,13 @@ export default function AboutUs() {
           <div className="aboutus-h-accordion-card mision">
             <div className="aboutus-h-accordion-title">Misión</div>
             <div className="aboutus-h-accordion-content">
-              LEAD impulsa el crecimiento académico, profesional y
-              personal de los estudiantes, preparándolos como líderes y agentes
-              de cambio en STEM, mediante experiencias, mentoría y trabajo
-              comunitario.
+              LEAD cierra la brecha de falta de oportunidades para estudiantes de comunidades subrepresentadas, brindándoles mentoría, desarrollo de habilidades y experiencias prácticas para que tengan éxito en carreras STEM y accedan a oportunidades globales.
             </div>
           </div>
           <div className="aboutus-h-accordion-card vision">
             <div className="aboutus-h-accordion-title">Visión</div>
             <div className="aboutus-h-accordion-content">
-              LEAD sueña con construir una comunidad donde cada
-              estudiante supere barreras, alcance sus metas y
-              contribuya activamente a un mundo más justo, inclusivo y lleno de
-              oportunidades.
+              LEAD sueña con un mundo donde todos los estudiantes, sin importar su origen, cuenten con el apoyo necesario para superar adversidades, perseguir sus sueños y construir un futuro mejor.
             </div>
           </div>
         </div>
