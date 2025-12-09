@@ -108,7 +108,7 @@ export default function AboutUs() {
             <div className="aboutus-h-accordion-title">Visión</div>
             <div className="aboutus-h-accordion-content">
               LEAD sueña con construir una comunidad donde cada
-              estudiante de TECSUP supere barreras, alcance sus metas y
+              estudiante supere barreras, alcance sus metas y
               contribuya activamente a un mundo más justo, inclusivo y lleno de
               oportunidades.
             </div>
