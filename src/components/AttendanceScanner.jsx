@@ -31,6 +31,9 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
         aspectRatio: 1.0,
         showTorchButtonIfSupported: false, // Desactivar si causa problemas visuales
         rememberLastUsedCamera: true,
+        videoConstraints: {
+          facingMode: { exact: "environment" }
+        }
       },
       false 
     );
