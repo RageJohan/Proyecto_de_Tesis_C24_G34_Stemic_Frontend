@@ -98,9 +98,9 @@ function JoinUs() {
       <div className="joinus-container">
         <ParticlesBG />
         <div style={{ position: "relative", width: "100%", height: "340px", overflow: "hidden" }}>
-          <img src={JoinUsImg} alt="Fondo LEAD AT TECSUP" className="joinus-hero-img" />
+          <img src={JoinUsImg} alt="Fondo LEAD" className="joinus-hero-img" />
           <div className="joinus-hero-title">
-            <AnimatedTitle text="¡Únete a la comunidad LEAD AT TECSUP!" />
+            <AnimatedTitle text="¡Únete a la comunidad LEAD!" />
           </div>
         </div>
         <div className="joinus-main">
@@ -136,7 +136,7 @@ function JoinUs() {
                 />
                 <textarea
                   name="motivacion"
-                  placeholder="¿Por qué quieres unirte a LEAD AT TECSUP?"
+                  placeholder="¿Por qué quieres unirte a LEAD?"
                   required
                   className="joinus-textarea"
                   rows={4}
