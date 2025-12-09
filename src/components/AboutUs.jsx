@@ -98,7 +98,7 @@ export default function AboutUs() {
           <div className="aboutus-h-accordion-card mision">
             <div className="aboutus-h-accordion-title">Misión</div>
             <div className="aboutus-h-accordion-content">
-              LEAD TECSUP impulsa el crecimiento académico, profesional y
+              LEAD impulsa el crecimiento académico, profesional y
               personal de los estudiantes, preparándolos como líderes y agentes
               de cambio en STEM, mediante experiencias, mentoría y trabajo
               comunitario.
@@ -107,7 +107,7 @@ export default function AboutUs() {
           <div className="aboutus-h-accordion-card vision">
             <div className="aboutus-h-accordion-title">Visión</div>
             <div className="aboutus-h-accordion-content">
-              LEAD TECSUP sueña con construir una comunidad donde cada
+              LEAD sueña con construir una comunidad donde cada
               estudiante de TECSUP supere barreras, alcance sus metas y
               contribuya activamente a un mundo más justo, inclusivo y lleno de
               oportunidades.
