@@ -24,19 +24,15 @@ export default function AttendanceScanner({ onClose, onSuccess }) {
     if (scannerRef.current) return;
 
     const scanner = new Html5QrcodeScanner(
-      qrReaderId, 
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-        showTorchButtonIfSupported: false, // Desactivar si causa problemas visuales
-        rememberLastUsedCamera: true,
-        videoConstraints: {
-          facingMode: { exact: "environment" }
-        }
-      },
-      false 
-    );
+            qrReaderId, 
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+              showTorchButtonIfSupported: false,
+              rememberLastUsedCamera: true,
+            },
+            false 
+          );
 
     scannerRef.current = scanner;
 
